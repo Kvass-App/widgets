@@ -34,15 +34,19 @@ To use the widget, use the `<kvass-lead-form />` element as shown here.
 
 ## Props
 
-The component has several props for easy customization.
+The component has several props for easy configuration.
 
-| Name        | Type   | Description                                                    | Default                            |
-| ----------- | ------ | -------------------------------------------------------------- | ---------------------------------- |
-| title       | String | Title of the lead form                                         | `"Meld interesse"`                 |
-| subtitle    | String | Optional subtitle under form title                             |                                    |
-| submitLabel | String | Label for the submit button                                    | `"Meld interesse"`                 |
-| privacyUrl  | String | URL to privacy statement                                       | `"https://legal.kvass.no/privacy"` |
-| accountUrl  | String | Account URL where data will be sent. **This prop is required** |                                    |
+| Name                  | Type    | Description                                                                      | Default                                 |
+| --------------------- | ------- | -------------------------------------------------------------------------------- | --------------------------------------- |
+| title                 | String  | Title of the lead form                                                           | `"Meld interesse"`                      |
+| subtitle              | String  | Optional subtitle shown under form title                                         |                                         |
+| submitLabel           | String  | Label for the submit button                                                      | `"Meld interesse"`                      |
+| privacyUrl            | String  | Optional URL to privacy statement                                                | `{accountUrl}/api/legal/privacy/tenant` |
+| accountUrl `required` | String  | Account URL where data will be sent.                                             |                                         |
+| projects              | String  | Comma-separated list of project ids. If not defined, a selection field will show |                                         |
+| references `required` | String  | Comma-separated list of references in {type}:{id} format                         |                                         |
+| upsell                | Boolean | If `true`, shows a checkbox for upsell                                           | `false`                                 |
+| tags                  | String  | Comma-separated list of tags                                                     |                                         |
 
 ## Styling
 
@@ -59,3 +63,5 @@ These are the available CSS variables.
 | --kvass-lead-form-color          | Base text color                                             | `#222222` |
 | --kvass-lead-form-color-inverted | Inverted text color. Used for the submit button             | `#ffffff` |
 | --kvass-lead-form-primary        | Primary color. Used for the submit button                   | `#1d56d8` |
+| --kvass-lead-form-error          | Error color. Used for error states                          | `#d81d1d` |
+| --kvass-lead-form-grid-columns   | Amount of columns in form                                   | `1`       |
