@@ -36,20 +36,20 @@ function handleInput(event) {
 
 <template>
   <label
-    class="kvass-lead-form-field"
+    class="kvass-contact-field"
     :class="[
       {
-        'kvass-lead-form-field--required': 'required' in $attrs,
-        'kvass-lead-form-field--focused': focused,
+        'kvass-contact-field--required': 'required' in $attrs,
+        'kvass-contact-field--focused': focused,
       },
       $attrs.class,
     ]"
     :for="$attrs.id"
   >
-    <span class="kvass-lead-form-field__label" v-if="label">{{ label }}</span>
+    <span class="kvass-contact-field__label" v-if="label">{{ label }}</span>
     <component
       :is="component"
-      class="kvass-lead-form-field__element"
+      class="kvass-contact-field__element"
       v-bind="$attrs"
       @input="handleInput"
       :value="modelValue"
@@ -60,46 +60,46 @@ function handleInput(event) {
 </template>
 
 <style lang="scss">
-.kvass-lead-form-field {
+.kvass-contact-field {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 
   &__element {
     padding: calc(
-      var(--kvass-lead-form-spacing, var(--kvass-lead-form-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
     border-radius: var(
-      --kvass-lead-form-border-radius,
-      var(--kvass-lead-form-default-border-radius)
+      --kvass-contact-border-radius,
+      var(--kvass-contact-default-border-radius)
     );
     border: 1px solid
       var(
-        --kvass-lead-form-border-color,
-        var(--kvass-lead-form-default-border-color)
+        --kvass-contact-border-color,
+        var(--kvass-contact-default-border-color)
       );
     resize: vertical;
     font: inherit;
 
     &:focus-visible {
       outline: 2px solid
-        var(--kvass-lead-form-color, var(--kvass-lead-form-default-color));
+        var(--kvass-contact-color, var(--kvass-contact-default-color));
       outline-offset: 2px;
     }
   }
 
   &--required {
-    .kvass-lead-form-field__label:after {
+    .kvass-contact-field__label:after {
       content: '*';
-      color: var(--kvass-lead-form-error, var(--kvass-lead-form-default-error));
+      color: var(--kvass-contact-error, var(--kvass-contact-default-error));
       margin-left: 0.3rem;
     }
 
-    &.kvass-lead-form-field--focused {
-      .kvass-lead-form-field__element:invalid {
+    &.kvass-contact-field--focused {
+      .kvass-contact-field__element:invalid {
         border-color: var(
-          --kvass-lead-form-error,
-          var(--kvass-lead-form-default-error)
+          --kvass-contact-error,
+          var(--kvass-contact-default-error)
         );
       }
     }
@@ -108,8 +108,8 @@ function handleInput(event) {
   &--full-width {
     grid-column-end: span
       var(
-        --kvass-lead-form-grid-columns,
-        var(--kvass-lead-form-default-grid-columns)
+        --kvass-contact-grid-columns,
+        var(--kvass-contact-default-grid-columns)
       );
   }
 }

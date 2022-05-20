@@ -141,15 +141,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <form class="kvass-lead-form" @submit.prevent="submit">
-    <div class="kvass-lead-form__header">
-      <h2 class="kvass-lead-form__title">{{ getLabel('title') }}</h2>
-      <p class="kvass-lead-form__subtitle" v-if="getLabel('subtitle')">
+  <form class="kvass-contact" @submit.prevent="submit">
+    <div class="kvass-contact__header">
+      <h2 class="kvass-contact__title">{{ getLabel('title') }}</h2>
+      <p class="kvass-contact__subtitle" v-if="getLabel('subtitle')">
         {{ getLabel('subtitle') }}
       </p>
     </div>
 
-    <div class="kvass-lead-form__fields">
+    <div class="kvass-contact__fields">
       <Field
         :label="getLabel('name')"
         type="text"
@@ -181,80 +181,77 @@ onMounted(() => {
         :label="getLabel('message')"
         type="textarea"
         rows="5"
-        class="kvass-lead-form-field--full-width"
+        class="kvass-contact-field--full-width"
         v-model="form.comment"
       />
       <Checkbox
         v-if="upsell"
         :label="getLabel('upsell')"
-        class="kvass-lead-form-field--full-width"
+        class="kvass-contact-field--full-width"
         v-model="form.contact.upsell"
       />
       <Checkbox
         :label="getLabel('privacy')"
-        class="kvass-lead-form-field--full-width"
+        class="kvass-contact-field--full-width"
         required
       />
     </div>
-    <button class="kvass-lead-form__submit" type="submit" :disabled="submitted">
+    <button class="kvass-contact__submit" type="submit" :disabled="submitted">
       {{ submitted ? getLabel('success') : getLabel('submit') }}
     </button>
   </form>
 </template>
 
 <style lang="scss">
-.kvass-lead-form {
+.kvass-contact {
   // default variables
-  --kvass-lead-form-default-background: #ffffff;
-  --kvass-lead-form-default-spacing: 2rem;
-  --kvass-lead-form-default-border-radius: 4px;
-  --kvass-lead-form-default-border-color: #eaeaea;
-  --kvass-lead-form-default-color: #222222;
-  --kvass-lead-form-default-color-inverted: #ffffff;
-  --kvass-lead-form-default-max-width: 720px;
-  --kvass-lead-form-default-primary: #1d56d8;
-  --kvass-lead-form-default-error: #d81d1d;
-  --kvass-lead-form-default-grid-columns: 1;
-  --kvass-lead-form-default-disabled: #eaeaea;
+  --kvass-contact-default-background: #ffffff;
+  --kvass-contact-default-spacing: 2rem;
+  --kvass-contact-default-border-radius: 4px;
+  --kvass-contact-default-border-color: #eaeaea;
+  --kvass-contact-default-color: #222222;
+  --kvass-contact-default-color-inverted: #ffffff;
+  --kvass-contact-default-max-width: 720px;
+  --kvass-contact-default-primary: #1d56d8;
+  --kvass-contact-default-error: #d81d1d;
+  --kvass-contact-default-grid-columns: 1;
+  --kvass-contact-default-disabled: #eaeaea;
 
   background-color: var(
-    --kvass-lead-form-background,
-    var(--kvass-lead-form-default-background)
+    --kvass-contact-background,
+    var(--kvass-contact-default-background)
   );
-  padding: var(
-    --kvass-lead-form-spacing,
-    var(--kvass-lead-form-default-spacing)
-  );
+  padding: var(--kvass-contact-spacing, var(--kvass-contact-default-spacing));
   border-radius: var(
-    --kvass-lead-form-border-radius,
-    var(--kvass-lead-form-default-border-radius)
+    --kvass-contact-border-radius,
+    var(--kvass-contact-default-border-radius)
   );
-  color: var(--kvass-lead-form-color, var(--kvass-lead-form-default-color));
+  color: var(--kvass-contact-color, var(--kvass-contact-default-color));
   max-width: var(
-    --kvass-lead-form-max-width,
-    var(--kvass-lead-form-default-max-width)
+    --kvass-contact-max-width,
+    var(--kvass-contact-default-max-width)
   );
   font: inherit;
   accent-color: var(
-    --kvass-lead-form-primary,
-    var(--kvass-lead-form-default-primary)
+    --kvass-contact-primary,
+    var(--kvass-contact-default-primary)
   );
 
   display: flex;
   flex-direction: column;
-  gap: var(--kvass-lead-form-spacing, var(--kvass-lead-form-default-spacing));
+  gap: var(--kvass-contact-spacing, var(--kvass-contact-default-spacing));
 
   @media (max-width: 600px) {
-    --kvass-lead-form-grid-columns: 1;
+    --kvass-contact-grid-columns: 1;
     padding: calc(
-      var(--kvass-lead-form-spacing, var(--kvass-lead-form-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
   }
 
   * {
     &:focus-visible {
       outline: 2px solid
-        var(--kvass-lead-form-color, var(--kvass-lead-form-default-color));
+        var(--kvass-contact-color, var(--kvass-contact-default-color));
       outline-offset: 2px;
     }
   }
@@ -269,13 +266,13 @@ onMounted(() => {
     display: grid;
     grid-template-columns: repeat(
       var(
-        --kvass-lead-form-grid-columns,
-        var(--kvass-lead-form-default-grid-columns)
+        --kvass-contact-grid-columns,
+        var(--kvass-contact-default-grid-columns)
       ),
       1fr
     );
     gap: calc(
-      var(--kvass-lead-form-spacing, var(--kvass-lead-form-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
   }
 
@@ -291,19 +288,19 @@ onMounted(() => {
 
   &__submit {
     padding: calc(
-      var(--kvass-lead-form-spacing, var(--kvass-lead-form-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
     border-radius: var(
-      --kvass-lead-form-border-radius,
-      var(--kvass-lead-form-default-border-radius)
+      --kvass-contact-border-radius,
+      var(--kvass-contact-default-border-radius)
     );
     background-color: var(
-      --kvass-lead-form-primary,
-      var(--kvass-lead-form-default-primary)
+      --kvass-contact-primary,
+      var(--kvass-contact-default-primary)
     );
     color: var(
-      --kvass-lead-form-color-inverted,
-      var(--kvass-lead-form-default-color-inverted)
+      --kvass-contact-color-inverted,
+      var(--kvass-contact-default-color-inverted)
     );
     border: none;
     font: inherit;
@@ -311,10 +308,10 @@ onMounted(() => {
 
     &:disabled {
       background-color: var(
-        --kvass-lead-form-disabled,
-        var(--kvass-lead-form-default-disabled)
+        --kvass-contact-disabled,
+        var(--kvass-contact-default-disabled)
       );
-      color: var(--kvass-lead-form-color, var(--kvass-lead-form-default-color));
+      color: var(--kvass-contact-color, var(--kvass-contact-default-color));
       cursor: not-allowed;
     }
   }

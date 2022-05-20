@@ -27,25 +27,25 @@ function onInput(ev) {
 
 <template>
   <label
-    class="kvass-lead-form-checkbox"
+    class="kvass-contact-checkbox"
     :class="[
-      { 'kvass-lead-form-checkbox--required': 'required' in $attrs },
+      { 'kvass-contact-checkbox--required': 'required' in $attrs },
       $attrs.class,
     ]"
   >
     <input
-      class="kvass-lead-form-checkbox__element"
+      class="kvass-contact-checkbox__element"
       type="checkbox"
       v-bind="$attrs"
       :value="modelValue"
       @input="onInput"
     />
-    <span class="kvass-lead-form-checkbox__label" v-html="label"></span>
+    <span class="kvass-contact-checkbox__label" v-html="label"></span>
   </label>
 </template>
 
 <style lang="scss">
-.kvass-lead-form-checkbox {
+.kvass-contact-checkbox {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
@@ -57,7 +57,7 @@ function onInput(ev) {
   &--required {
     span:after {
       content: '*';
-      color: var(--kvass-lead-form-error, var(--kvass-lead-form-default-error));
+      color: var(--kvass-contact-error, var(--kvass-contact-default-error));
       margin-left: 0.3rem;
     }
   }
