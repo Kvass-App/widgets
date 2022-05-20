@@ -52,6 +52,7 @@ function handleInput(event) {
       class="kvass-lead-form-field__element"
       v-bind="$attrs"
       @input="handleInput"
+      :value="modelValue"
     >
       <slot />
     </component>

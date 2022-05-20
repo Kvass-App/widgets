@@ -1,5 +1,13 @@
 <script setup>
-import { onMounted, reactive, ref, watch, computed, useAttrs } from 'vue'
+import {
+  onMounted,
+  reactive,
+  ref,
+  watch,
+  computed,
+  useAttrs,
+  isReactive,
+} from 'vue'
 import { createLead, getProjects, createContact } from '../api'
 import Field from './Field.ce.vue'
 import Fieldset from './Fieldset.ce.vue'
@@ -92,6 +100,7 @@ function getLabel(key) {
 
 function resetForm() {
   Object.assign(form, structuredClone(initialForm))
+  selectedProjects.value = []
 }
 
 function submit() {
@@ -187,7 +196,6 @@ onMounted(() => {
         required
       />
     </div>
-
     <button class="kvass-lead-form__submit" type="submit" :disabled="submitted">
       {{ submitted ? getLabel('success') : getLabel('submit') }}
     </button>
