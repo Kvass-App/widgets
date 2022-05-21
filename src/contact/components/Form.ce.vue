@@ -63,7 +63,10 @@ const props = defineProps({
   },
   projects: String,
   references: String,
-  tags: String,
+  tags: {
+    type: String,
+    default: '',
+  },
 })
 
 const privacyUrlComp = computed(() =>
