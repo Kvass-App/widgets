@@ -5,6 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "prepare": "husky install",
     "semantic-release": "dotenv semantic-release"
   },
   "dependencies": {
