@@ -61,8 +61,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  projects: String,
-  references: String,
+  projects: {
+    type: String,
+    default: '',
+  },
+  references: {
+    type: String,
+    default: '',
+  },
   tags: {
     type: String,
     default: '',
