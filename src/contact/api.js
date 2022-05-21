@@ -71,7 +71,7 @@ function getProjects(url) {
     }),
   })
     .then((res) => res.json())
-    .then((data) => data.filter((d) => d.isPublished))
+    .then((res) => res.data.Projects.filter((d) => d.isPublished))
 }
 
 export { createLead, createContact, getProjects }

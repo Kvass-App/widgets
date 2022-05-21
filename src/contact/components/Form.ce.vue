@@ -140,7 +140,7 @@ function setReferences() {
 onMounted(() => {
   if (!props.projects) {
     getProjects(props.accountUrl).then(
-      (data) => (fetchedProjects.value = data.data.Projects),
+      (projects) => (fetchedProjects.value = projects),
     )
   } else {
     props.projects.split(',').forEach((p) => selectedProjects.value.push(p))
