@@ -61,9 +61,18 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  projects: String,
-  references: String,
-  tags: String,
+  projects: {
+    type: String,
+    default: '',
+  },
+  references: {
+    type: String,
+    default: '',
+  },
+  tags: {
+    type: String,
+    default: '',
+  },
 })
 
 const privacyUrlComp = computed(() =>
@@ -118,20 +127,23 @@ function submit() {
 }
 
 function setReferences() {
-  const refs = props.references.split(',').map((r) => {
-    const [onModel, ref] = r.split(':')
-    return {
-      onModel,
-      ref,
-    }
-  })
+  const refs = props.references
+    .split(',')
+    .filter(Boolean)
+    .map((r) => {
+      const [onModel, ref] = r.split(':')
+      return {
+        onModel,
+        ref,
+      }
+    })
   references.value = refs
 }
 
 onMounted(() => {
   if (!props.projects) {
     getProjects(props.accountUrl).then(
-      (data) => (fetchedProjects.value = data.data.Projects),
+      (projects) => (fetchedProjects.value = projects),
     )
   } else {
     props.projects.split(',').forEach((p) => selectedProjects.value.push(p))

@@ -2,6 +2,8 @@
 
 A simple, embeddable Web Component for sending leads to Kvass.
 
+`https://unpkg.com/@kvass/widgets@latest/dist/contact.js`
+
 ## Develop
 
 To run in development mode, first install the neccessary packages.
@@ -41,8 +43,8 @@ The component has several props for easy configuration.
 | label-title           | String  | Title of the lead form                                                           | `"Meld interesse"`                      |
 | label-subtitle        | String  | Optional subtitle shown under form title                                         |                                         |
 | label-submit          | String  | Label for the submit button                                                      | `"Meld interesse"`                      |
-| privacyUrl            | String  | Optional URL to privacy statement                                                | `{accountUrl}/api/legal/privacy/tenant` |
-| accountUrl `required` | String  | Account URL where data will be sent.                                             |                                         |
+| privacy-url            | String  | Optional URL to privacy statement                                                | `{accountUrl}/api/legal/privacy/tenant` |
+| account-url `required` | String  | Account URL where data will be sent.                                             |                                         |
 | projects              | String  | Comma-separated list of project ids. If not defined, a selection field will show |                                         |
 | references `required` | String  | Comma-separated list of references in {type}:{id} format                         |                                         |
 | upsell                | Boolean | If `true`, shows a checkbox for upsell                                           | `false`                                 |
