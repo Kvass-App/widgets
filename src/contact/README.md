@@ -2,6 +2,8 @@
 
 A simple, embeddable Web Component for sending leads to Kvass.
 
+`https://unpkg.com/@kvass/widgets@latest/dist/contact.js`
+
 ## Develop
 
 To run in development mode, first install the neccessary packages.
