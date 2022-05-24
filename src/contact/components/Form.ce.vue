@@ -327,5 +327,9 @@ onMounted(() => {
       cursor: not-allowed;
     }
   }
+
+  a {
+    color: var(--kvass-contact-spacing, var(--kvass-contact-default-primary));
+  }
 }
 </style>
