@@ -39,7 +39,7 @@ To use the widget, use the `<kvass-contact />` element as shown here.
 The component has several props for easy configuration.
 
 | Name                   | Type    | Description                                                                      | Default                                 |
-| ---------------------- | ------- | -------------------------------------------------------------------------------- | --------------------------------------- |
+| :--------------------- | :------ | :------------------------------------------------------------------------------- | :-------------------------------------- |
 | label-title            | String  | Title of the lead form                                                           | `"Meld interesse"`                      |
 | label-subtitle         | String  | Optional subtitle shown under form title                                         |                                         |
 | label-submit           | String  | Label for the submit button                                                      | `"Meld interesse"`                      |
@@ -56,7 +56,7 @@ The widget's styles are based on CSS custom properties, and can be overwritten.
 These are the available CSS variables.
 
 | Name                             | Description                                                 | Default       |
-| -------------------------------- | ----------------------------------------------------------- | ------------- |
+| :------------------------------- | :---------------------------------------------------------- | :------------ |
 | --kvass-contact-background       | The form's background color                                 | `#ffffff`     |
 | --kvass-contact-spacing          | Base spacing amount. Other amounts are calculated from this | `2rem`        |
 | --kvass-contact-max-width        | Max width of the form                                       | `720px`       |
