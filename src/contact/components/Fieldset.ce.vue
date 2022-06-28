@@ -35,10 +35,6 @@ defineProps({
   border: 1px solid
     var(--kvass-contact-border-color, var(--kvass-contact-default-border-color));
   font: inherit;
-  background-color: var(
-    --kvass-contact-input-background,
-    var(--kvass-contact-default-input-background)
-  );
 
   &:focus-visible {
     outline: 2px solid
