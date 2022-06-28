@@ -69,3 +69,4 @@ These are the available CSS variables.
 | --kvass-contact-grid-columns     | Amount of columns in the form                               | `1`           |
 | --kvass-contact-disabled         | Background color on disabled button                         | `#eaeaea`     |
 | --kvass-contact-input-background | Background color for input fields                           | `transparent` |
+| --kvass-contact-border-width     | Border-width for input fields                               | `1px`         |

@@ -80,7 +80,11 @@ function onBlur() {
       --kvass-contact-border-radius,
       var(--kvass-contact-default-border-radius)
     );
-    border: 1px solid
+    border: var(
+        --kvass-contact-border-width,
+        var(--kvass-contact-default-border-width)
+      )
+      solid
       var(
         --kvass-contact-border-color,
         var(--kvass-contact-default-border-color)

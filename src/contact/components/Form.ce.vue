@@ -224,6 +224,7 @@ onMounted(() => {
   --kvass-contact-default-spacing: 2rem;
   --kvass-contact-default-border-radius: 4px;
   --kvass-contact-default-border-color: #eaeaea;
+  --kvass-contact-default-border-width: 1px;
   --kvass-contact-default-color: #222222;
   --kvass-contact-default-color-inverted: #ffffff;
   --kvass-contact-default-max-width: 720px;
