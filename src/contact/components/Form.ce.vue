@@ -1,14 +1,6 @@
 <script setup>
-import {
-  onMounted,
-  reactive,
-  ref,
-  watch,
-  computed,
-  useAttrs,
-  isReactive,
-} from 'vue'
-import { createLead, getProjects, createContact } from '../api'
+import { onMounted, reactive, ref, computed, useAttrs } from 'vue'
+import { createLead, getProjects } from '../api'
 import Field from './Field.ce.vue'
 import Fieldset from './Fieldset.ce.vue'
 import Checkbox from './Checkbox.ce.vue'
@@ -75,6 +67,7 @@ const props = defineProps({
   },
 })
 
+const privacy = ref(false)
 const privacyUrlComp = computed(() =>
   props.privacyUrl
     ? props.privacyUrl
@@ -103,12 +96,17 @@ const Capitalize = (v) => v.charAt(0).toUpperCase() + v.substring(1)
 function getLabel(key) {
   let label = attrs['label' + Capitalize(key)] || Labels[props.lang][key]
   if (key === 'privacy')
-    return label.replace(/\[(.+)\]/, `<a href="${privacyUrlComp.value}">$1</a>`)
+    return label.replace(
+      /\[(.+)\]/,
+      `<a href="${privacyUrlComp.value}" target="_blank">$1</a>`,
+    )
   return label
 }
 
 function resetForm() {
-  Object.assign(form, structuredClone(initialForm))
+  form.comment = null
+  form.contact.upsell = false
+  privacy.value = false
   selectedProjects.value = []
 }
 
@@ -123,6 +121,7 @@ function submit() {
   ).then(() => {
     submitted.value = true
     resetForm()
+    setTimeout(() => (submitted.value = false), 2000)
   })
 }
 
@@ -186,6 +185,7 @@ onMounted(() => {
           :key="project.id"
           :state="project.id"
           :label="project.name"
+          :checked="selectedProjects.includes(project.id)"
           v-model="selectedProjects"
         />
       </Fieldset>
@@ -200,12 +200,15 @@ onMounted(() => {
         v-if="upsell"
         :label="getLabel('upsell')"
         class="kvass-contact-field--full-width"
+        :checked="form.contact.upsell"
         v-model="form.contact.upsell"
       />
       <Checkbox
         :label="getLabel('privacy')"
         class="kvass-contact-field--full-width"
         required
+        :checked="privacy"
+        v-model="privacy"
       />
     </div>
     <button class="kvass-contact__submit" type="submit" :disabled="submitted">
@@ -228,6 +231,7 @@ onMounted(() => {
   --kvass-contact-default-error: #d81d1d;
   --kvass-contact-default-grid-columns: 1;
   --kvass-contact-default-disabled: #eaeaea;
+  --kvass-contact-default-input-background: #ffffff;
 
   background-color: var(
     --kvass-contact-background,
@@ -317,6 +321,11 @@ onMounted(() => {
     border: none;
     font: inherit;
     width: 100%;
+    cursor: pointer;
+
+    &:active {
+      filter: brightness(0.95);
+    }
 
     &:disabled {
       background-color: var(
@@ -329,7 +338,7 @@ onMounted(() => {
   }
 
   a {
-    color: var(--kvass-contact-spacing, var(--kvass-contact-default-primary));
+    color: inherit;
   }
 }
 </style>

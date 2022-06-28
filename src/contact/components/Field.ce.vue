@@ -27,10 +27,16 @@ const component = computed(() => {
 })
 
 const focused = ref(false)
+const blurred = ref(false)
 
-function handleInput(event) {
+function onInput(event) {
   emit('update:modelValue', event.target.value)
   focused.value = true
+}
+
+function onBlur() {
+  if (!focused.value) return
+  blurred.value = true
 }
 </script>
 
@@ -40,7 +46,7 @@ function handleInput(event) {
     :class="[
       {
         'kvass-contact-field--required': 'required' in $attrs,
-        'kvass-contact-field--focused': focused,
+        'kvass-contact-field--focused': blurred,
       },
       $attrs.class,
     ]"
@@ -51,8 +57,9 @@ function handleInput(event) {
       :is="component"
       class="kvass-contact-field__element"
       v-bind="$attrs"
-      @input="handleInput"
       :value="modelValue"
+      @input="onInput"
+      @blur="onBlur"
     >
       <slot />
     </component>
@@ -80,6 +87,10 @@ function handleInput(event) {
       );
     resize: vertical;
     font: inherit;
+    background-color: var(
+      --kvass-contact-input-background,
+      var(--kvass-contact-default-input-background)
+    );
 
     &:focus-visible {
       outline: 2px solid
