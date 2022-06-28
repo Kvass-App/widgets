@@ -42,7 +42,6 @@ function onChange(ev) {
       @change="onChange"
     />
     <span class="kvass-contact-checkbox__label" v-html="label"></span>
-    {{ $attrs.checked }}
   </label>
 </template>
 
