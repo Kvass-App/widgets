@@ -13,7 +13,7 @@ const props = defineProps({
   label: String,
 })
 
-function onInput(ev) {
+function onChange(ev) {
   if (typeof props.modelValue === 'boolean')
     return emit('update:modelValue', ev.target.checked)
   return emit(
@@ -38,9 +38,11 @@ function onInput(ev) {
       type="checkbox"
       v-bind="$attrs"
       :value="modelValue"
-      @input="onInput"
+      :checked="$attrs.checked"
+      @change="onChange"
     />
     <span class="kvass-contact-checkbox__label" v-html="label"></span>
+    {{ $attrs.checked }}
   </label>
 </template>
 
