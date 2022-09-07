@@ -43,9 +43,7 @@ const props = defineProps({
       return document.documentElement.getAttribute('lang') || 'nb'
     },
   },
-  privacyUrl: {
-    type: String,
-  },
+  privacyUrl: String,
   upsell: {
     type: Boolean,
     default: false,
@@ -66,9 +64,7 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  defaultAssignees: {
-    type: String,
-  },
+  defaultAssignees: String,
 })
 
 const privacy = ref(false)
@@ -120,12 +116,14 @@ function submit() {
       references: references.value,
     },
     selectedProjects.value,
-    props.defaultAssignees.split(','),
-  ).then(() => {
-    submitted.value = true
-    resetForm()
-    setTimeout(() => (submitted.value = false), 2000)
-  })
+    props.defaultAssignees?.split(','),
+  )
+    .then(() => {
+      submitted.value = true
+      resetForm()
+      setTimeout(() => (submitted.value = false), 2000)
+    })
+    .catch(console.error)
 }
 
 function setReferences() {

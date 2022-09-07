@@ -11,7 +11,10 @@ function createLead(url, data, projects, defaultAssignees) {
       }),
     )
 
-  if (projects && !projects.length) {
+  if (!projects?.length) {
+    if (!defaultAssignees?.length) {
+      return Promise.reject(new Error('No default assignees defined'))
+    }
     return createContact(url, { ...data.contact, assignees: defaultAssignees }, data.comment)
   }
 
@@ -31,6 +34,7 @@ function createLead(url, data, projects, defaultAssignees) {
       variables: { data },
     }),
   }).then((res) => res.json())
+    .catch((err) => console.error(err))
 }
 
 function createContact(url, data, comment) {
@@ -50,6 +54,7 @@ function createContact(url, data, comment) {
       variables: { data, comment },
     }),
   }).then((res) => res.json())
+    .catch(err => console.error(err))
 }
 
 function getProjects(url) {
@@ -72,6 +77,7 @@ function getProjects(url) {
   })
     .then((res) => res.json())
     .then((res) => res.data.Projects.filter((d) => d.isPublished))
+    .catch((err) => console.error(err))
 }
 
 export { createLead, createContact, getProjects }
