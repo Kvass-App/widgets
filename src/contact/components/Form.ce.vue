@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, reactive, ref, computed, useAttrs } from 'vue'
 import { createLead, getProjects } from '../api'
+import { Capitalize } from '../utils'
+
 import Field from './Field.ce.vue'
 import Fieldset from './Fieldset.ce.vue'
 import Checkbox from './Checkbox.ce.vue'
@@ -34,7 +36,6 @@ const Labels = {
 }
 
 const attrs = useAttrs()
-
 const props = defineProps({
   lang: {
     type: String,
@@ -65,6 +66,9 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  defaultAssignees: {
+    type: String,
+  },
 })
 
 const privacy = ref(false)
@@ -91,8 +95,6 @@ const fetchedProjects = ref([])
 const selectedProjects = ref([])
 const references = ref([])
 
-const Capitalize = (v) => v.charAt(0).toUpperCase() + v.substring(1)
-
 function getLabel(key) {
   let label = attrs['label' + Capitalize(key)] || Labels[props.lang][key]
   if (key === 'privacy')
@@ -118,6 +120,7 @@ function submit() {
       references: references.value,
     },
     selectedProjects.value,
+    props.defaultAssignees.split(','),
   ).then(() => {
     submitted.value = true
     resetForm()

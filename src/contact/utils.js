@@ -6,6 +6,9 @@ function Debounce(fn, wait = 300) {
 	}
 }
 
+const Capitalize = (value) => value.charAt(0).toUpperCase() + value.substring(1)
+
 export {
-	Debounce
+	Debounce,
+	Capitalize
 }

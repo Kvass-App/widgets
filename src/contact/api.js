@@ -1,4 +1,4 @@
-function createLead(url, data, projects) {
+function createLead(url, data, projects, defaultAssignees) {
   if (projects && projects instanceof Array && projects.length)
     return Promise.all(
       projects.map((p) => {
@@ -12,7 +12,7 @@ function createLead(url, data, projects) {
     )
 
   if (projects && !projects.length) {
-    return createContact(url, data.contact, data.comment)
+    return createContact(url, { ...data.contact, assignees: defaultAssignees }, data.comment)
   }
 
   return fetch(`${url}/api/graphql`, {

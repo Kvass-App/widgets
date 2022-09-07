@@ -38,17 +38,18 @@ To use the widget, use the `<kvass-contact />` element as shown here.
 
 The component has several props for easy configuration.
 
-| Name                   | Type    | Description                                                                      | Default                                 |
-| :--------------------- | :------ | :------------------------------------------------------------------------------- | :-------------------------------------- |
-| label-title            | String  | Title of the lead form                                                           | `"Meld interesse"`                      |
-| label-subtitle         | String  | Optional subtitle shown under form title                                         |                                         |
-| label-submit           | String  | Label for the submit button                                                      | `"Meld interesse"`                      |
-| privacy-url            | String  | Optional URL to privacy statement                                                | `{accountUrl}/api/legal/privacy/tenant` |
-| account-url `required` | String  | Account URL where data will be sent.                                             |                                         |
-| projects               | String  | Comma-separated list of project ids. If not defined, a selection field will show |                                         |
-| references `required`  | String  | Comma-separated list of references in {type}:{id} format                         |                                         |
-| upsell                 | Boolean | If `true`, shows a checkbox for upsell                                           | `false`                                 |
-| tags                   | String  | Comma-separated list of tags                                                     |                                         |
+| Name                   | Type    | Description                                                                              | Default                                 |
+| :--------------------- | :------ | :--------------------------------------------------------------------------------------- | :-------------------------------------- |
+| account-url `required` | String  | Account URL where data will be sent.                                                     |                                         |
+| references `required`  | String  | Comma-separated list of references in {type}:{id} format                                 |                                         |
+| default-assignees      | String  | Comma-separated list of userIds. Used as fallback assignees of the created task in Kvass |                                         |
+| projects               | String  | Comma-separated list of project ids. If not defined, a selection field will show         |                                         |
+| tags                   | String  | Comma-separated list of tags                                                             |                                         |
+| upsell                 | Boolean | If `true`, shows a checkbox for upsell                                                   | `false`                                 |
+| label-title            | String  | Title of the lead form                                                                   | `"Meld interesse"`                      |
+| label-subtitle         | String  | Optional subtitle shown under form title                                                 |                                         |
+| label-submit           | String  | Label for the submit button                                                              | `"Meld interesse"`                      |
+| privacy-url            | String  | Optional URL to privacy statement                                                        | `{accountUrl}/api/legal/privacy/tenant` |
 
 ## Styling
 
@@ -65,7 +66,7 @@ These are the available CSS variables.
 | --kvass-contact-border-width     | Border-width for input fields                               | `1px`         |
 | --kvass-contact-color            | Base text color                                             | `#222222`     |
 | --kvass-contact-color-inverted   | Inverted text color. Used for the submit button             | `#ffffff`     |
-| --kvass-contact-primary          | Primary color. Used for submit button and form elements                   | `#1d56d8`     |
+| --kvass-contact-primary          | Primary color. Used for submit button and form elements     | `#1d56d8`     |
 | --kvass-contact-error            | Error color. Used for error states                          | `#d81d1d`     |
 | --kvass-contact-grid-columns     | Amount of columns in the form                               | `1`           |
 | --kvass-contact-disabled         | Background color on disabled button                         | `#eaeaea`     |
