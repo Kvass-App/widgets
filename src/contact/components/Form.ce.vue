@@ -117,13 +117,11 @@ function submit() {
     },
     selectedProjects.value,
     props.defaultAssignees?.split(','),
-  )
-    .then(() => {
-      submitted.value = true
-      resetForm()
-      setTimeout(() => (submitted.value = false), 2000)
-    })
-    .catch(console.error)
+  ).then(() => {
+    submitted.value = true
+    resetForm()
+    setTimeout(() => (submitted.value = false), 2000)
+  })
 }
 
 function setReferences() {
