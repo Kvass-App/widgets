@@ -1,0 +1,178 @@
+@import '../_variables';
+
+.project-selector-card {
+  position: relative;
+  font-family: var(--kvass-project-selector-secondary-font, inherit);
+  display: flex;
+  flex-direction: column;
+  border-radius: GetVariable('border-radius');
+  background-color: white;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+
+  $space: GetVariable('card-spacing');
+
+  &__header {
+    min-height: var(--kvass-project-selector-header-min-height, 250px);
+    background-color: GetVariable('dark');
+
+    @media (max-width: $kvass-project-selector-resposive) {
+      min-height: var(
+        --kvass-project-selector-header-min-height-resposive,
+        150px
+      );
+    }
+
+    &-category {
+      position: absolute;
+      background-color: GetVariable('secondary');
+      z-index: 11;
+      color: white;
+      left: var(--kvass-project-selector-card-status-gap, 0.5rem);
+      top: var(--kvass-project-selector-card-status-gap, 0.5rem);
+      border-radius: GetVariable('border-radius');
+      .category {
+        font-size: var(--kvass-project-selector-card-status-font-size, 0.8em);
+        padding: var(--kvass-project-selector-card-status-padding-x, 0.5rem)
+          var(--kvass-project-selector-card-status-padding-x, 1rem);
+      }
+    }
+
+    &-cover {
+      width: 100%;
+      background-repeat: no-repeat;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.62s cubic-bezier(0.05, 0.2, 0.1, 1);
+
+      &:hover {
+        transform: scale(1.11);
+        -webkit-transform: scale(1.11);
+      }
+    }
+  }
+
+  &__title {
+    font-weight: bold;
+    line-height: 1;
+    margin: 0;
+  }
+
+  &__content {
+    background-color: GetVariable('background-color');
+    border-top: none;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: calc(#{$space} - 0.5rem);
+
+    height: 100%;
+
+    &-name {
+      color: GetVariable('dark');
+      margin: 0 !important;
+    }
+
+    &-url {
+      color: GetVariable('primary');
+      font-size: 1.1em;
+      margin-top: auto;
+      text-decoration: underline;
+      text-decoration-color: GetVariable('primary');
+      text-underline-offset: 0.3em;
+      text-decoration-thickness: 1px;
+
+      &:hover {
+        color: GetVariable('secondary');
+      }
+    }
+
+    &-city {
+      font-size: 1.2rem;
+    }
+
+    &-location {
+      display: flex;
+      align-items: center;
+      align-content: center;
+      gap: 1rem;
+      color: GetVariable('secondary');
+
+      svg {
+        opacity: 0.5;
+        height: 0.9rem;
+        path {
+          color: currentColor;
+        }
+      }
+    }
+
+    @media (max-width: $kvass-project-selector-resposive) {
+      gap: 0.5rem;
+      padding: calc(#{$space} - 0.5rem) calc(#{$space} - 1rem);
+    }
+  }
+}
+
+// tiles theme
+.project-selector--theme-tiles {
+  .project-selector-card {
+    border-radius: var(--kvass-project-selector-border-radius, 0px);
+
+    &:hover {
+      .project-selector-card__content {
+        background: rgba(0, 0, 0, 0.2) !important;
+      }
+    }
+
+    &__header {
+      min-height: var(--kvass-project-selector-header-min-height, 400px);
+
+      @media (max-width: $kvass-project-selector-resposive) {
+        min-height: var(
+          --kvass-project-selector-header-min-height-resposive,
+          250px
+        );
+      }
+    }
+
+    &__content {
+      font-size: 1.5rem;
+      height: unset !important;
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.4) !important;
+      transition: background 200ms ease;
+
+      display: grid !important;
+      place-content: center;
+
+      & > * {
+        color: white !important;
+        text-align: center;
+      }
+
+      &-url {
+        text-decoration-color: currentColor;
+        font-size: 0.8em;
+      }
+
+      &-location {
+        justify-content: center;
+        margin-bottom: 1rem;
+
+        svg {
+          display: none;
+        }
+      }
+      &-intro {
+        font-size: 0.8em;
+      }
+    }
+  }
+}
