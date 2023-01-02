@@ -139,12 +139,14 @@ function setReferences() {
 }
 
 onMounted(() => {
-  if (!props.projects) {
-    getProjects(props.accountUrl).then(
-      (projects) => (fetchedProjects.value = projects),
-    )
-  } else {
-    props.projects.split(',').forEach((p) => selectedProjects.value.push(p))
+  if (props.projects !== 'disable') {
+    if (!props.projects) {
+      getProjects(props.accountUrl).then(
+        (projects) => (fetchedProjects.value = projects),
+      )
+    } else {
+      props.projects.split(',').forEach((p) => selectedProjects.value.push(p))
+    }
   }
   setReferences()
 })

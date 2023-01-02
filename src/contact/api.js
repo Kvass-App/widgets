@@ -1,5 +1,5 @@
 function createLead(url, data, projects, defaultAssignees) {
-  if (projects && projects instanceof Array && projects.length)
+  if (projects && projects instanceof Array && projects.length) {
     return Promise.all(
       projects.map((p) => {
         let projectRef = { onModel: 'Project', ref: p }
@@ -10,12 +10,14 @@ function createLead(url, data, projects, defaultAssignees) {
         })
       }),
     )
+  }
 
-  if (!projects?.length) {
-    if (!defaultAssignees?.length) {
-      return Promise.reject(new Error('No default assignees defined'))
-    }
-    return createContact(url, { ...data.contact, assignees: defaultAssignees }, data.comment)
+  if (!projects?.length && defaultAssignees?.length) {
+    return createContact(
+      url,
+      { ...data.contact, assignees: defaultAssignees },
+      data.comment,
+    )
   }
 
   return fetch(`${url}/api/graphql`, {
