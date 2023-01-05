@@ -1,10 +1,6 @@
 <template>
   <!-- <Loader :value="promise">  -->
-  <div
-    v-if="promiseDone"
-    class="project-selector"
-    :class="`project-selector--theme-${theme}`"
-  >
+  <div class="project-selector" :class="`project-selector--theme-${theme}`">
     <div
       v-if="!disableNav || !navItems.length"
       class="project-selector__navigation"
@@ -30,7 +26,7 @@
         :value="projectType"
         @input="
           ($ev) => {
-            projectType = $ev
+            projectType = $ev.target.value
             filterItems()
           }
         "
@@ -131,7 +127,6 @@ const projectType = ref('none')
 const items = ref([])
 var allItems = []
 const promise = ref(null)
-const promiseDone = ref(false)
 
 const navItems = computed(() => {
   return [
@@ -223,7 +218,6 @@ function fetch() {
     .then(() => {
       category.value = props.startCategory
       items.value = allItems
-      promiseDone.value = true
     })
 }
 </script>
