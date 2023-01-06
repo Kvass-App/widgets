@@ -13,8 +13,6 @@
 </template>
 
 <script setup>
-import { computed } from '@vue/reactivity'
-
 function Capitalize(value) {
   return value.charAt(0).toUpperCase() + value.substring(1)
 }
@@ -27,14 +25,7 @@ const props = defineProps({
   value: {
     type: String,
   },
-  triggerLabel: {
-    type: String,
-  },
 })
-
-const label = computed(() =>
-  Capitalize(props.value !== 'none' ? props.value : ''),
-)
 </script>
 
 <style lang="scss">

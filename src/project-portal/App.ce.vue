@@ -20,7 +20,6 @@
 
       <ProjectTypeSelector
         v-if="projectTypes.length > 1"
-        :trigger-label="triggerLabel"
         class="project-selector__navigation-project-type"
         :items="projectTypes"
         :value="projectType"
@@ -112,10 +111,10 @@ const props = defineProps({
     enum: ['status', 'name'],
     default: 'status',
   },
-  triggerLabel: {
-    type: String,
-    default: 'Velg type',
-  },
+  // triggerLabel: {
+  //   type: String,
+  //   default: 'Velg type',
+  // },
   disableNav: {
     type: Boolean,
     default: false,
