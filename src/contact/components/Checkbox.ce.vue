@@ -1,18 +1,20 @@
-<script>
+<script lang="ts">
 export default {
   // disable attrs on root element
   inheritAttrs: false,
 }
 </script>
 
-<script setup>
-const emit = defineEmits(['update:modelValue'])
-const props = defineProps({
-  modelValue: [Boolean, Array],
-  state: String,
-  label: String,
-})
+<script setup lang="ts">
+// PROPS
+const props = defineProps<{
+  modelValue: string[] | boolean
+  label: string
+  state?: string
+}>()
 
+// EMITS
+const emit = defineEmits(['update:modelValue'])
 function onChange(ev) {
   if (typeof props.modelValue === 'boolean')
     return emit('update:modelValue', ev.target.checked)
@@ -38,7 +40,7 @@ function onChange(ev) {
       type="checkbox"
       v-bind="$attrs"
       :value="modelValue"
-      :checked="$attrs.checked"
+      :checked="($attrs.checked as boolean)"
       @change="onChange"
     />
     <span class="kvass-contact-checkbox__label" v-html="label"></span>

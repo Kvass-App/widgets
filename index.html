@@ -9,11 +9,17 @@
 </head>
 
 <body>
-  <kvass-contact account-url="https://local.kvass.test" label-subtitle="Ønsker du å motta vårt nyhetsbrev?"
-    tags="Test side" upsell references="Residential:630f5c19ffd25600331dcd05"
-    default-assignees="630f5c19ffd25600331dcc06,627181d6009b8f0022b09ac8" />
+  <section>
+    <kvass-contact account-url="https://feature.kvass.no" label-subtitle="Ønsker du å motta vårt nyhetsbrev?"
+      tags="Test side" upsell references="Residential:630f5c19ffd25600331dcd05"
+      default-assignees="630f5c19ffd25600331dcc06,627181d6009b8f0022b09ac8"></kvass-contact>
+  </section>
+  <section>
+    <kvass-project-portal></kvass-project-portal>
+  </section>
 
-  <script type="module" src="/src/contact/main.js"></script>
+  <script type="module" src="/src/contact/main.ts"></script>
+  <script type="module" src="/src/project-portal/main.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-function Debounce(fn, wait = 300) {
+function Debounce(fn: () => void, wait: number = 300) {
 	let timer
 	return (...args) => {
 		clearTimeout(timer)
@@ -6,7 +6,7 @@ function Debounce(fn, wait = 300) {
 	}
 }
 
-const Capitalize = (value) => value.charAt(0).toUpperCase() + value.substring(1)
+const Capitalize = (value: string) => value.charAt(0).toUpperCase() + value.substring(1)
 
 export {
 	Debounce,

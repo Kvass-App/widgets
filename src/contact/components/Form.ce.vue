@@ -1,13 +1,39 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref, computed, useAttrs } from 'vue'
 import { createLead, getProjects } from '../api'
 import { Capitalize } from '../utils'
+import type { Contact, Project } from '../types'
 
 import Field from './Field.ce.vue'
 import Fieldset from './Fieldset.ce.vue'
 import Checkbox from './Checkbox.ce.vue'
 
-const Labels = {
+// PROPS & ATTRIBUTES
+interface Props {
+  accountUrl: string
+  lang?: string
+  privacyUrl?: string
+  upsell?: boolean
+  projects?: string
+  references?: string
+  tags?: string
+  defaultAssignees?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  lang: () => document.documentElement.getAttribute('lang') || 'nb',
+  upsell: false,
+  projects: '',
+  references: '',
+  tags: '',
+})
+
+const attrs = useAttrs()
+
+// LABELS
+const Labels: {
+  [key: string]: any
+} = {
   nb: {
     title: 'Meld interesse',
     submit: 'Meld interesse',
@@ -35,44 +61,24 @@ const Labels = {
   },
 }
 
-const attrs = useAttrs()
-const props = defineProps({
-  lang: {
-    type: String,
-    default: () => {
-      return document.documentElement.getAttribute('lang') || 'nb'
-    },
-  },
-  privacyUrl: String,
-  upsell: {
-    type: Boolean,
-    default: false,
-  },
-  accountUrl: {
-    type: String,
-    required: true,
-  },
-  projects: {
-    type: String,
-    default: '',
-  },
-  references: {
-    type: String,
-    default: '',
-  },
-  tags: {
-    type: String,
-    default: '',
-  },
-  defaultAssignees: String,
-})
+function getLabel(key: string) {
+  let label: string =
+    attrs['label' + Capitalize(key)] || Labels[props.lang][key]
 
-const privacy = ref(false)
-const privacyUrlComp = computed(() =>
-  props.privacyUrl
-    ? props.privacyUrl
-    : `${props.accountUrl}/api/legal/privacy/tenant`,
-)
+  if (key === 'privacy')
+    return label.replace(
+      /\[(.+)\]/,
+      `<a href="${privacyUrlComp.value}" target="_blank">$1</a>`,
+    )
+
+  return label
+}
+
+// FORM
+interface Form {
+  contact: Contact
+  comment?: string | null
+}
 
 const initialForm = {
   contact: {
@@ -83,23 +89,17 @@ const initialForm = {
     tags: props.tags.split(','),
   },
   comment: null,
-}
-const form = reactive(structuredClone(initialForm))
+} satisfies Form
 
+const form: Form = reactive(structuredClone(initialForm))
 const submitted = ref(false)
-const fetchedProjects = ref([])
-const selectedProjects = ref([])
-const references = ref([])
+const privacy = ref(false)
 
-function getLabel(key) {
-  let label = attrs['label' + Capitalize(key)] || Labels[props.lang][key]
-  if (key === 'privacy')
-    return label.replace(
-      /\[(.+)\]/,
-      `<a href="${privacyUrlComp.value}" target="_blank">$1</a>`,
-    )
-  return label
-}
+const privacyUrlComp = computed(() =>
+  props.privacyUrl
+    ? props.privacyUrl
+    : `${props.accountUrl}/api/legal/privacy/tenant`,
+)
 
 function resetForm() {
   form.comment = null
@@ -124,6 +124,28 @@ function submit() {
   })
 }
 
+// PROJECTS
+const fetchedProjects = ref<Project[]>([])
+const selectedProjects = ref<string[]>([])
+
+onMounted(() => {
+  if (!props.projects) {
+    getProjects(props.accountUrl).then(
+      (projects) => (fetchedProjects.value = projects),
+    )
+  } else {
+    props.projects.split(',').forEach((p) => selectedProjects.value.push(p))
+  }
+})
+
+// REFERENCES
+interface Reference {
+  onModel: string
+  ref: string
+}
+
+const references = ref<Reference[]>([])
+
 function setReferences() {
   const refs = props.references
     .split(',')
@@ -135,17 +157,11 @@ function setReferences() {
         ref,
       }
     })
+
   references.value = refs
 }
 
 onMounted(() => {
-  if (!props.projects) {
-    getProjects(props.accountUrl).then(
-      (projects) => (fetchedProjects.value = projects),
-    )
-  } else {
-    props.projects.split(',').forEach((p) => selectedProjects.value.push(p))
-  }
   setReferences()
 })
 </script>

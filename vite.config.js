@@ -15,11 +15,10 @@ export default defineConfig({
       },
       input: {
         contact: fileURLToPath(
-          new URL('./src/contact/main.js', import.meta.url),
+          new URL('./src/contact/main.ts', import.meta.url),
         ),
         'project-portal': fileURLToPath(
-          new URL('./src/project-portal/main.js'),
-          import.meta.url,
+          new URL('./src/project-portal/main.js', import.meta.url),
         ),
       },
     },

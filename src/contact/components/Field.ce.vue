@@ -1,20 +1,40 @@
-<script>
+<script lang="ts">
 export default {
   // disable attrs on root element
   inheritAttrs: false,
 }
 </script>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 
-const emit = defineEmits(['update:modelValue'])
-const props = defineProps({
-  modelValue: [String, Array],
-  label: String,
-  type: String,
-})
+// PROPS
+const props = defineProps<{
+  modelValue: string | string[] | null
+  label: String
+  type: String
+}>()
 
+// EMITS
+const emit = defineEmits(['update:modelValue'])
+
+// FOCUS
+const focused = ref(false)
+
+function onInput(event: InputEvent) {
+  emit('update:modelValue', (event.target as HTMLInputElement).value)
+  focused.value = true
+}
+
+// BLUR
+const blurred = ref(false)
+
+function onBlur() {
+  if (!focused.value) return
+  blurred.value = true
+}
+
+// FIELD TYPE
 const component = computed(() => {
   switch (props.type) {
     case 'textarea':
@@ -25,19 +45,6 @@ const component = computed(() => {
       return 'input'
   }
 })
-
-const focused = ref(false)
-const blurred = ref(false)
-
-function onInput(event) {
-  emit('update:modelValue', event.target.value)
-  focused.value = true
-}
-
-function onBlur() {
-  if (!focused.value) return
-  blurred.value = true
-}
 </script>
 
 <template>
@@ -50,7 +57,6 @@ function onBlur() {
       },
       $attrs.class,
     ]"
-    :for="$attrs.id"
   >
     <span class="kvass-contact-field__label" v-if="label">{{ label }}</span>
     <component

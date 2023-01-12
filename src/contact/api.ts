@@ -1,4 +1,22 @@
-function createLead(url, data, projects, defaultAssignees) {
+import type { Reference, Project, Contact } from './types'
+
+interface CreateLeadData {
+  contact: Contact
+  comment?: string | null
+  project?: string
+  references: Reference[]
+}
+
+interface CreateContactData extends Contact {
+  assignees: string[]
+}
+
+export function createLead(
+  url: string,
+  data: CreateLeadData,
+  projects?: string[],
+  defaultAssignees?: string[]
+): Promise<any> {
   if (projects && projects instanceof Array && projects.length)
     return Promise.all(
       projects.map((p) => {
@@ -36,7 +54,11 @@ function createLead(url, data, projects, defaultAssignees) {
   }).then((res) => res.json())
 }
 
-function createContact(url, data, comment) {
+export function createContact(
+  url: string,
+  data: CreateContactData,
+  comment?: string | undefined | null
+): Promise<{ id: string }> {
   return fetch(`${url}/api/graphql`, {
     method: 'POST',
     headers: {
@@ -55,7 +77,7 @@ function createContact(url, data, comment) {
   }).then((res) => res.json())
 }
 
-function getProjects(url) {
+export function getProjects(url: string): Promise<Project[]> {
   return fetch(`${url}/api/graphql`, {
     method: 'POST',
     headers: {
@@ -74,7 +96,5 @@ function getProjects(url) {
     }),
   })
     .then((res) => res.json())
-    .then((res) => res.data.Projects.filter((d) => d.isPublished))
+    .then((res) => res.data.Projects.filter((d: Project) => d.isPublished))
 }
-
-export { createLead, createContact, getProjects }
