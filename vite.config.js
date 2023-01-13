@@ -18,8 +18,7 @@ export default defineConfig({
           new URL('./src/contact/main.js', import.meta.url),
         ),
         'project-portal': fileURLToPath(
-          new URL('./src/project-portal/main.js'),
-          import.meta.url,
+          new URL('./src/project-portal/main.js', import.meta.url),
         ),
       },
     },
