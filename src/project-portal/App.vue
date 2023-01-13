@@ -1,0 +1,315 @@
+<template>
+  <Loader :value="promise">
+    <div class="project-portal" :class="`project-portal--theme-${theme}`">
+      <div
+        v-if="!disableNav || !navItems.length"
+        class="project-portal__navigation"
+      >
+        <CategorySelector
+          class="project-portal__navigation-category"
+          v-if="navItems.length"
+          :items="navItems"
+          :value="category"
+          @input="
+            ($ev) => {
+              category = $ev
+              filterItems()
+            }
+          "
+        />
+
+        <ProjectTypeSelector
+          v-if="projectTypes.length > 1"
+          class="project-portal__navigation-project-type"
+          :items="projectTypes"
+          :value="projectType"
+          @input="
+            ($ev) => {
+              projectType = $ev.target.value
+              filterItems()
+            }
+          "
+        />
+      </div>
+
+      <transition-group
+        v-if="items && items.length"
+        tag="div"
+        name="list"
+        appear
+        class="project-portal__cards"
+      >
+        <Card
+          v-for="(item, index) in items"
+          :disable-label="disableNav"
+          :key="item.id"
+          :item="item"
+        />
+      </transition-group>
+
+      <div class="project-portal__no-result" v-else>Ingen resultater</div>
+    </div>
+  </Loader>
+</template>
+
+<script setup>
+import { ref, computed, onBeforeMount } from 'vue'
+
+import Card from './components/Card.vue'
+import CategorySelector from './components/CategorySelector.vue'
+import ProjectTypeSelector from './components/ProjectTypeSelector.vue'
+import { LoaderComponent as Loader } from '@kvass/loader'
+
+import { getProjects } from './api'
+
+function getSortValue(type, value) {
+  switch (type) {
+    case 'status':
+      switch (value[type]) {
+        case 'sale':
+          return 2
+        case 'upcoming':
+          return 1
+        default:
+          return 0
+      }
+    case 'name':
+      return value[type]
+  }
+}
+
+const props = defineProps({
+  source: {
+    type: String,
+    required: true,
+  },
+  startCategory: {
+    type: String,
+    default: 'all',
+    validator: (val) =>
+      ['all', 'sale', 'upcoming', 'development', 'sold'].includes(val),
+  },
+  enabledCategories: {
+    type: String,
+    default: 'all,sale,upcoming,development,sold',
+  },
+  theme: {
+    type: String,
+    validator: (val) => ['default', 'tiles'].includes(val),
+    default: 'default',
+  },
+  sortOn: {
+    type: String,
+    validator: (val) => ['status', 'name'].includes(val),
+    default: 'status',
+  },
+  // triggerLabel: {
+  //   type: String,
+  //   default: 'Velg type',
+  // },
+  disableNav: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const category = ref('')
+const projectType = ref('none')
+const items = ref([])
+const allItems = ref([])
+const promise = ref(null)
+
+const navItems = computed(() => {
+  return [
+    ...props.enabledCategories.split(',').filter((i) => {
+      if (i === 'all') return true
+      return allItems.value.find((k) => k.status.includes(i))
+    }),
+  ]
+})
+
+const projectTypes = computed(() => {
+  let types = ['none'].concat(
+    allItems.value.map((i) => {
+      if (i.customFields && i.customFields['project-type'])
+        return i.customFields['project-type']
+    }),
+  )
+
+  return [...new Set(types || [])].filter(Boolean)
+})
+
+function filterItems() {
+  items.value = allItems.value
+    .filter((i) => {
+      if (category.value === 'all') return true
+      return i.status.includes(category.value)
+    })
+    .filter((i) => {
+      if (!projectTypes.length || projectType.value === 'none') return true
+      if (!i.customFields || !i.customFields['project-type']) return
+      return i.customFields['project-type'].includes(projectType.value)
+    })
+}
+
+function getFromSource() {
+  if (props.source) return getProjects(props.source)
+  return Promise.resolve()
+}
+
+function getStatus(item) {
+  if (item.status) return item.status
+  let total = item.stats.total
+  if (item.isPublished && total && !item.stats.sale) return 'sold'
+  if (item.isPublished && total) return 'sale'
+  if (item.isPublished && !total) return 'upcoming'
+  if (!item.isPublished) return 'development'
+  return 'development'
+}
+
+function fetchProjects() {
+  promise.value = getFromSource()
+    .then(async (data) => {
+      let items = []
+      //read from global customItems
+      if (typeof customItems !== 'undefined') {
+        items =
+          typeof customItems === 'function' ? await customItems() : customItems
+      }
+      //remove kvass projects that is defined in customItems
+      let kvassProjects = data
+        ? data.Projects.filter((item) => {
+            if (items.find((i) => (i.id ? i.id.includes(item.id) : undefined)))
+              return
+            return item
+          })
+        : []
+
+      allItems.value = [...kvassProjects, ...items]
+
+      return (allItems.value = allItems.value
+        .map((item) => {
+          item.status = getStatus(item)
+          return {
+            intro: item.customFields ? item.customFields['project-intro'] : '',
+            ...item,
+            sortVale: getSortValue(props.sortOn, item),
+            url: item.url,
+          }
+        })
+        .sort((a, b) => {
+          switch (props.sortOn) {
+            case 'status':
+              if (a.sortVale < b.sortVale) return 1
+              if (a.sortVale > b.sortVale) return -1
+          }
+        })
+        .filter((i) => props.enabledCategories.split(',').includes(i.status)))
+    })
+    .then(() => {
+      category.value = props.startCategory
+      items.value = allItems.value
+    })
+}
+
+onBeforeMount(() => {
+  fetchProjects()
+})
+</script>
+
+<style lang="scss">
+@import './styles/_variables';
+.project-portal {
+  $gap: 1.5rem;
+
+  &__navigation {
+    display: flex;
+    justify-content: var(--kvass-project-portal-nav-position, center);
+    padding: 0 2rem;
+    padding-bottom: 3rem;
+    gap: $gap;
+
+    @media (max-width: $kvass-project-portal-breakpoint) {
+      flex-direction: column-reverse;
+      justify-content: center;
+      gap: $gap - 1rem;
+    }
+
+    &-category {
+      display: flex;
+      justify-content: center;
+      gap: $gap;
+
+      @media (max-width: $kvass-project-portal-breakpoint) {
+        flex-direction: column;
+        gap: $gap - 1rem;
+        align-items: center;
+      }
+    }
+  }
+
+  &__cards {
+    position: relative;
+    display: grid;
+    gap: var(--kvass-project-portal-grid-gap, 2rem);
+    grid-template-columns: repeat(
+      var(--kvass-project-portal-grid-columns, 4),
+      1fr
+    );
+
+    @media (max-width: $kvass-project-portal-breakpoint) {
+      grid-template-columns: 1fr;
+      padding-top: 2rem;
+    }
+  }
+
+  &__no-result {
+    font-size: 1.2em;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    margin: 2rem 0;
+    background-color: GetVariable('light-grey');
+
+    @media (max-width: $kvass-project-portal-breakpoint) {
+      min-height: 100px;
+    }
+  }
+}
+
+.list {
+  &-leave-active,
+  &-move {
+    position: absolute;
+  }
+
+  &-move,
+  &-enter-active,
+  &-leave-active {
+    transition: all 300ms ease;
+  }
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+// tiles theme
+.project-portal--theme-tiles {
+  .project-portal__card {
+    gap: var(--kvass-project-portal-grid-gap, 0rem);
+    grid-template-columns: repeat(
+      var(--kvass-project-portal-grid-columns, 2),
+      1fr
+    );
+
+    @media (max-width: $kvass-project-portal-breakpoint) {
+      grid-template-columns: 1fr;
+      padding-top: 2rem;
+    }
+  }
+}
+</style>
