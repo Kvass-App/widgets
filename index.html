@@ -5,15 +5,38 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kvass Lead Form</title>
+  <title>Kvass Widgets</title>
 </head>
 
 <body>
-  <kvass-contact account-url="https://local.kvass.test" label-subtitle="Ønsker du å motta vårt nyhetsbrev?"
-    tags="Test side" upsell references="Residential:630f5c19ffd25600331dcd05"
-    default-assignees="630f5c19ffd25600331dcc06,627181d6009b8f0022b09ac8" />
+  <h1>Kvass Widgets playground</h1>
 
+  <!-- widgets -->
+  <section id="project-portal">
+    <h2>project-portal</h2>
+    <kvass-project-portal theme="tiles" source="https://feature.kvass.no"></kvass-project-portal>
+  </section>
+
+  <section id="contact">
+    <h2>contact</h2>
+    <kvass-contact account-url="https://feature.kvass.no" label-subtitle="Ønsker du å motta vårt nyhetsbrev?"
+      tags="Test side" upsell references="Residential:630f5c19ffd25600331dcd05"
+      default-assignees="630f5c19ffd25600331dcc06,627181d6009b8f0022b09ac8"></kvass-contact>
+  </section>
+
+  <!-- styles -->
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1920px;
+      margin-inline: auto;
+      width: 100%;
+    }
+  </style>
+
+  <!-- component scripts -->
   <script type="module" src="/src/contact/main.js"></script>
+  <script type="module" src="/src/project-portal/main.js"></script>
 </body>
 
 </html>
