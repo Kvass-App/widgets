@@ -71,3 +71,6 @@ These are the available CSS variables.
 | --kvass-contact-grid-columns     | Amount of columns in the form                               | `1`           |
 | --kvass-contact-disabled         | Background color on disabled button                         | `#eaeaea`     |
 | --kvass-contact-input-background | Background color for input fields                           | `transparent` |
+| --kvass-contact-outline-width    | Width of focus outline                                      | `2px`         |
+| --kvass-contact-outline-offset   | Offset between the form control and its outline             | `0px`         |
+| --kvass-contact-checkbox-size    | Size of checkboxes                                          | `1em`         |

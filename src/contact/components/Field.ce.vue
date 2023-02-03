@@ -97,9 +97,15 @@ function onBlur() {
     );
 
     &:focus-visible {
-      outline: 2px solid
-        var(--kvass-contact-color, var(--kvass-contact-default-color));
-      outline-offset: 2px;
+      outline: var(
+          --kvass-contact-outline-width,
+          var(--kvass-contact-default-outline-width)
+        )
+        solid var(--kvass-contact-color, var(--kvass-contact-default-color));
+      outline-offset: var(
+        --kvass-contact-outline-offset,
+        var(--kvass-contact-default-outline-offset)
+      );
     }
   }
 
