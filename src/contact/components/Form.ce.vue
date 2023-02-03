@@ -234,6 +234,9 @@ onMounted(() => {
   --kvass-contact-default-grid-columns: 1;
   --kvass-contact-default-disabled: #eaeaea;
   --kvass-contact-default-input-background: #ffffff;
+  --kvass-contact-default-outline-width: 2px;
+  --kvass-contact-default-outline-offset: 0px;
+  --kvass-contact-default-checkbox-size: 1em;
 
   background-color: var(
     --kvass-contact-background,
