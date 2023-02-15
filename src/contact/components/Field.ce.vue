@@ -72,6 +72,13 @@ function onBlur() {
   flex-direction: column;
   gap: 0.3rem;
 
+  &__label {
+    margin-left: var(
+      --kvass-contact-default-label-tansform,
+      var(--kvass-contact-label-tansform)
+    );
+  }
+
   &__element {
     padding: calc(
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2

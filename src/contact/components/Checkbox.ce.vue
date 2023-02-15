@@ -57,7 +57,7 @@ function onChange(ev) {
 
     margin: 0;
     appearance: none;
-    background-color: none;
+    background-color: var(--kvass-contact-input-background);
     flex-shrink: 0;
 
     font: inherit;
@@ -68,13 +68,13 @@ function onChange(ev) {
     );
     aspect-ratio: 1;
     border: var(
-        --kvass-contact-border-width,
-        var(--kvass-contact-default-border-width)
+        --kvass-contact-checkbox-border-width,
+        var(--kvass-contact-default-checkbox-border-width)
       )
       solid currentColor;
     border-radius: var(
-      --kvass-contact-border-radius,
-      var(--kvass-contact-default-border-radius)
+      --kvass-contact-checkbox-border-radius,
+      var(--kvass-contact-default-checkbox-border-radius)
     );
 
     &:focus-visible {

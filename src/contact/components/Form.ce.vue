@@ -65,6 +65,15 @@ const props = defineProps({
     default: '',
   },
   defaultAssignees: String,
+  successTheme: {
+    type: String,
+    default: 'default',
+    enums: ['overlay', 'default'],
+  },
+  submitTimeout: {
+    type: Number,
+    default: 2000,
+  },
 })
 
 const privacy = ref(false)
@@ -120,7 +129,7 @@ function submit() {
   ).then(() => {
     submitted.value = true
     resetForm()
-    setTimeout(() => (submitted.value = false), 2000)
+    setTimeout(() => (submitted.value = false), props.submitTimeout)
   })
 }
 
@@ -154,73 +163,82 @@ onMounted(() => {
 
 <template>
   <form class="kvass-contact" @submit.prevent="submit">
-    <div class="kvass-contact__header">
-      <h2 class="kvass-contact__title">{{ getLabel('title') }}</h2>
-      <p class="kvass-contact__subtitle" v-if="getLabel('subtitle')">
-        {{ getLabel('subtitle') }}
-      </p>
+    <div
+      v-if="successTheme === 'overlay' && submitted"
+      class="kvass-contact__success--overlay"
+    >
+      <div>{{ getLabel('success') }}</div>
     </div>
+    <template v-else>
+      <div class="kvass-contact__header">
+        <h2 class="kvass-contact__title">{{ getLabel('title') }}</h2>
+        <p class="kvass-contact__subtitle" v-if="getLabel('subtitle')">
+          {{ getLabel('subtitle') }}
+        </p>
+      </div>
 
-    <div class="kvass-contact__fields">
-      <Field
-        :label="getLabel('name')"
-        type="text"
-        required
-        v-model="form.contact.name"
-      />
-      <Field
-        :label="getLabel('email')"
-        type="email"
-        pattern="\b[\w\.-]+@[\w\.-]+\.\w{2,4}"
-        required
-        v-model="form.contact.email"
-      />
-      <Field
-        :label="getLabel('phone')"
-        type="tel"
-        v-model="form.contact.phone"
-      />
-      <Fieldset :label="getLabel('projects')" v-if="!projects">
-        <Checkbox
-          v-for="project in fetchedProjects"
-          :key="project.id"
-          :state="project.id"
-          :label="project.name"
-          :checked="selectedProjects.includes(project.id)"
-          v-model="selectedProjects"
+      <div class="kvass-contact__fields">
+        <Field
+          :label="getLabel('name')"
+          type="text"
+          required
+          v-model="form.contact.name"
         />
-      </Fieldset>
-      <Field
-        :label="getLabel('message')"
-        type="textarea"
-        rows="5"
-        class="kvass-contact-field--full-width"
-        v-model="form.comment"
-      />
-      <Checkbox
-        v-if="upsell"
-        :label="getLabel('upsell')"
-        class="kvass-contact-field--full-width"
-        :checked="form.contact.upsell"
-        v-model="form.contact.upsell"
-      />
-      <Checkbox
-        :label="getLabel('privacy')"
-        class="kvass-contact-field--full-width"
-        required
-        :checked="privacy"
-        v-model="privacy"
-      />
-    </div>
-    <button class="kvass-contact__submit" type="submit" :disabled="submitted">
-      {{ submitted ? getLabel('success') : getLabel('submit') }}
-    </button>
+        <Field
+          :label="getLabel('email')"
+          type="email"
+          pattern="\b[\w\.-]+@[\w\.-]+\.\w{2,4}"
+          required
+          v-model="form.contact.email"
+        />
+        <Field
+          :label="getLabel('phone')"
+          type="tel"
+          v-model="form.contact.phone"
+        />
+        <Fieldset :label="getLabel('projects')" v-if="!projects">
+          <Checkbox
+            v-for="project in fetchedProjects"
+            :key="project.id"
+            :state="project.id"
+            :label="project.name"
+            :checked="selectedProjects.includes(project.id)"
+            v-model="selectedProjects"
+          />
+        </Fieldset>
+        <Field
+          :label="getLabel('message')"
+          type="textarea"
+          rows="5"
+          class="kvass-contact-field--full-width"
+          v-model="form.comment"
+        />
+        <Checkbox
+          v-if="upsell"
+          :label="getLabel('upsell')"
+          class="kvass-contact-field--full-width"
+          :checked="form.contact.upsell"
+          v-model="form.contact.upsell"
+        />
+        <Checkbox
+          :label="getLabel('privacy')"
+          class="kvass-contact-field--full-width"
+          required
+          :checked="privacy"
+          v-model="privacy"
+        />
+      </div>
+      <button class="kvass-contact__submit" type="submit" :disabled="submitted">
+        {{ submitted ? getLabel('success') : getLabel('submit') }}
+      </button>
+    </template>
   </form>
 </template>
 
 <style lang="scss">
 .kvass-contact {
   // default variables
+
   --kvass-contact-default-background: #ffffff;
   --kvass-contact-default-spacing: 2rem;
   --kvass-contact-default-border-radius: 4px;
@@ -237,6 +255,13 @@ onMounted(() => {
   --kvass-contact-default-outline-width: 2px;
   --kvass-contact-default-outline-offset: 0px;
   --kvass-contact-default-checkbox-size: 1em;
+  --kvass-contact-default-label-tansform: 0;
+  --kvass-contact-default-checkbox-border-width: var(
+    --kvass-contact-default-border-width
+  );
+  --kvass-contact-default-checkbox-border-radius: var(
+    --kvass-contact-default-border-radius
+  );
 
   background-color: var(
     --kvass-contact-background,
@@ -258,6 +283,10 @@ onMounted(() => {
     var(--kvass-contact-default-primary)
   );
 
+  font-size: var(--kvass-contact-font-size, inherit);
+  height: inherit;
+  min-height: inherit;
+  max-height: inherit;
   display: flex;
   flex-direction: column;
   gap: var(--kvass-contact-spacing, var(--kvass-contact-default-spacing));
@@ -295,6 +324,11 @@ onMounted(() => {
     gap: calc(
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
+  }
+
+  &__success--overlay {
+    margin: auto;
+    font-size: var(--kvass-contact-success-label-font-size, inherit);
   }
 
   &__title {
