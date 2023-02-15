@@ -50,6 +50,9 @@ The component has several props for easy configuration.
 | label-subtitle         | String  | Optional subtitle shown under form title                                                 |                                         |
 | label-submit           | String  | Label for the submit button                                                              | `"Meld interesse"`                      |
 | privacy-url            | String  | Optional URL to privacy statement                                                        | `{accountUrl}/api/legal/privacy/tenant` |
+| label-success          | String  | Message displayed after submit                                                           | `"Takk for interessen!"`                |
+| success-theme          | String  | Success theme, enums: ['default', 'overlay']                                             | `"default"`                             |
+| submit-timeout         | Number  | Delay on submit reset                                                                    | `2000`                                  |
 
 ## Styling
 
