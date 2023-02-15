@@ -255,7 +255,7 @@ onMounted(() => {
   --kvass-contact-default-outline-width: 2px;
   --kvass-contact-default-outline-offset: 0px;
   --kvass-contact-default-checkbox-size: 1em;
-  --kvass-contact-default-label-tansform: 0;
+  --kvass-contact-default-label-transform: 0;
   --kvass-contact-default-checkbox-border-width: var(
     --kvass-contact-default-border-width
   );

@@ -74,8 +74,8 @@ function onBlur() {
 
   &__label {
     margin-left: var(
-      --kvass-contact-default-label-tansform,
-      var(--kvass-contact-label-tansform)
+      --kvass-contact-default-label-transform,
+      var(--kvass-contact-label-transform)
     );
   }
 
