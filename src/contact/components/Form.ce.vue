@@ -162,7 +162,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <form class="kvass-contact" @submit.prevent="submit">
+  <form
+    class="kvass-contact"
+    :class="[
+      { 'kvass-contact--submitted': submitted },
+      `kvass-contact--theme-${successTheme}`,
+    ]"
+    @submit.prevent="submit"
+  >
     <div
       v-if="successTheme === 'overlay' && submitted"
       class="kvass-contact__success--overlay"
@@ -303,6 +310,16 @@ onMounted(() => {
       outline: 2px solid
         var(--kvass-contact-color, var(--kvass-contact-default-color));
       outline-offset: 2px;
+    }
+  }
+
+  &--submitted {
+    &.kvass-contact--theme-overlay {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      z-index: 2000;
+      max-width: 100%;
     }
   }
 

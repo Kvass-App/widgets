@@ -73,16 +73,27 @@ function onBlur() {
   gap: 0.3rem;
 
   &__label {
-    margin-left: var(
-      --kvass-contact-default-label-transform,
-      var(--kvass-contact-label-transform)
-    );
+    margin-left: var(--kvass-contact-label-transform, 0);
+    font-weight: var(--kvass-contact-label-weight, initial);
   }
 
   &__element {
     padding: calc(
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
+
+    padding-left: calc(
+      calc(
+          var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+        ) +
+        (
+          var(
+            --kvass-contact-border-radius,
+            var(--kvass-contact-default-border-radius)
+          )
+        ) / 2
+    );
+
     border-radius: var(
       --kvass-contact-border-radius,
       var(--kvass-contact-default-border-radius)
