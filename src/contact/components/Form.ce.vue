@@ -320,6 +320,7 @@ onMounted(() => {
       position: absolute;
       z-index: 2000;
       max-width: 100%;
+      left: 0;
     }
   }
 

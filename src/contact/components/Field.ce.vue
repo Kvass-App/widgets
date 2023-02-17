@@ -82,16 +82,11 @@ function onBlur() {
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
     );
 
-    padding-left: calc(
+    padding-left: var(
+      --kvass-contact-field-input-tranform,
       calc(
-          var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
-        ) +
-        (
-          var(
-            --kvass-contact-border-radius,
-            var(--kvass-contact-default-border-radius)
-          )
-        ) / 2
+        var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+      )
     );
 
     border-radius: var(
