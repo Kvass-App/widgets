@@ -76,7 +76,9 @@ function onBlur() {
     margin-left: var(--kvass-contact-label-transform, 0);
     font-weight: var(--kvass-contact-label-weight, initial);
   }
-
+  input {
+    -webkit-appearance: none;
+  }
   &__element {
     padding: calc(
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
@@ -110,15 +112,13 @@ function onBlur() {
     );
 
     &:focus-visible {
-      outline: var(
+      outline: none;
+
+      border: var(
           --kvass-contact-outline-width,
           var(--kvass-contact-default-outline-width)
         )
         solid var(--kvass-contact-color, var(--kvass-contact-default-color));
-      outline-offset: var(
-        --kvass-contact-outline-offset,
-        var(--kvass-contact-default-outline-offset)
-      );
     }
   }
 
