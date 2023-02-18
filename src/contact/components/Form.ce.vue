@@ -174,7 +174,7 @@ onMounted(() => {
       v-if="successTheme === 'overlay' && submitted"
       class="kvass-contact__success--overlay"
     >
-      <div>{{ getLabel('success') }}</div>
+      <div v-html="getLabel('success')"></div>
     </div>
     <template v-else>
       <div class="kvass-contact__header">
@@ -321,6 +321,7 @@ onMounted(() => {
       z-index: 2000;
       max-width: 100%;
       left: 0;
+      top: 0;
     }
   }
 
