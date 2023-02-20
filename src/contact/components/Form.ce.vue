@@ -266,6 +266,7 @@ onMounted(() => {
   --kvass-contact-default-checkbox-border-width: var(
     --kvass-contact-default-border-width
   );
+
   --kvass-contact-default-checkbox-border-radius: var(
     --kvass-contact-default-border-radius
   );
