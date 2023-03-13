@@ -11,14 +11,19 @@ export default defineConfig({
         manualChunks: false,
         entryFileNames: `[name].js`,
         chunkFileNames: `[name].js`,
-        assetFileNames: `[name].[ext]`
+        assetFileNames: `[name].[ext]`,
       },
       input: {
-        contact: fileURLToPath(new URL('./src/contact/main.js', import.meta.url))
-      }
-    }
+        contact: fileURLToPath(
+          new URL('./src/contact/main.js', import.meta.url),
+        ),
+        'img-comparison-slider': fileURLToPath(
+          new URL('./src/img-comparison-slider/main.js', import.meta.url),
+        ),
+      },
+    },
   },
   server: {
-    port: 3001
-  }
+    port: 3001,
+  },
 })
