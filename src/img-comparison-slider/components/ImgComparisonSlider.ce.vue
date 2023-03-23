@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from 'vue'
-import { ImgComparisonSlider } from '@img-comparison-slider/vue'
+import { ImgComparisonSlider } from '@img-comparison-slider/vue';
+import { computed } from 'vue';
 
 const defaultOptions = {
   value: 50,
@@ -10,71 +10,69 @@ const defaultOptions = {
   handle: false,
 }
 
-const firstImageCaption = computed(
-  () => props.data.firstImage.description || props.data.firstImage.name,
-)
-const secondImageCaption = computed(
-  () => props.data.secondImage.description || props.data.secondImage.name,
-)
+function createImageObject(imageString) {
+  if (!imageString) return {}
+
+  const split = imageString.split(',')
+  return {
+    url: split[0],
+    description: split[1]
+  }
+}
 
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({
-      firstImage: {
-        url: 'https://assets.kvass.no/641c0b087c49867b0b1065ec',
-        description: 'Første bilde',
-      },
-      secondImage: {
-        url: 'https://assets.kvass.no/641c0a8c7c49867b0b106570',
-
-        description: 'Andre bilde',
-      },
-    }),
+  firstImage: {
+    type: String,
+    default: 'https://assets.kvass.no/641c0b087c49867b0b1065ec,Første bilde'
+  },
+  secondImage: {
+    type: String,
+    default: 'https://assets.kvass.no/641c0a8c7c49867b0b106570,Andre bilde'
   },
 
   options: {
-    type: Object,
-    default: () => ({}),
+    type: String,
+    default: '',
   },
 
-  handleSVG: {
+  handleSvg: {
     type: String,
     default:
       '<svg xmlns="http://www.w3.org/2000/svg"  viewBox="-8 -3 16 6"><path stroke="#fff" d="M -3 -2 L -5 0 L -3 2 M -3 -2 L -3 2 M 3 -2 L 5 0 L 3 2 M 3 -2 L 3 2" stroke-width="1" fill="#fff" vector-effect="non-scaling-stroke"></path></svg>',
   },
 })
+
+// images
+const firstImage = createImageObject(props.firstImage)
+const firstImageCaption = computed(() => firstImage.description)
+
+const secondImage = createImageObject(props.secondImage)
+const secondImageCaption = computed(() => secondImage.description)
+
+// options
+const options = computed(() => {
+  const entries = props.options.split(',').map(entry => entry.split(':'))
+  return Object.fromEntries(entries)
+})
 </script>
 
 <template>
   <ImgComparisonSlider
-    :style="`--first-image-caption: ${firstImageCaption}; --second-image-caption: ${secondImageCaption}`"
-    tabindex="0"
-    class="img-comparison-slider"
-    v-bind="{
+    :style="`--first-image-caption: ${firstImageCaption}; --second-image-caption: ${secondImageCaption}`" tabindex="0"
+    class="img-comparison-slider" v-bind="{
       ...defaultOptions,
       ...options,
-    }"
-  >
-    <img
-      slot="second"
-      class="img-comparison-slider__image"
-      :src="data.firstImage.url"
-    />
-
-    <img
-      slot="first"
-      class="img-comparison-slider__image"
-      :src="data.secondImage.url"
-    />
+    }">
+    <img slot="first" class="img-comparison-slider__image" :src="firstImage.url" />
+    <img slot="second" class="img-comparison-slider__image" :src="secondImage.url" />
 
     <div slot="handle" class="handle">
       <p class="handle__caption handle__caption--left">
-        {{ data.firstImage.description || data.firstImage.name }}
+        {{ firstImage.description }}
       </p>
-      <div class="handle__svg" v-html="handleSVG"></div>
+      <div class="handle__svg" v-html="handleSvg"></div>
       <p class="handle__caption handle__caption--right">
-        {{ data.secondImage.description || data.secondImage.name }}
+        {{ secondImage.description }}
       </p>
     </div>
   </ImgComparisonSlider>
@@ -87,10 +85,6 @@ const props = defineProps({
 
   --divider-width: 4px;
   --divider-color: black;
-
-  $aspect-ratio: 16/9;
-  $handleColor: black;
-  $IconColor: white;
 
   // aspect-ratio: var(--kvass-img-comparison-slider-aspect-ratio, $aspect-ratio);
   //   aspect-ratio: var(

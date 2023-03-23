@@ -31,32 +31,30 @@ npm run build
 To use the widget, use the `<kvass-img-comparison-slider />` element as shown here.
 
 ```html
-<kvass-img-comparison-slider account-url="https://example.kvass.no" />
+<kvass-img-comparison-slider
+  first-image="https://example.com/first-image,First image"
+  second-image="https://example.com/second-image,Second image"
+  options="direction:vertical,keyboard:disabled"
+></kvass-img-comparison-slider>
 ```
 
 ## Props
 
 The component has several props for easy configuration.
 
-| Name           | Type    | Description                                               | Enums                   |
-| :------------- | :------ | :-------------------------------------------------------- | :---------------------- |
-| `Options`      |         |                                                           |                         |
-| value          | Number  | Position of the divider in percents.                      | `0...100`               |
-| hover          | Boolean | Automatically slide on mouse over.                        | `false`, `true`         |
-| direction      | String  | Set slider direction.                                     | `horiontal`, `vertical` |
-| nonce          |         | Define nonce which gets passed to inline style.           |                         |
-| keyboard       | String  | Enable/disable slider position control with the keyboard. | `enabled`, `disabled`   |
-| handle         | Boolean | Enable/disable dragging by handle only.                   | `false`, `true`         |
-|                |         |                                                           |                         |
-| `Data`         |         |                                                           |                         |
-| firstImage     | Object  | Optional subtitle shown under form title                  |                         |
-| secondImage    | Object  | Label for the submit button                               |                         |
-|                |         |                                                           |                         |
-| `handleSVG`    |         |                                                           |                         |
-| privacy-url    | String  | Optional URL to privacy statement                         |                         |
-| label-success  | String  | Message displayed after submit                            |                         |
-| success-theme  | String  | Success theme, enums: ['default', 'overlay']              |                         |
-| submit-timeout | Number  | Delay on submit reset                                     |                         |
+| Name        | Type    | Description                                               | Enums                   |
+| :---------- | :------ | :-------------------------------------------------------- | :---------------------- |
+| **options** | String  | key:value pairs separated by comma                        | The following options:  |
+| value       | Number  | Position of the divider in percents.                      | `0...100`               |
+| hover       | Boolean | Automatically slide on mouse over.                        | `false`, `true`         |
+| direction   | String  | Set slider direction.                                     | `horiontal`, `vertical` |
+| nonce       |         | Define nonce which gets passed to inline style.           |                         |
+| keyboard    | String  | Enable/disable slider position control with the keyboard. | `enabled`, `disabled`   |
+| handle      | Boolean | Enable/disable dragging by handle only.                   | `false`, `true`         |
+|             |         |                                                           |                         |
+| first-image | String  | Image url and text, separated by a comma                  |                         |
+| second-mage | String  | Image url and text, separated by a comma                  |                         |
+| handle-svg  | String  | The svg on the slider handle                              |                         |
 
 ## Styling
 
