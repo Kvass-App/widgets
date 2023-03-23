@@ -17,6 +17,8 @@ export default defineConfig({
         contact: fileURLToPath(
           new URL('./src/contact/main.js', import.meta.url),
         ),
+        'img-comparison-slider': fileURLToPath(
+          new URL('./src/img-comparison-slider/main.js', import.meta.url),
         'project-portal': fileURLToPath(
           new URL('./src/project-portal/main.js'),
           import.meta.url,
