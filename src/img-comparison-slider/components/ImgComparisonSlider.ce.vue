@@ -22,12 +22,13 @@ const props = defineProps({
     type: Object,
     default: () => ({
       firstImage: {
-        src: 'https://img-comparison-slider.sneas.io/demo/images/before.webp',
-        name: 'Kort Bildetekst',
+        url: 'https://assets.kvass.no/641c0b087c49867b0b1065ec',
+        description: 'Første bilde',
       },
       secondImage: {
-        src: 'https://img-comparison-slider.sneas.io/demo/images/after.webp',
-        name: 'Lang lang lang bildetekst ',
+        url: 'https://assets.kvass.no/641c0a8c7c49867b0b106570',
+
+        description: 'Andre bilde',
       },
     }),
   },
@@ -58,13 +59,13 @@ const props = defineProps({
     <img
       slot="second"
       class="img-comparison-slider__image"
-      :src="data.firstImage.src"
+      :src="data.firstImage.url"
     />
 
     <img
       slot="first"
       class="img-comparison-slider__image"
-      :src="data.secondImage.src"
+      :src="data.secondImage.url"
     />
 
     <div slot="handle" class="handle">
@@ -91,15 +92,16 @@ const props = defineProps({
   $handleColor: black;
   $IconColor: white;
 
-  aspect-ratio: var(--kvass-img-comparison-slider-aspect-ratio, $aspect-ratio);
+  // aspect-ratio: var(--kvass-img-comparison-slider-aspect-ratio, $aspect-ratio);
+  //   aspect-ratio: var(
+  //     --kvass-img-comparison-slider-aspect-ratio,
+  //     $aspect-ratio
+  //   );
 
   &__image {
     width: 100%;
     height: 100%;
-    aspect-ratio: var(
-      --kvass-img-comparison-slider-aspect-ratio,
-      $aspect-ratio
-    );
+    object-fit: cover;
   }
 
   .handle {
@@ -110,18 +112,7 @@ const props = defineProps({
     align-items: center;
     flex-wrap: nowrap;
     gap: 1rem;
-    width: 2000px;
-
-    // height: calc(calc(16 / 9 * 100%));
-
-    //   height: 100px;
-
-    // background: linear-gradient(
-    //   to right,
-    //   rgba(black, 0) 0%,
-    //   rgba(black, 0.15) 50%,
-    //   rgba(black, 0) 100%
-    // );
+    min-width: 800px;
 
     font-size: 1rem;
 
@@ -147,11 +138,6 @@ const props = defineProps({
       svg {
         width: 2.5em;
         height: 2.5em;
-
-        // @media (max-width: 600px) {
-        //   width: 2em;
-        //   height: 2em;
-        // }
       }
     }
   }

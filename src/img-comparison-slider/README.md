@@ -63,21 +63,9 @@ The component has several props for easy configuration.
 The widget's styles are based on CSS custom properties, and can be overwritten.
 These are the available CSS variables.
 
-| Name                             | Description                                                                              | Default       |
-| :------------------------------- | :--------------------------------------------------------------------------------------- | :------------ |
-| `--divider-width`                | Width of the vertical line separating both images                                        | `1px`         |
-| `--divider-color`                | Color of the vertical line separating the two images                                     | `#fff`        |
-| `--divider-shadow`               | Shadow cast by the vertical line separating the two images                               | `none`        |
-| `--handle-position-start`        | Handle position on the divider axis. In case the handle must be displaced off the center | `50%`         |
-| --kvass-contact-border-color     | Color of the borders of the form fields                                                  | `#eaeaea`     |
-| --kvass-contact-border-width     | Border-width for input fields                                                            | `1px`         |
-| --kvass-contact-color            | Base text color                                                                          | `#222222`     |
-| --kvass-contact-color-inverted   | Inverted text color. Used for the submit button                                          | `#ffffff`     |
-| --kvass-contact-primary          | Primary color. Used for submit button and form elements                                  | `#1d56d8`     |
-| --kvass-contact-error            | Error color. Used for error states                                                       | `#d81d1d`     |
-| --kvass-contact-grid-columns     | Amount of columns in the form                                                            | `1`           |
-| --kvass-contact-disabled         | Background color on disabled button                                                      | `#eaeaea`     |
-| --kvass-contact-input-background | Background color for input fields                                                        | `transparent` |
-| --kvass-contact-outline-width    | Width of focus outline                                                                   | `2px`         |
-| --kvass-contact-outline-offset   | Offset between the form control and its outline                                          | `0px`         |
-| --kvass-contact-checkbox-size    | Size of checkboxes                                                                       | `1em`         |
+| Name                      | Description                                                                              | Default |
+| :------------------------ | :--------------------------------------------------------------------------------------- | :------ |
+| `--divider-width`         | Width of the vertical line separating both images                                        | `1px`   |
+| `--divider-color`         | Color of the vertical line separating the two images                                     | `#fff`  |
+| `--divider-shadow`        | Shadow cast by the vertical line separating the two images                               | `none`  |
+| `--handle-position-start` | Handle position on the divider axis. In case the handle must be displaced off the center | `50%`   |
