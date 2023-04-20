@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted, reactive, ref, computed, useAttrs } from 'vue'
+import { computed, onMounted, reactive, ref, useAttrs } from 'vue'
 import { createLead, getProjects } from '../api'
 import { Capitalize } from '../utils'
 
+import Checkbox from './Checkbox.ce.vue'
 import Field from './Field.ce.vue'
 import Fieldset from './Fieldset.ce.vue'
-import Checkbox from './Checkbox.ce.vue'
 
 const Labels = {
   nb: {
@@ -248,7 +248,7 @@ onMounted(() => {
 
   --kvass-contact-default-background: #ffffff;
   --kvass-contact-default-spacing: 2rem;
-  --kvass-contact-default-padding: 2rem;
+  --kvass-contact-default-padding: var(--kvass-contact-default-spacing);
   --kvass-contact-default-border-radius: 4px;
   --kvass-contact-default-border-color: #eaeaea;
   --kvass-contact-default-border-width: 1px;
