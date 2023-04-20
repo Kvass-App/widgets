@@ -248,6 +248,7 @@ onMounted(() => {
 
   --kvass-contact-default-background: #ffffff;
   --kvass-contact-default-spacing: 2rem;
+  --kvass-contact-default-padding: 2rem;
   --kvass-contact-default-border-radius: 4px;
   --kvass-contact-default-border-color: #eaeaea;
   --kvass-contact-default-border-width: 1px;
@@ -275,7 +276,7 @@ onMounted(() => {
     --kvass-contact-background,
     var(--kvass-contact-default-background)
   );
-  padding: var(--kvass-contact-spacing, var(--kvass-contact-default-spacing));
+  padding: var(--kvass-contact-padding, var(--kvass-contact-default-padding));
   border-radius: var(
     --kvass-contact-border-radius,
     var(--kvass-contact-default-border-radius)
