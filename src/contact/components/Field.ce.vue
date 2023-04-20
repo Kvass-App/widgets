@@ -6,7 +6,7 @@ export default {
 </script>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -76,9 +76,11 @@ function onBlur() {
     margin-left: var(--kvass-contact-label-transform, 0);
     font-weight: var(--kvass-contact-label-weight, initial);
   }
+
   input {
     -webkit-appearance: none;
   }
+  
   &__element {
     padding: calc(
       var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
@@ -106,6 +108,7 @@ function onBlur() {
       );
     resize: vertical;
     font: inherit;
+    color: inherit;
     background-color: var(
       --kvass-contact-input-background,
       var(--kvass-contact-default-input-background)
@@ -126,7 +129,7 @@ function onBlur() {
   }
 
   &--required {
-    .kvass-contact-field__label:after {
+    .kvass-contact-field__label::after {
       content: '*';
       color: var(--kvass-contact-error, var(--kvass-contact-default-error));
       margin-left: 0.3rem;
