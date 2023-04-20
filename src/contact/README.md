@@ -63,6 +63,7 @@ These are the available CSS variables.
 | :------------------------------- | :---------------------------------------------------------- | :------------ |
 | --kvass-contact-background       | The form's background color                                 | `#ffffff`     |
 | --kvass-contact-spacing          | Base spacing amount. Other amounts are calculated from this | `2rem`        |
+| --kvass-contact-padding          | Outer padding of the form element                           | `2rem`        |
 | --kvass-contact-max-width        | Max width of the form                                       | `720px`       |
 | --kvass-contact-border-radius    | Base border-radius                                          | `4px`         |
 | --kvass-contact-border-color     | Color of the borders of the form fields                     | `#eaeaea`     |
