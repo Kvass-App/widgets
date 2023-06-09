@@ -208,7 +208,6 @@ export default {
 
 <style lang="scss">
 .widget-kvass-media-render-vimeo {
-  background-color: rgb(210, 210, 210);
   height: 100%;
   width: 100%;
   position: relative;
