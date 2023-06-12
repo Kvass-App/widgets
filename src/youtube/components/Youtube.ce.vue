@@ -7,6 +7,11 @@ export default {
       type: String,
       default: '',
     },
+    videoState: {
+      type: String,
+      default: 'ready',
+      enums: ['ready ', 'play', 'pause'],
+    },
 
     loop: {
       type: [String, Boolean],
@@ -58,10 +63,25 @@ export default {
       default: '16/9',
     },
   },
+
+  watch: {
+    videoState: {
+      handler(newValue, oldValue) {
+        if (newValue === oldValue) return
+        switch (newValue) {
+          case 'play':
+            return this.play()
+          case 'pause':
+            return this.pause()
+          default:
+            return
+        }
+      },
+    },
+  },
   data() {
     return {
       ready: false,
-      player: null,
       thumbnail: null,
       consents: [],
     }
@@ -78,7 +98,7 @@ export default {
     videoId() {
       if (!this.url) return
       let value = this.url
-      return [
+      let id = [
         ExtractString(
           value,
           /https\:\/\/(w{3}\.)?youtube\.com\/watch\?v=(.+)\/?/,
@@ -97,11 +117,11 @@ export default {
         ExtractString(value, /https\:\/\/(w{3}\.)?youtu\.be\/(.+)\/?/, {
           group: 2,
         }),
-      ]
-        .find((e) => {
-          return Boolean(e)
-        })
-        .split('&')[0]
+      ].find((e) => {
+        return Boolean(e)
+      })
+
+      if (id) return id.split('&')[0]
     },
   },
 
@@ -111,8 +131,11 @@ export default {
       Kvass.emit('consent:show')
     },
     play() {
-      if (!this.player || !this.ready) return
+      this.player.mute()
       this.player.playVideo()
+    },
+    pause() {
+      this.player.pauseVideo()
     },
 
     async init() {
@@ -137,7 +160,7 @@ export default {
 
       LoadScript('https://www.youtube.com/iframe_api')
 
-      await WaitUntil(() => window.YT && window.YT.Player, { limit: 100 })
+      await WaitUntil(() => window.YT && window.YT.Player, { limit: 200 })
       this.player = new YT.Player(this.$refs.youtubePlayer, {
         videoId: this.videoId,
         playerVars: {
@@ -148,8 +171,9 @@ export default {
         events: {
           onReady: (event) => {
             this.ready = true
-            if (Boolean(mergeOptions.mute)) event.target.mute()
-            if (Boolean(mergeOptions.autoplay)) event.target.playVideo()
+
+            if (Boolean(mergeOptions.mute)) this.player.mute()
+            if (Boolean(mergeOptions.autoplay)) this.play()
           },
         },
       })

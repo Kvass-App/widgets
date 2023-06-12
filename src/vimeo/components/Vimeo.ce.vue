@@ -7,7 +7,11 @@ export default {
       type: String,
       default: '',
     },
-
+    videoState: {
+      type: String,
+      default: 'ready',
+      enums: ['ready ', 'play', 'pause'],
+    },
     loop: {
       type: [String, Boolean],
       default: true,
@@ -58,14 +62,30 @@ export default {
       default: '16/9',
     },
   },
+  watch: {
+    videoState: {
+      handler(newValue, oldValue) {
+        if (newValue === oldValue) return
+        switch (newValue) {
+          case 'play':
+            return this.play()
+          case 'pause':
+            return this.pause()
+          default:
+            return
+        }
+      },
+    },
+  },
   data() {
     return {
       ready: false,
-      player: null,
+
       thumbnail: null,
       consents: [],
     }
   },
+
   computed: {
     kvassDefined() {
       return typeof Kvass !== 'undefined'
@@ -78,7 +98,7 @@ export default {
     videoId() {
       if (!this.url) return
 
-      return [
+      let id = [
         ExtractString(this.url, /https\:\/\/(w{3}\.)?vimeo\.com\/(.+)\/?/, {
           group: 2,
         }),
@@ -89,9 +109,9 @@ export default {
             group: 3,
           },
         ),
-      ]
-        .find((e) => Boolean(e))
-        .split('&')[0]
+      ].find((e) => Boolean(e))
+
+      if (id) return id.split('&')[0]
     },
   },
 
@@ -100,14 +120,22 @@ export default {
       if (!this.kvassDefined) return
       Kvass.emit('consent:show')
     },
-    play() {
-      if (!this.player || !this.ready) return
-      this.player.play()
+
+    async play() {
+      try {
+        this.player.setVolume(0)
+        await this.player.play()
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    pause() {
+      this.player.pause()
     },
 
     async init() {
       const mergeOptions = {
-        id: this.videoId,
+        url: `https://vimeo.com/${this.videoId}`,
         loop: this.loop,
         autoplay: this.autoplay,
         controls: this.controls,
@@ -129,9 +157,7 @@ export default {
       LoadScript('https://player.vimeo.com/api/player.js')
       const Vimeo = await WaitUntil(() => window.Vimeo, { limit: 100 })
 
-      this.player = new Vimeo.Player(this.$refs.vimeoPlayer, {
-        ...mergeOptions,
-      })
+      this.player = new Vimeo.Player(this.$refs.vimeoPlayer, mergeOptions)
 
       await this.player
         .ready()
@@ -139,32 +165,13 @@ export default {
           this.ready = true
         })
         .catch((error) => {
-          this.ready = true
+          console.log(error)
         })
     },
   },
 
   async mounted() {
-    if (this.displayThumbnail)
-      this.thumbnail =
-        !this.thumbnailSource && this.kvassDefined
-          ? `/api/media/thumbnail?url=${this.url}`
-          : this.thumbnailSource
-
-    if (this.ignoreConsent || !this.kvassDefined) return this.init()
-
-    let onChange = (consents) => {
-      this.consents = consents || []
-      if (!this.consents || !this.consents.length) return
-
-      if (this.consents.includes('statistics')) return this.init()
-      return this.$nextTick(() => this.$emit('ended'))
-    }
-
-    if (this.kvassDefined) {
-      Kvass.emit('consent:get', (c) => onChange(c))
-      Kvass.on('consent:change', onChange)
-    }
+    this.init()
   },
 }
 </script>
