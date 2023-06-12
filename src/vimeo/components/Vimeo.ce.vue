@@ -171,7 +171,22 @@ export default {
   },
 
   async mounted() {
-    this.init()
+    if (this.displayThumbnail)
+      this.thumbnail = `/api/media/thumbnail?url=${this.url}`
+
+    if (this.ignoreConsent || !this.kvassDefined) return this.init()
+
+    let onChange = (consents) => {
+      this.consents = consents || []
+      if (!this.consents || !this.consents.length) return
+
+      if (this.consents.includes('statistics')) return this.init()
+    }
+
+    if (this.kvassDefined) {
+      Kvass.emit('consent:get', (c) => onChange(c))
+      Kvass.on('consent:change', onChange)
+    }
   },
 }
 </script>
