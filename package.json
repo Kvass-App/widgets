@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
+    "@kvass/map": "^1.0.3",
     "vue": "^3.2.47"
   },
   "devDependencies": {

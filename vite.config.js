@@ -27,6 +27,7 @@ export default defineConfig({
         youtube: fileURLToPath(
           new URL('./src/youtube/main.js', import.meta.url),
         ),
+        map: fileURLToPath(new URL('./src/map/main.js', import.meta.url)),
       },
     },
   },
