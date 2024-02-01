@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="nb">
 
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kvass Lead Form</title>
+  <title>Kvass Web Components</title>
 </head>
 
 <body>
@@ -26,8 +26,10 @@
     options="keyboard:disabled,direction:vertical"></kvass-img-comparison-slider>
 
     <script type="module" src="/src/img-comparison-slider/main.js"></script> -->
-  <kvass-map coordinates="10.745,59.9123" address="Klokkergårdveien 5, 1711 Sarpsborg" show-address />
-  <script type="module" src="/dist/map.js"></script>
+  <!-- <kvass-map coordinates="10.745,59.9123" address="Klokkergårdveien 5, 1711 Sarpsborg" show-address /> -->
+  <kvass-flatfinder project-url="https://alvebergtunet.production.kvass.no" project-id="65a4f48ed1ba5cd61468f235"
+    path-prefix="/residential" />
+  <script type="module" src="/dist/flatfinder.js"></script>
 </body>
 
 </html>
