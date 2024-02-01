@@ -5,7 +5,16 @@ import { defineConfig } from 'vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue({ customElement: true })],
+  optimizeDeps: {
+    include: ['@kvass/vue3-flatfinder'],
+    esbuildOptions: {
+      supported: {
+        'top-level-await': true,
+      }
+    }
+  },
   build: {
+    target: 'esnext',
     rollupOptions: {
       output: {
         manualChunks: false,
@@ -27,6 +36,10 @@ export default defineConfig({
         youtube: fileURLToPath(
           new URL('./src/youtube/main.js', import.meta.url),
         ),
+        map: fileURLToPath(new URL('./src/map/main.js', import.meta.url)),
+        flatfinder: fileURLToPath(
+          new URL('./src/flatfinder/main.js', import.meta.url),
+        )
       },
     },
   },

@@ -1,6 +1,7 @@
 {
   "name": "@kvass/widgets",
   "version": "0.0.0-development",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,6 +10,8 @@
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
+    "@kvass/map": "^1.0.3",
+    "@kvass/vue3-flatfinder": "^1.0.12",
     "vue": "^3.2.47"
   },
   "devDependencies": {
