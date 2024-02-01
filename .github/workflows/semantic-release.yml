@@ -11,6 +11,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
+      - name: Authenticate with private NPM package
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPMRC_TOKEN }}" > ~/.npmrc
       - run: npm install
       - name: Release
         env:
