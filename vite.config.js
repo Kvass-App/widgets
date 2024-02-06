@@ -10,8 +10,8 @@ export default defineConfig({
     esbuildOptions: {
       supported: {
         'top-level-await': true,
-      }
-    }
+      },
+    },
   },
   build: {
     target: 'esnext',
@@ -39,7 +39,7 @@ export default defineConfig({
         map: fileURLToPath(new URL('./src/map/main.js', import.meta.url)),
         flatfinder: fileURLToPath(
           new URL('./src/flatfinder/main.js', import.meta.url),
-        )
+        ),
       },
     },
   },
