@@ -1,8 +1,17 @@
 <script setup>
 import { Map as MapComponent } from '@kvass/map'
-import { computed } from 'vue'
+import { LazyLoad } from '@kvass/ui'
+import { computed, reactive } from 'vue'
 
 const props = defineProps({
+  theme: {
+    type: String,
+    required: true,
+  },
+  mapboxApiToken: {
+    type: String,
+    required: true,
+  },
   /**
    * The coordinates in the format of 'latitude,longitude'
    */
@@ -34,14 +43,22 @@ const coordinatesComp = computed(() => props.coordinates.split(','))
 const markersComp = computed(() =>
   props.markers?.split(';').map((m) => m.split(',')),
 )
+
+const mapOptions = reactive({
+  style: props.theme,
+  accessToken: props.mapboxApiToken,
+})
 </script>
 
 <template>
-  <MapComponent
-    :coordinates="coordinatesComp"
-    :zoom="parseInt(props.zoom)"
-    :markers="markersComp"
-  />
+  <LazyLoad>
+    <MapComponent
+      :coordinates="coordinatesComp"
+      :zoom="parseInt(props.zoom)"
+      :markers="markersComp"
+      :map-options="mapOptions"
+    />
+  </LazyLoad>
 </template>
 
 <style>

@@ -9,8 +9,9 @@
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/map": "^1.0.3",
-    "@kvass/vue3-flatfinder": "^1.0.12",
+    "@kvass/map": "^1.0.4",
+    "@kvass/ui": "^1.6.0",
+    "@kvass/vue3-flatfinder": "^1.0.15",
     "vue": "^3.2.47"
   },
   "devDependencies": {
