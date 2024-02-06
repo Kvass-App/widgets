@@ -10,7 +10,8 @@
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
     "@kvass/map": "^1.0.4",
-    "@kvass/vue3-flatfinder": "^1.0.14",
+    "@kvass/ui": "^1.6.0",
+    "@kvass/vue3-flatfinder": "^1.0.15",
     "@vueuse/core": "^10.7.2",
     "@zag-js/select": "^0.34.0",
     "@zag-js/vue": "^0.34.0",
