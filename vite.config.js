@@ -10,8 +10,8 @@ export default defineConfig({
     esbuildOptions: {
       supported: {
         'top-level-await': true,
-      }
-    }
+      },
+    },
   },
   build: {
     target: 'esnext',

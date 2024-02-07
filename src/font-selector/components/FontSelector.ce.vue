@@ -1,5 +1,4 @@
 <script setup>
-import '@kvass/ui/style.css'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { providers } from '../providers.js'
@@ -98,6 +97,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+@import url('@kvass/ui/style.css');
+
 .kvass-font-selector {
   // Default variables
   --__kvass-font-selector-background-color: white;
