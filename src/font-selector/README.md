@@ -58,6 +58,6 @@ These are the available CSS variables.
 | --kvass-font-selector-border-width     | The width of the borders              | `1px`          |
 | --kvass-font-selector-border-style     | The style of the borders              | `solid`        |
 | --kvass-font-selector-border-color     | The color of the borders              | `#eaeaea`      |
-| --kvass-font-selector-max-width        | The maximum width of the component    | `500px`        |
+| --kvass-font-selector-max-width        | The maximum width of the component    | `100%`         |
 | --kvass-font-selector-label-color      | The color of the label                | `currentColor` |
 | --kvass-font-selector-label-weight     | The weight of the label               | `400`          |
