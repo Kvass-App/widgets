@@ -17,7 +17,6 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: false,
         entryFileNames: `[name].js`,
         chunkFileNames: `[name].js`,
         assetFileNames: `[name].[ext]`,
@@ -39,6 +38,9 @@ export default defineConfig({
         map: fileURLToPath(new URL('./src/map/main.js', import.meta.url)),
         flatfinder: fileURLToPath(
           new URL('./src/flatfinder/main.js', import.meta.url),
+        ),
+        'font-selector': fileURLToPath(
+          new URL('./src/font-selector/main.js', import.meta.url),
         ),
       },
     },
