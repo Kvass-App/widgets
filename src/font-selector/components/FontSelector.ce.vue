@@ -1,11 +1,11 @@
 <script setup>
 import '@kvass/ui/style.css'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useCurrentElement } from '@vueuse/core'
 import { providers } from '../providers.js'
 import WebFontLoader from 'webfontloader'
 
 const props = defineProps({
-  placeholder: String,
   provider: {
     type: String,
     default: 'google',
@@ -21,10 +21,26 @@ const props = defineProps({
 const selectedProvider = computed(() =>
   providers.find((p) => p.value === props.provider),
 )
+
 const selectedFont = ref(
   selectedProvider.value?.fonts.find((f) => f.value === props.defaultFont) ||
     selectedProvider.value?.fonts[0],
 )
+
+const element = useCurrentElement()
+
+watch(selectedFont, (newFont) => {
+  if (!newFont) return
+
+  // emit custom event
+  element.value.dispatchEvent(
+    new CustomEvent('webcomponent:update', {
+      detail: newFont,
+      bubbles: true,
+      composed: true,
+    }),
+  )
+})
 
 const styles = computed(
   () =>
@@ -33,6 +49,8 @@ const styles = computed(
 )
 
 onMounted(() => {
+  if (!selectedProvider.value) throw new Error('Invalid provider')
+
   // Initialize WebFontLoader
   const config = Object.fromEntries(
     Object.entries(providers).map(([_, provider]) => [
@@ -66,7 +84,7 @@ onMounted(() => {
       <small class="kvass-font-selector__preview-label">Forhåndsvisning</small>
       <template v-if="props.type === 'heading'">
         <h1>Hovedtittel</h1>
-        <h2>Mellomtittel</h2>
+        <h2>Sekundærtittel</h2>
         <h3>Tertiærtittel</h3>
       </template>
       <template v-if="props.type === 'text'">
