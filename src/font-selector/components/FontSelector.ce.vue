@@ -15,6 +15,7 @@ const props = defineProps({
     validator: (value) => ['text', 'heading'].includes(value),
   },
   defaultFont: String,
+  label: String,
 })
 
 const selectedProvider = computed(() =>
@@ -35,8 +36,8 @@ watch(selectedFont, (newFont) => {
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
-        font: newFont,
-        provider: selectedProvider.value,
+        font: newFont.value,
+        provider: selectedProvider.value.value,
       },
       bubbles: true,
       composed: true,
@@ -67,17 +68,26 @@ onMounted(() => {
 
 <template>
   <div class="kvass-font-selector" :style="styles">
-    <select v-model="selectedFont" class="kvass-font-selector__input">
-      <optgroup
-        v-for="provider in providers"
-        :key="provider.value"
-        :label="provider.label"
-      >
-        <option v-for="font in provider.fonts" :key="font.value" :value="font">
-          {{ font.label }}
-        </option>
-      </optgroup>
-    </select>
+    <label>
+      <span v-if="label" class="kvass-font-selector__label">{{ label }}</span>
+      <div class="kvass-font-selector__input-wrapper">
+        <select v-model="selectedFont" class="kvass-font-selector__input">
+          <optgroup
+            v-for="provider in providers"
+            :key="provider.value"
+            :label="provider.label"
+          >
+            <option
+              v-for="font in provider.fonts"
+              :key="font.value"
+              :value="font"
+            >
+              {{ font.label }}
+            </option>
+          </optgroup>
+        </select>
+      </div>
+    </label>
     <div
       :class="[
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
@@ -111,7 +121,9 @@ onMounted(() => {
   --__kvass-font-selector-border-style: solid;
   --__kvass-font-selector-border-color: #eaeaea;
   --__kvass-font-selector-border-radius: 6px;
-  --__kvass-font-selector-max-width: 500px;
+  --__kvass-font-selector-max-width: 100%;
+  --__kvass-font-selector-label-color: currentColor;
+  --__kvass-font-selector-label-weight: 400;
 
   border-radius: var(
     --kvass-font-selector-border-radius,
@@ -125,22 +137,6 @@ onMounted(() => {
     --kvass-font-selector-max-width,
     var(--__kvass-font-selector-max-width)
   );
-  position: relative;
-
-  &::after {
-    content: url('../selector.svg');
-    position: absolute;
-    right: var(
-      --kvass-font-selector-padding-x,
-      var(--__kvass-font-selector-padding-x)
-    );
-    top: var(
-      --kvass-font-selector-padding-y,
-      var(--__kvass-font-selector-padding-y)
-    );
-    pointer-events: none;
-    opacity: 0.5;
-  }
 
   &__input {
     appearance: none;
@@ -175,6 +171,25 @@ onMounted(() => {
       var(--__kvass-font-selector-border-radius)
     );
     border-bottom: none;
+
+    &-wrapper {
+      position: relative;
+
+      &::after {
+        content: url('../selector.svg');
+        position: absolute;
+        right: var(
+          --kvass-font-selector-padding-x,
+          var(--__kvass-font-selector-padding-x)
+        );
+        top: var(
+          --kvass-font-selector-padding-y,
+          var(--__kvass-font-selector-padding-y)
+        );
+        pointer-events: none;
+        opacity: 0.5;
+      }
+    }
   }
 
   &__preview {
@@ -241,6 +256,19 @@ onMounted(() => {
       opacity: 0.5;
       letter-spacing: 0.25px;
     }
+  }
+
+  &__label {
+    color: var(
+      --kvass-font-selector-label-color,
+      var(--__kvass-font-selector-label-color)
+    );
+    font-weight: var(
+      --kvass-font-selector-label-weight,
+      var(--__kvass-font-selector-label-weight)
+    );
+    display: block;
+    margin-bottom: 0.5rem;
   }
 }
 </style>
