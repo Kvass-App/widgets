@@ -16,6 +16,9 @@
     "vue": "^3.4.15",
     "webfontloader": "^1.6.28"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/webfontloader": "^1.6.38",
     "@vitejs/plugin-vue": "^5.0.3",
