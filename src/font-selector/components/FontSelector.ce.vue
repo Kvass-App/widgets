@@ -34,7 +34,10 @@ watch(selectedFont, (newFont) => {
   // emit custom event
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
-      detail: newFont,
+      detail: {
+        font: newFont,
+        provider: selectedProvider.value,
+      },
       bubbles: true,
       composed: true,
     }),
