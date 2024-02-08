@@ -38,11 +38,11 @@ To use the widget, use the `<kvass-flatfinder />` element as shown here.
 
 The component has several props for easy configuration.
 
-| Name         | Type   | Description                       | Default  |
-| :----------- | :----- | :-------------------------------- | :------- |
-| provider     | String | The provider to fetch fonts from. | `google` |
-| default-font | String | The default selected font.        |          |
-| label        | String | An optional label for the input.  |          |
+| Name     | Type   | Description                       | Default  |
+| :------- | :----- | :-------------------------------- | :------- |
+| provider | String | The provider to fetch fonts from. | `google` |
+| value    | String | The selected font.                |          |
+| label    | String | An optional label for the input.  |          |
 
 ## Styling
 
