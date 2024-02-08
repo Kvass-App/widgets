@@ -14,7 +14,7 @@ const props = defineProps({
     default: 'text',
     validator: (value) => ['text', 'heading'].includes(value),
   },
-  defaultFont: String,
+  value: String,
   label: String,
 })
 
@@ -23,7 +23,7 @@ const selectedProvider = computed(() =>
 )
 
 const selectedFont = ref(
-  selectedProvider.value?.fonts.find((f) => f.value === props.defaultFont) ||
+  selectedProvider.value?.fonts.find((f) => f.value === props.value) ||
     selectedProvider.value?.fonts[0],
 )
 
