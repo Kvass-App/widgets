@@ -1,7 +1,7 @@
 <script setup>
-import { Button, Dialog, FormControl, Icon, Input } from '@kvass/ui'
+import { Button, Dialog, FormControl, Icon, Input, Skeleton } from '@kvass/ui'
 import { refDebounced, useCurrentElement } from '@vueuse/core'
-import { onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useIconApi } from '../composables/useIconApi.js'
 import { getCategorizedIcons } from '../utils.js'
 
@@ -19,9 +19,19 @@ const props = defineProps({
 
 const { getCollections, getIcons } = useIconApi(props.apiUrl)
 
+// All collections with minimal metadata
 const collections = ref()
+
+// Selected collection and its icons
 const collection = ref()
+
+// All icons from the selected collection
 const icons = ref()
+
+const loadAllIcons = ref(false)
+const slicedIcons = computed(() =>
+  loadAllIcons.value ? icons.value : icons.value?.slice(0, 400),
+)
 
 const selectedIcon = ref(props.value || '')
 const selectedIconUnsaved = ref('')
@@ -30,6 +40,7 @@ const selectedCollection = ref('')
 function reset() {
   selectedCollection.value = ''
   selectedIconUnsaved.value = ''
+  loadAllIcons.value = false
 }
 
 function selectCollection(prefix) {
@@ -66,10 +77,13 @@ const search = ref('')
 const searchDebounced = refDebounced(search, 500)
 
 watch(searchDebounced, async (s) => {
+  if (!s) return
+
   collection.value = await getIcons({
     collection: selectedCollection.value,
     search: s,
   })
+
   icons.value = collection.value.icons
 })
 </script>
@@ -91,7 +105,7 @@ watch(searchDebounced, async (s) => {
             v-bind="triggerProps"
           >
             <span v-if="!selectedIcon"></span>
-            <Icon v-else :icon="selectedIcon" />
+            <Icon v-else :icon="selectedIcon" style="font-size: 1.25rem" />
             <Icon
               icon="tabler:selector"
               class="kvass-icon-selector__trigger-icon"
@@ -108,70 +122,108 @@ watch(searchDebounced, async (s) => {
       </template>
 
       <template #default>
-        <div>
-          <Transition name="fade" mode="out-in">
+        <Transition name="fade" mode="out-in">
+          <div
+            v-if="search"
+            style="
+              overflow-y: auto;
+              max-height: 50dvh;
+              display: grid;
+              gap: 0.5rem;
+              grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+            "
+          >
+            <template v-if="searchDebounced && slicedIcons?.length">
+              <IconButton
+                v-for="icon in slicedIcons"
+                :key="icon"
+                :icon="icon"
+                :selected="selectedIconUnsaved === icon"
+                @click="selectedIconUnsaved = icon"
+              />
+            </template>
+            <template v-else>
+              <Skeleton
+                v-for="i in 100"
+                :key="i"
+                height="2rem"
+                width="2rem"
+                rounding="6px"
+              />
+            </template>
+          </div>
+          <div
+            v-else-if="!selectedCollection"
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 1rem;
+              overflow-y: auto;
+              max-height: 50dvh;
+            "
+          >
+            <Collection
+              v-for="(collection, prefix) of collections"
+              :key="prefix"
+              :collection="collection"
+              :prefix="prefix"
+              :selected="selectedCollection === prefix"
+              @click="selectCollection(prefix)"
+            />
+          </div>
+          <div
+            v-else-if="collection"
+            style="
+              overflow-y: auto;
+              max-height: 50dvh;
+              display: grid;
+              gap: 0.5rem;
+              grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+            "
+          >
             <div
-              v-if="!selectedCollection"
               style="
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 1rem;
-                overflow-y: auto;
-                max-height: 50dvh;
+                position: sticky;
+                top: 0;
+                background: white;
+                grid-column: 1/-1;
               "
             >
-              <Collection
-                v-for="(collection, prefix) of collections"
-                :key="prefix"
-                :collection="collection"
-                :prefix="prefix"
-                :selected="selectedCollection === prefix"
-                @click="selectCollection(prefix)"
-              />
-            </div>
-            <div
-              v-else-if="collection"
-              style="overflow-y: auto; max-height: 50dvh"
-            >
-              <div style="position: sticky; top: 0; background: white">
-                <button
-                  @click="reset"
-                  style="background: none; border: none; font: inherit"
-                >
-                  <Icon icon="tabler:arrow-left" />
-                  Gå tilbake
-                </button>
-                <h3 style="margin-bottom: 0">{{ collection.title }}</h3>
-                <p style="opacity: 0.5">{{ collection.total }} ikoner</p>
-              </div>
-              <section
-                v-for="(category, i) in icons"
-                :key="category.title || i"
-                style="
-                  display: grid;
-                  grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
-                  grid-column: 1/-1;
-                "
+              <button
+                @click="reset"
+                style="background: none; border: none; font: inherit"
               >
-                <h4
-                  v-if="category.title"
-                  style="grid-column: 1/-1; margin-bottom: 0.5rem"
-                >
-                  {{ category.title }}
-                </h4>
-                <IconButton
-                  v-for="icon in category.icons"
-                  :key="icon"
-                  :icon="`${selectedCollection}:${icon}`"
-                  :selected="
-                    selectedIconUnsaved === `${selectedCollection}:${icon}`
-                  "
-                  @click="selectedIconUnsaved = `${selectedCollection}:${icon}`"
-                />
-              </section>
+                <Icon icon="tabler:arrow-left" />
+                Gå tilbake
+              </button>
+              <h3 style="margin-bottom: 0">{{ collection.title }}</h3>
+              <p style="opacity: 0.5">{{ collection.total }} ikoner</p>
             </div>
-          </Transition>
-        </div>
+            <IconButton
+              v-for="icon in slicedIcons"
+              :key="icon"
+              :icon="`${selectedCollection}:${icon}`"
+              :selected="
+                selectedIconUnsaved === `${selectedCollection}:${icon}`
+              "
+              @click="selectedIconUnsaved = `${selectedCollection}:${icon}`"
+            />
+            <div
+              style="grid-column: 1/-1; display: flex; justify-content: center"
+            >
+              <Button
+                v-if="icons.length !== slicedIcons.length"
+                variant="secondary"
+                icon-right="tabler:loader"
+                size="small"
+                @click="loadAllIcons = true"
+                :loading="loadAllIcons"
+              >
+                Last alle ikoner
+              </Button>
+            </div>
+          </div>
+        </Transition>
       </template>
 
       <template #footer="{ close }">

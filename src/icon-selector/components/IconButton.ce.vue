@@ -23,7 +23,7 @@ const props = defineProps({
 .kvass-icon-selector-icon-button {
   appearance: none;
   font: inherit;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   padding: 0.25rem;
   border-radius: 6px;
   border: none;
