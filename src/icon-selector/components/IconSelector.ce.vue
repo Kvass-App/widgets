@@ -130,7 +130,7 @@ watch(searchDebounced, async (s) => {
               max-height: 50dvh;
               display: grid;
               gap: 0.5rem;
-              grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+              grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
             "
           >
             <template v-if="searchDebounced && slicedIcons?.length">
@@ -156,7 +156,7 @@ watch(searchDebounced, async (s) => {
             v-else-if="!selectedCollection"
             style="
               display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
               gap: 1rem;
               overflow-y: auto;
               max-height: 50dvh;
@@ -178,7 +178,7 @@ watch(searchDebounced, async (s) => {
               max-height: 50dvh;
               display: grid;
               gap: 0.5rem;
-              grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+              grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
             "
           >
             <div
