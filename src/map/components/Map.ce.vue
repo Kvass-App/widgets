@@ -37,6 +37,11 @@ const props = defineProps({
       return typeof parseInt(value) === 'number'
     },
   },
+
+  /**
+   * The formatted address. Will be visible in the bottom of the map
+   */
+  address: String,
 })
 
 const coordinatesComp = computed(() => props.coordinates.split(','))
@@ -57,6 +62,8 @@ const mapOptions = reactive({
       :zoom="parseInt(props.zoom)"
       :markers="markersComp"
       :map-options="mapOptions"
+      :address="address"
+      :show-address="Boolean(address)"
     />
   </LazyLoad>
 </template>
