@@ -1,5 +1,16 @@
 <script setup>
-import { Button, Dialog, FormControl, Icon, Input, Skeleton } from '@kvass/ui'
+import {
+  Button,
+  Dialog,
+  FormControl,
+  Icon,
+  Input,
+  Skeleton,
+  Grid,
+  GridItem,
+  Scroller,
+  Flex,
+} from '@kvass/ui'
 import { refDebounced, useCurrentElement } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useIconApi } from '../composables/useIconApi.js'
@@ -137,109 +148,95 @@ function iconIsSelected(icon) {
 
       <template #default>
         <Transition name="fade" mode="out-in">
-          <div
-            v-if="search"
-            style="
-              overflow-y: auto;
-              max-height: 50dvh;
-              display: grid;
-              gap: 0.5rem;
-              grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-            "
-          >
-            <template v-if="searchDebounced && slicedIcons?.length">
-              <IconButton
-                v-for="icon in slicedIcons"
-                :key="icon"
-                :icon="icon"
-                :selected="iconIsSelected(icon)"
-                @click="selectedIconUnsaved = icon"
-              />
-            </template>
-            <template v-else>
-              <Skeleton
-                v-for="i in 100"
-                :key="i"
-                height="2rem"
-                width="2rem"
-                rounding="6px"
-              />
-            </template>
-          </div>
-          <div
-            v-else-if="!selectedCollection"
-            style="
-              display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-              gap: 1rem;
-              overflow-y: auto;
-              max-height: 50dvh;
-            "
-          >
-            <Collection
-              v-for="(collection, prefix) of collections"
-              :key="prefix"
-              :collection="collection"
-              :prefix="prefix"
-              :selected="selectedCollection === prefix"
-              @click="selectCollection(prefix)"
-            />
-          </div>
-          <div
-            v-else-if="collection"
-            style="
-              overflow-y: auto;
-              max-height: 50dvh;
-              display: grid;
-              gap: 0.5rem;
-              grid-template-columns: repeat(auto-fill, minmax(2rem, 1fr));
-            "
-          >
-            <div
-              style="
-                position: sticky;
-                top: 0;
-                background: white;
-                grid-column: 1/-1;
-              "
+          <Scroller style="max-height: 50dvh">
+            <Grid
+              v-if="search"
+              gap="0.5rem"
+              columns="repeat(auto-fill, minmax(2rem, 1fr))"
             >
-              <button
-                @click="reset"
-                style="background: none; border: none; font: inherit"
-              >
-                <Icon icon="tabler:arrow-left" />
-                Gå tilbake
-              </button>
-              <h3 style="margin-bottom: 0">{{ collection.title }}</h3>
-              <p style="opacity: 0.5">{{ collection.total }} ikoner</p>
-            </div>
-            <IconButton
-              v-for="icon in slicedIcons"
-              :key="icon"
-              :icon="`${selectedCollection}:${icon}`"
-              :selected="iconIsSelected(`${selectedCollection}:${icon}`)"
-              @click="selectedIconUnsaved = `${selectedCollection}:${icon}`"
-            />
-            <div
-              style="grid-column: 1/-1; display: flex; justify-content: center"
+              <template v-if="searchDebounced && slicedIcons?.length">
+                <GridItem v-for="icon in slicedIcons" :key="icon">
+                  <IconButton
+                    :icon="icon"
+                    :selected="iconIsSelected(icon)"
+                    @click="selectedIconUnsaved = icon"
+                  />
+                </GridItem>
+              </template>
+              <template v-else>
+                <GridItem v-for="i in 100" :key="i">
+                  <Skeleton height="2rem" width="2rem" rounding="6px" />
+                </GridItem>
+              </template>
+            </Grid>
+            <Grid
+              v-else-if="!selectedCollection"
+              gap="1rem"
+              columns="repeat(auto-fill, minmax(200px, 1fr))"
             >
-              <Button
-                v-if="icons.length !== slicedIcons.length"
-                variant="secondary"
-                icon-right="tabler:loader"
-                size="small"
-                @click="loadAllIcons = true"
-                :loading="loadAllIcons"
+              <GridItem
+                v-for="(collection, prefix) of collections"
+                :key="prefix"
               >
-                Last alle ikoner
-              </Button>
-            </div>
-          </div>
+                <Collection
+                  :collection="collection"
+                  :prefix="prefix"
+                  :selected="selectedCollection === prefix"
+                  @click="selectCollection(prefix)"
+                />
+              </GridItem>
+            </Grid>
+            <Grid
+              v-else-if="collection"
+              gap="0.5rem"
+              columns="repeat(auto-fill, minmax(2rem, 1fr))"
+            >
+              <GridItem>
+                <div class="kvass-icon-selector__header">
+                  <button
+                    @click="reset"
+                    style="background: none; border: none; font: inherit"
+                  >
+                    <Icon icon="tabler:arrow-left" />
+                    Gå tilbake
+                  </button>
+                  <h3 style="margin-bottom: 0">{{ collection.title }}</h3>
+                  <p style="opacity: 0.5">{{ collection.total }} ikoner</p>
+                </div>
+              </GridItem>
+              <GridItem v-for="icon in slicedIcons" :key="icon">
+                <IconButton
+                  :icon="`${selectedCollection}:${icon}`"
+                  :selected="iconIsSelected(`${selectedCollection}:${icon}`)"
+                  @click="selectedIconUnsaved = `${selectedCollection}:${icon}`"
+                />
+              </GridItem>
+              <GridItem>
+                <Flex justify="center" style="grid-column: 1/-1">
+                  <Button
+                    v-if="icons.length !== slicedIcons.length"
+                    variant="secondary"
+                    icon-right="tabler:loader"
+                    size="small"
+                    @click="loadAllIcons = true"
+                    :loading="loadAllIcons"
+                  >
+                    Last alle ikoner
+                  </Button>
+                </Flex>
+              </GridItem>
+            </Grid>
+          </Scroller>
         </Transition>
       </template>
 
       <template #footer="{ close }">
-        <div class="kvass-icon-selector__footer">
+        <Flex
+          align="center"
+          justify="end"
+          gap="0.5rem"
+          class="kvass-icon-selector__footer"
+        >
           <Button @click="close" variant="tertiary">Avbryt</Button>
           <Button
             @click="
@@ -252,7 +249,7 @@ function iconIsSelected(icon) {
           >
             Bekreft valg
           </Button>
-        </div>
+        </Flex>
       </template>
     </Dialog>
   </div>
@@ -273,6 +270,8 @@ function iconIsSelected(icon) {
   --__kvass-icon-selector-max-width: 500px;
   --__kvass-icon-selector-label-color: currentColor;
   --__kvass-icon-selector-label-weight: 400;
+  --__kvass-icon-selector-transition-easing: ease-out;
+  --__kvass-icon-selector-transition-duration: 100ms;
 
   border-radius: var(
     --kvass-icon-selector-border-radius,
@@ -344,10 +343,6 @@ function iconIsSelected(icon) {
 
   &__footer {
     width: 100%;
-    display: flex;
-    justify-content: end;
-    gap: 0.5rem;
-    align-items: center;
   }
 
   &__dialog {
@@ -358,9 +353,27 @@ function iconIsSelected(icon) {
     }
   }
 
+  &__header {
+    position: sticky;
+    top: 0;
+    background: var(
+      --kvass-icon-selector-background-color,
+      var(--__kvass-icon-selector-background-color)
+    );
+    grid-column: 1/-1;
+  }
+
   .fade-enter-active,
   .fade-leave-active {
-    transition: all 100ms ease-out;
+    transition: all
+      var(
+        --kvass-icon-selector-transition-duration,
+        var(--__kvass-icon-selector-transition-duration)
+      )
+      var(
+        --kvass-icon-selector-transition-easing,
+        var(--__kvass-icon-selector-transition-easing)
+      );
   }
 
   .fade-enter-from,
