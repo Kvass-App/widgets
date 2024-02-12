@@ -86,7 +86,7 @@ watch(
 
     collection.value = await getIcons({
       collection: selectedCollection.value,
-      collections: props.collections,
+      collections: selectedCollection.value || props.collections,
       search: s,
     })
 
