@@ -47,7 +47,7 @@ const slicedIcons = computed(() =>
   loadAllIcons.value ? icons.value : icons.value?.slice(0, 400),
 )
 
-const selectedIcon = ref(props.value || props.default || '')
+const selectedIcon = ref((props.value || props.default).replace('"', '') || '')
 const selectedIconUnsaved = ref('')
 const selectedCollection = ref('')
 
