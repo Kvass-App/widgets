@@ -69,7 +69,7 @@ watch(selectedIcon, async (icon) => {
   // emit custom event
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
-      detail: { icon },
+      detail: icon,
       bubbles: true,
       composed: true,
     }),
