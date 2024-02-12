@@ -42,6 +42,9 @@ export default defineConfig({
         'font-selector': fileURLToPath(
           new URL('./src/font-selector/main.js', import.meta.url),
         ),
+        'icon-selector': fileURLToPath(
+          new URL('./src/icon-selector/main.js', import.meta.url),
+        ),
       },
     },
   },
