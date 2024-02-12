@@ -4,11 +4,13 @@ export function useIconApi(url) {
 	const apiUrl = unref(url)
 
 	async function getCollections(options) {
-		const { collections = '' } = options
+		const { collections } = options
 
-		const params = new URLSearchParams({
-			prefixes: collections,
-		})
+		const params = new URLSearchParams()
+
+		if (collections) {
+			params.set('prefixes', collections)
+		}
 
 		const res = await fetch(`${apiUrl}/collections?${params.toString()}`)
 		if (!res.ok) throw new Error('Failed to fetch collections')
@@ -18,11 +20,17 @@ export function useIconApi(url) {
 	}
 
 	async function getIcons(options) {
-		const { collection, limit, search } = options
+		const { collection, collections, limit, search } = options
 
-		const params = new URLSearchParams({
-			prefix: collection,
-		})
+		const params = new URLSearchParams()
+
+		if (collection) {
+			params.set('prefix', collection)
+		}
+
+		if (collections) {
+			params.set('prefixes', collections)
+		}
 
 		if (limit) {
 			params.set('limit', limit)

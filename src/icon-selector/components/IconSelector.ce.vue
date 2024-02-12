@@ -86,6 +86,7 @@ watch(
 
     collection.value = await getIcons({
       collection: selectedCollection.value,
+      collections: props.collections,
       search: s,
     })
 
@@ -93,6 +94,12 @@ watch(
   },
   { immediate: true },
 )
+
+function iconIsSelected(icon) {
+  if (selectedIconUnsaved.value === icon) return true
+  if (selectedIcon.value === icon && !selectedIconUnsaved.value) return true
+  return false
+}
 </script>
 
 <template>
@@ -145,7 +152,7 @@ watch(
                 v-for="icon in slicedIcons"
                 :key="icon"
                 :icon="icon"
-                :selected="selectedIconUnsaved === icon"
+                :selected="iconIsSelected(icon)"
                 @click="selectedIconUnsaved = icon"
               />
             </template>
@@ -210,9 +217,7 @@ watch(
               v-for="icon in slicedIcons"
               :key="icon"
               :icon="`${selectedCollection}:${icon}`"
-              :selected="
-                selectedIconUnsaved === `${selectedCollection}:${icon}`
-              "
+              :selected="iconIsSelected(`${selectedCollection}:${icon}`)"
               @click="selectedIconUnsaved = `${selectedCollection}:${icon}`"
             />
             <div
