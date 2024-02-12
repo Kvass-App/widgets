@@ -3,8 +3,14 @@ import { unref } from "vue";
 export function useIconApi(url) {
 	const apiUrl = unref(url)
 
-	async function getCollections() {
-		const res = await fetch(`${apiUrl}/collections`)
+	async function getCollections(options) {
+		const { collections = '' } = options
+
+		const params = new URLSearchParams({
+			prefixes: collections,
+		})
+
+		const res = await fetch(`${apiUrl}/collections?${params.toString()}`)
 		if (!res.ok) throw new Error('Failed to fetch collections')
 
 		const data = await res.json()
