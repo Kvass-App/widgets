@@ -14,7 +14,10 @@ const props = defineProps({
     default: 'https://icons.ui.kvass.no',
   },
   value: String,
+  default: String,
+  defaultSearch: String,
   label: String,
+  collections: String,
 })
 
 const { getCollections, getIcons } = useIconApi(props.apiUrl)
@@ -33,7 +36,7 @@ const slicedIcons = computed(() =>
   loadAllIcons.value ? icons.value : icons.value?.slice(0, 400),
 )
 
-const selectedIcon = ref(props.value || '')
+const selectedIcon = ref(props.value || props.default || '')
 const selectedIconUnsaved = ref('')
 const selectedCollection = ref('')
 
@@ -69,23 +72,27 @@ watch(selectedCollection, async (c) => {
 })
 
 onBeforeMount(async () => {
-  collections.value = await getCollections()
+  collections.value = await getCollections({ collections: props.collections })
 })
 
 // Search
-const search = ref('')
+const search = ref(props.defaultSearch || '')
 const searchDebounced = refDebounced(search, 500)
 
-watch(searchDebounced, async (s) => {
-  if (!s) return
+watch(
+  searchDebounced,
+  async (s) => {
+    if (!s) return
 
-  collection.value = await getIcons({
-    collection: selectedCollection.value,
-    search: s,
-  })
+    collection.value = await getIcons({
+      collection: selectedCollection.value,
+      search: s,
+    })
 
-  icons.value = collection.value.icons
-})
+    icons.value = collection.value.icons
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
