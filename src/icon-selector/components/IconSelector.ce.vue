@@ -274,6 +274,7 @@ function iconIsSelected(icon) {
   --__kvass-icon-selector-label-weight: 400;
   --__kvass-icon-selector-transition-easing: ease-out;
   --__kvass-icon-selector-transition-duration: 100ms;
+  --__kvass-icon-selector-z-index: 1009;
 
   border-radius: var(
     --kvass-icon-selector-border-radius,
@@ -282,6 +283,10 @@ function iconIsSelected(icon) {
   max-width: var(
     --kvass-icon-selector-max-width,
     var(--__kvass-icon-selector-max-width)
+  );
+  z-index: var(
+    --kvass-icon-selector-z-index,
+    var(--__kvass-icon-selector-z-index)
   );
 
   &__trigger {
@@ -352,7 +357,6 @@ function iconIsSelected(icon) {
       --k-dialog-max-width: 1000px;
       --k-dialog-min-width: 100px;
       width: 100%;
-      z-index: 1009;
     }
   }
 
