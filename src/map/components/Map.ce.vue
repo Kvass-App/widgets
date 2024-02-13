@@ -78,12 +78,5 @@ const mapOptions = reactive({
   @media screen and (max-width: 680px) {
     aspect-ratio: 1/1.4;
   }
-
-  &__address {
-    right: 0;
-    left: 0;
-    text-align: center;
-    padding-inline: var(--kvass-map-address-padding-x, 0.5rem);
-  }
 }
 </style>
