@@ -352,6 +352,7 @@ function iconIsSelected(icon) {
       --k-dialog-max-width: 1000px;
       --k-dialog-min-width: 100px;
       width: 100%;
+      z-index: 1009;
     }
   }
 
