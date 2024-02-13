@@ -284,10 +284,6 @@ function iconIsSelected(icon) {
     --kvass-icon-selector-max-width,
     var(--__kvass-icon-selector-max-width)
   );
-  z-index: var(
-    --kvass-icon-selector-z-index,
-    var(--__kvass-icon-selector-z-index)
-  );
 
   &__trigger {
     cursor: pointer;
@@ -353,10 +349,21 @@ function iconIsSelected(icon) {
   }
 
   &__dialog {
-    .k-dialog__card {
+    .k-dialog {
       --k-dialog-max-width: 1000px;
       --k-dialog-min-width: 100px;
-      width: 100%;
+
+      &__card {
+        width: 100%;
+      }
+
+      &__backdrop,
+      &__container {
+        z-index: var(
+          --kvass-icon-selector-z-index,
+          var(--__kvass-icon-selector-z-index)
+        );
+      }
     }
   }
 
