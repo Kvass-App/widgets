@@ -263,23 +263,19 @@ function iconIsSelected(icon) {
 .kvass-icon-selector {
   // Default variables
   --__kvass-icon-selector-background-color: white;
-  --__kvass-icon-selector-padding-y: 1rem;
-  --__kvass-icon-selector-padding-x: 1rem;
+  --__kvass-icon-selector-trigger-padding-y: 1rem;
+  --__kvass-icon-selector-trigger-padding-x: 1rem;
   --__kvass-icon-selector-border-width: 1px;
   --__kvass-icon-selector-border-style: solid;
   --__kvass-icon-selector-border-color: #eaeaea;
   --__kvass-icon-selector-border-radius: 6px;
-  --__kvass-icon-selector-max-width: 500px;
+  --__kvass-icon-selector-max-width: 100%;
   --__kvass-icon-selector-label-color: currentColor;
   --__kvass-icon-selector-label-weight: 400;
   --__kvass-icon-selector-transition-easing: ease-out;
   --__kvass-icon-selector-transition-duration: 100ms;
   --__kvass-icon-selector-z-index: 1009;
 
-  border-radius: var(
-    --kvass-icon-selector-border-radius,
-    var(--__kvass-icon-selector-border-radius)
-  );
   max-width: var(
     --kvass-icon-selector-max-width,
     var(--__kvass-icon-selector-max-width)
@@ -302,12 +298,12 @@ function iconIsSelected(icon) {
       var(--__kvass-icon-selector-background-color)
     );
     padding: var(
-        --kvass-icon-selector-padding-y,
-        var(--__kvass-icon-selector-padding-y)
+        --kvass-icon-selector-trigger-padding-y,
+        var(--__kvass-icon-selector-trigger-padding-y)
       )
       var(
-        --kvass-icon-selector-padding-x,
-        var(--__kvass-icon-selector-padding-x)
+        --kvass-icon-selector-trigger-padding-x,
+        var(--__kvass-icon-selector-trigger-padding-x)
       );
     border: var(
         --kvass-icon-selector-border-width,
@@ -331,7 +327,7 @@ function iconIsSelected(icon) {
     }
   }
 
-  &__label {
+  .k-formcontrol__label {
     color: var(
       --kvass-icon-selector-label-color,
       var(--__kvass-icon-selector-label-color)
@@ -340,8 +336,6 @@ function iconIsSelected(icon) {
       --kvass-icon-selector-label-weight,
       var(--__kvass-icon-selector-label-weight)
     );
-    display: block;
-    margin-bottom: 0.5rem;
   }
 
   &__footer {

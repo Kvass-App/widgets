@@ -56,8 +56,8 @@ These are the available CSS variables.
 | :---------------------------------------- | :------------------------------------------------ | :------------- |
 | --kvass-icon-selector-border-radius       | The border radius of the input field              | `6px`          |
 | --kvass-icon-selector-background-color    | The background color of the component             | `white`        |
-| --kvass-icon-selector-padding-y           | The inline padding                                | `1rem`         |
-| --kvass-icon-selector-padding-x           | The block padding                                 | `1rem`         |
+| --kvass-icon-selector-trigger-padding-y   | The inline padding of the trigger button          | `1rem`         |
+| --kvass-icon-selector-trigger-padding-x   | The block padding of the trigger button           | `1rem`         |
 | --kvass-icon-selector-border-width        | The width of the borders                          | `1px`          |
 | --kvass-icon-selector-border-style        | The style of the borders                          | `solid`        |
 | --kvass-icon-selector-border-color        | The color of the borders                          | `#eaeaea`      |
