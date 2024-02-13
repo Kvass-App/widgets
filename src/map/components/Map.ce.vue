@@ -42,6 +42,8 @@ const props = defineProps({
    * The formatted address. Will be visible in the bottom of the map
    */
   address: String,
+
+  aspectRatio: String,
 })
 
 const coordinatesComp = computed(() => props.coordinates.split(','))
@@ -64,10 +66,24 @@ const mapOptions = reactive({
       :map-options="mapOptions"
       :address="address"
       :show-address="Boolean(address)"
+      :aspect-ratio="aspectRatio"
     />
   </LazyLoad>
 </template>
 
-<style>
+<style lang="scss">
 @import url('@kvass/map/style.css');
+
+.kvass-map {
+  @media screen and (max-width: 680px) {
+    aspect-ratio: 1/1.4;
+  }
+
+  &__address {
+    right: 0;
+    left: 0;
+    text-align: center;
+    padding-inline: var(--kvass-map-address-padding-x, 0.5rem);
+  }
+}
 </style>
