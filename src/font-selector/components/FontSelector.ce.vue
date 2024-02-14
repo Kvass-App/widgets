@@ -16,14 +16,25 @@ const props = defineProps({
   },
   value: String,
   label: String,
+  fonts: String,
 })
 
-const selectedProvider = computed(() =>
-  providers.find((p) => p.value === props.provider),
-)
+const selectedProvider = computed(() => {
+  const provider = providers.find((p) => p.value === props.provider)
+  if (!provider) return
+
+  // If custom fonts are specified for the current provider,
+  // replace the default fonts with the custom fonts.
+  if (props.fonts) {
+    const fonts = props.fonts.split(',').map((f) => f.trim())
+    provider.fonts = fonts
+  }
+
+  return provider
+})
 
 const selectedFont = ref(
-  selectedProvider.value?.fonts.find((f) => f.value === props.value) ||
+  selectedProvider.value?.fonts.find((f) => f === props.value) ||
     selectedProvider.value?.fonts[0],
 )
 
@@ -36,7 +47,7 @@ watch(selectedFont, (newFont) => {
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
-        font: newFont.value,
+        font: newFont,
         provider: selectedProvider.value.value,
       },
       bubbles: true,
@@ -48,17 +59,17 @@ watch(selectedFont, (newFont) => {
 const styles = computed(
   () =>
     selectedFont.value &&
-    `--kvass-font-selector-font-family: '${selectedFont.value.value}'`,
+    `--kvass-font-selector-font-family: '${selectedFont.value}'`,
 )
 
 onMounted(() => {
-  if (!selectedProvider.value) throw new Error('Invalid provider')
+  if (!selectedProvider.value) throw new Error('Invalid font provider')
 
   // Initialize WebFontLoader
   const config = Object.fromEntries(
     Object.entries(providers).map(([_, provider]) => [
       provider.value,
-      { families: provider.fonts.map((font) => `${font.value}:400,700`) },
+      { families: provider.fonts.map((font) => `${font}:400,700`) },
     ]),
   )
 
@@ -77,12 +88,8 @@ onMounted(() => {
             :key="provider.value"
             :label="provider.label"
           >
-            <option
-              v-for="font in provider.fonts"
-              :key="font.value"
-              :value="font"
-            >
-              {{ font.label }}
+            <option v-for="font in provider.fonts" :key="font" :value="font">
+              {{ font }}
             </option>
           </optgroup>
         </select>
