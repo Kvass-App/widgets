@@ -1,3 +1,5 @@
+import { translateCollectionName } from './i18n.js'
+
 export function getCategorizedIcons(collection) {
 	const { uncategorized = [], categories = {}, icons = [] } = collection
 
@@ -27,8 +29,6 @@ export function normalizeCollection(collection) {
 	if (isSearch) {
 		const currentCollection = Object.entries(collection.collections).map(([key, value]) => ({ key, value }))[0]
 
-		console.log(collection)
-
 		/**
 		 * {
 		 * 	limit: number
@@ -52,7 +52,7 @@ export function normalizeCollection(collection) {
 		 * }
 		 */
 		return {
-			title: currentCollection.value.name,
+			title: translateCollectionName(currentCollection.key) || currentCollection.value.name,
 			prefix: currentCollection.key,
 			total: collection.total,
 			icons: collection.icons,
@@ -71,7 +71,7 @@ export function normalizeCollection(collection) {
 	 * }
 	 */
 	return {
-		title: collection.title,
+		title: translateCollectionName(collection.prefix) || collection.title,
 		prefix: collection.prefix,
 		total: collection.total,
 		icons: getCategorizedIcons(collection)
