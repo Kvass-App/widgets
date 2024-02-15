@@ -1,5 +1,6 @@
 <script setup>
 import { Icon } from '@kvass/ui'
+import { computed } from 'vue'
 
 const props = defineProps({
   collection: {
@@ -11,11 +12,15 @@ const props = defineProps({
     required: true,
   },
 })
+
+const collectionName = computed(
+  () => props.collection.i18n?.nb || props.collection.name,
+)
 </script>
 
 <template>
   <button class="kvass-icon-selector-collection">
-    <span>{{ collection.name }}</span>
+    <span>{{ collectionName }}</span>
     <div class="kvass-icon-selector-collection__icons">
       <Icon
         v-for="icon in collection.samples"

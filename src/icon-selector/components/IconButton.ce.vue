@@ -24,7 +24,7 @@ const props = defineProps({
   appearance: none;
   font: inherit;
   font-size: 1.5rem;
-  padding: 0.25rem;
+  padding: 0.5rem;
   border-radius: 6px;
   border: none;
   background: none;

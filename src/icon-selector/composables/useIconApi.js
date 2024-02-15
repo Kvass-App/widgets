@@ -1,4 +1,5 @@
 import { unref } from "vue";
+import { normalizeCollection } from "../utils.js";
 
 export function useIconApi(url) {
 	const apiUrl = unref(url)
@@ -24,33 +25,33 @@ export function useIconApi(url) {
 
 		const params = new URLSearchParams()
 
-		if (collection) {
-			params.set('prefix', collection)
-		}
-
-		if (collections) {
-			params.set('prefixes', collections)
-		}
-
-		if (limit) {
-			params.set('limit', limit)
-		}
-
 		if (search) {
 			params.set('query', search)
+
+			if (collections) {
+				params.set('prefixes', collections)
+			}
+
+			if (limit) {
+				params.set('limit', limit)
+			}
 
 			const res = await fetch(`${apiUrl}/search?${params.toString()}`)
 			if (!res.ok) throw new Error('Failed to fetch icons')
 
 			const data = await res.json()
-			return data
+			return normalizeCollection(data)
+		}
+
+		if (collection) {
+			params.set('prefix', collection)
 		}
 
 		const res = await fetch(`${apiUrl}/collection?${params.toString()}`)
 		if (!res.ok) throw new Error('Failed to fetch icons')
 
 		const data = await res.json()
-		return data
+		return normalizeCollection(data)
 	}
 
 	return {

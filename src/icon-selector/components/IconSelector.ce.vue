@@ -2,19 +2,18 @@
 import {
   Button,
   Dialog,
+  Flex,
   FormControl,
-  Icon,
-  Input,
-  Skeleton,
   Grid,
   GridItem,
+  Icon,
+  Input,
   Scroller,
-  Flex,
+  Skeleton,
 } from '@kvass/ui'
 import { refDebounced, useCurrentElement } from '@vueuse/core'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useIconApi } from '../composables/useIconApi.js'
-import { getCategorizedIcons } from '../utils.js'
 
 import Collection from './Collection.ce.vue'
 import IconButton from './IconButton.ce.vue'
@@ -28,7 +27,16 @@ const props = defineProps({
   default: String,
   defaultSearch: String,
   label: String,
-  collections: String,
+  collections: {
+    type: String,
+    default:
+      'fa-pro-solid,fa-pro-light,fa-pro-regular,fa-pro-brands,fa-pro-duotone',
+  },
+  searchPlaceholder: {
+    type: String,
+    default: 'Søk på engelsk etter ikonet du leter etter. Eks. "Helicopter"',
+  },
+  featuredIcons: String,
 })
 
 const { getCollections, getIcons } = useIconApi(props.apiUrl)
@@ -43,12 +51,15 @@ const collection = ref()
 const icons = ref()
 
 const loadAllIcons = ref(false)
+const allIconsIsLoaded = computed(
+  () => icons.value?.length === slicedIcons.value?.length,
+)
 const slicedIcons = computed(() =>
   loadAllIcons.value ? icons.value : icons.value?.slice(0, 400),
 )
 
 const selectedIcon = ref(
-  (props.value || props.default).replaceAll('"', '') || '',
+  (props.value || props.default || '').replaceAll('"', ''),
 )
 const selectedIconUnsaved = ref('')
 const selectedCollection = ref('')
@@ -56,6 +67,7 @@ const selectedCollection = ref('')
 function reset() {
   selectedCollection.value = ''
   selectedIconUnsaved.value = ''
+  search.value = ''
   loadAllIcons.value = false
 }
 
@@ -81,7 +93,7 @@ watch(selectedIcon, async (icon) => {
 watch(selectedCollection, async (c) => {
   if (!c) return
   collection.value = await getIcons({ collection: c })
-  icons.value = getCategorizedIcons(collection.value)
+  icons.value = collection.value.icons
 })
 
 onBeforeMount(async () => {
@@ -89,13 +101,13 @@ onBeforeMount(async () => {
 })
 
 // Search
-const search = ref(props.defaultSearch || '')
+const search = ref(props.defaultSearch)
 const searchDebounced = refDebounced(search, 500)
 
 watch(
   searchDebounced,
   async (s) => {
-    if (!s) return
+    if (s === undefined || s === null) return
 
     collection.value = await getIcons({
       collection: selectedCollection.value,
@@ -113,6 +125,9 @@ function iconIsSelected(icon) {
   if (selectedIcon.value === icon && !selectedIconUnsaved.value) return true
   return false
 }
+
+// Featured icons
+const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
 </script>
 
 <template>
@@ -145,7 +160,7 @@ function iconIsSelected(icon) {
         <strong v-bind="titleProps" style="margin-bottom: 1rem; display: block">
           Velg ikon
         </strong>
-        <Input placeholder="Søk" v-model="search" />
+        <Input :placeholder="searchPlaceholder" v-model="search" />
       </template>
 
       <template #default>
@@ -156,6 +171,26 @@ function iconIsSelected(icon) {
               gap="0.5rem"
               columns="repeat(auto-fill, minmax(2rem, 1fr))"
             >
+              <GridItem>
+                <div class="kvass-icon-selector__header">
+                  <button
+                    @click="reset"
+                    style="background: none; border: none; font: inherit"
+                  >
+                    <Icon icon="tabler:arrow-left" />
+                    Gå tilbake
+                  </button>
+                  <h3
+                    v-if="selectedCollection && collection.title"
+                    style="margin-bottom: 0"
+                  >
+                    {{ collection.title }}
+                  </h3>
+                  <p v-if="collection.total" style="opacity: 0.5">
+                    {{ collection.total }} treff
+                  </p>
+                </div>
+              </GridItem>
               <template v-if="searchDebounced && slicedIcons?.length">
                 <GridItem v-for="icon in slicedIcons" :key="icon">
                   <IconButton
@@ -163,6 +198,13 @@ function iconIsSelected(icon) {
                     :selected="iconIsSelected(icon)"
                     @click="selectedIconUnsaved = icon"
                   />
+                </GridItem>
+              </template>
+              <template v-else-if="!slicedIcons?.length">
+                <GridItem>
+                  <div style="grid-column: 1 / -1; text-align: center">
+                    Ingen ikoner passer søket ditt.
+                  </div>
                 </GridItem>
               </template>
               <template v-else>
@@ -176,6 +218,30 @@ function iconIsSelected(icon) {
               gap="1rem"
               columns="repeat(auto-fill, minmax(200px, 1fr))"
             >
+              <GridItem v-if="featuredIcons">
+                <Grid
+                  style="grid-column: 1/-1; margin-block-end: 1rem"
+                  gap="0"
+                  columns="repeat(auto-fill, minmax(2.5rem, 1fr))"
+                >
+                  <small
+                    style="
+                      grid-column: 1/-1;
+                      opacity: 0.5;
+                      letter-spacing: 0.5px;
+                      margin-block-end: 0.2rem;
+                    "
+                  >
+                    Fremhevede ikoner
+                  </small>
+                  <IconButton
+                    v-for="icon in featuredIcons"
+                    :icon="icon"
+                    :selected="iconIsSelected(icon)"
+                    @click="selectedIconUnsaved = icon"
+                  />
+                </Grid>
+              </GridItem>
               <GridItem
                 v-for="(collection, prefix) of collections"
                 :key="prefix"
@@ -190,8 +256,8 @@ function iconIsSelected(icon) {
             </Grid>
             <Grid
               v-else-if="collection"
-              gap="0.5rem"
-              columns="repeat(auto-fill, minmax(2rem, 1fr))"
+              gap="0"
+              columns="repeat(auto-fill, minmax(2.5rem, 1fr))"
             >
               <GridItem>
                 <div class="kvass-icon-selector__header">
@@ -202,8 +268,15 @@ function iconIsSelected(icon) {
                     <Icon icon="tabler:arrow-left" />
                     Gå tilbake
                   </button>
-                  <h3 style="margin-bottom: 0">{{ collection.title }}</h3>
-                  <p style="opacity: 0.5">{{ collection.total }} ikoner</p>
+                  <h3 v-if="collection.title" style="margin-bottom: 0">
+                    {{ collection.title }}
+                  </h3>
+                  <p
+                    v-if="collection.total"
+                    style="opacity: 0.5; margin-block: 0.5rem 1.5rem"
+                  >
+                    {{ collection.total }} ikoner
+                  </p>
                 </div>
               </GridItem>
               <GridItem v-for="icon in slicedIcons" :key="icon">
@@ -216,7 +289,7 @@ function iconIsSelected(icon) {
               <GridItem>
                 <Flex justify="center" style="grid-column: 1/-1">
                   <Button
-                    v-if="icons.length !== slicedIcons.length"
+                    v-if="!allIconsIsLoaded"
                     variant="secondary"
                     icon-right="tabler:loader"
                     size="small"

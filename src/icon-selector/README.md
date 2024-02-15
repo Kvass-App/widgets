@@ -38,14 +38,15 @@ To use the widget, use the `<kvass-icon-selector>` element as shown here.
 
 The component has several props for easy configuration.
 
-| Name           | Type   | Description                                                 | Default                     |
-| :------------- | :----- | :---------------------------------------------------------- | :-------------------------- |
-| api-url        | String | The Iconify API endpoint to get icons from.                 | `https://icons.ui.kvass.no` |
-| value          | String | The selected icon.                                          |                             |
-| label          | String | An optional label for the input.                            |                             |
-| default        | String | Fallback icon if value prop is not assigned.                |                             |
-| default-search | String | Use this if you want to have a default search value be set. |                             |
-| collections    | String | Comma-separated list of icon collections to be available.   |                             |
+| Name               | Type   | Description                                                 | Default                                                         |
+| :----------------- | :----- | :---------------------------------------------------------- | :-------------------------------------------------------------- |
+| api-url            | String | The Iconify API endpoint to get icons from.                 | `https://icons.ui.kvass.no`                                     |
+| value              | String | The selected icon.                                          |                                                                 |
+| label              | String | An optional label for the input.                            |                                                                 |
+| default            | String | Fallback icon if value prop is not assigned.                |                                                                 |
+| default-search     | String | Use this if you want to have a default search value be set. |                                                                 |
+| collections        | String | Comma-separated list of icon collections to be available.   |                                                                 |
+| search-placeholder | String | The placeholder of the search input.                        | `Søk på engelsk etter ikonet du leter etter. Eks. "Helicopter"` |
 
 ## Styling
 
