@@ -17,7 +17,6 @@ const props = defineProps({
    */
   coordinates: {
     type: String,
-    required: true,
   },
 
   /**
@@ -30,6 +29,10 @@ const props = defineProps({
   /**
    * The map zoom level. Lower is more zoomed out
    */
+
+  popUpContent: {
+    type: String,
+  },
   zoom: {
     type: String,
     default: '8',
@@ -46,10 +49,30 @@ const props = defineProps({
   aspectRatio: String,
 })
 
-const coordinatesComp = computed(() => props.coordinates.split(','))
-const markersComp = computed(() =>
-  props.markers?.split(';').map((m) => m.split(',')),
+const coordinatesComp = computed(() =>
+  props.coordinates ? props.coordinates.split(',') : null,
 )
+
+const markersComp = computed(() => {
+  const content = props.popUpContent?.split(';').map((m) => m.split(','))
+
+  return props.markers
+    ?.split(';')
+    .map((m) => m.split(','))
+    .map((i, index) => {
+      return {
+        coordinates: i.map((c) => parseFloat(c)),
+        content: content?.length
+          ? {
+              thumbnail: content?.[index]?.[0],
+              description: content?.[index]?.[1],
+              action: content?.[index]?.[2],
+              actionLabel: content?.[index]?.[3],
+            }
+          : null,
+      }
+    })
+})
 
 const mapOptions = reactive({
   style: props.theme,
