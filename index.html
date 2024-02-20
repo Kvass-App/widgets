@@ -1,59 +1,56 @@
 <!DOCTYPE html>
 <html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kvass Web Components</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kvass Web Components</title>
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
+      body,
+      html {
+        height: 100%;
+      }
 
-    body,
-    html {
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+          sans-serif;
+        max-width: 70ch;
+        margin-inline: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        justify-content: center;
+      }
+    </style>
+  </head>
 
-      height: 100%;
-    }
+  <body>
+    <kvass-location-selector
+      label="Posisjon"
+      mapbox-api-token="pk.eyJ1IjoiY3JzdGVuIiwiYSI6ImNrNTZxa3gzMDE3dGszaHBod2RnMXQ0anYifQ.FBWO3jVL_VK4RCznouV-iA"
+      theme="mapbox://styles/crsten/ckbuozmry0ioj1iqwqmkls4o7"
+    ></kvass-location-selector>
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-        Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-        sans-serif;
-      max-width: 70ch;
-      margin-inline: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      justify-content: center;
-    }
-  </style>
-</head>
+    <script type="module" src="/src/location-selector/main.js"></script>
 
-<body>
-  <kvass-icon-selector label="Ikon" id="icon"
-    featured-icons="fa-pro-light:train,fa-pro-regular:car,fa-pro-duotone:building"></kvass-icon-selector>
-  <script type="module" src="/src/icon-selector/main.js"></script>
+    <script>
+      const fontSelector = document.getElementById('font')
+      const iconSelector = document.getElementById('icon')
 
-  <kvass-font-selector label="Velg teksttype" value="Inter" fonts="Inter,Protest Riot,Protest Guerrilla"
-    id="font"></kvass-font-selector>
-  <script type="module" src="/src/font-selector/main.js"></script>
+      fontSelector.addEventListener('webcomponent:update', (event) => {
+        console.log(event.detail)
+      })
 
-  <script>
-    const fontSelector = document.getElementById('font')
-    const iconSelector = document.getElementById('icon')
-
-    fontSelector.addEventListener('webcomponent:update', (event) => {
-      console.log(event.detail)
-    })
-
-    iconSelector.addEventListener('webcomponent:update', (event) => {
-      console.log(event.detail)
-    })
-  </script>
-</body>
-
+      iconSelector.addEventListener('webcomponent:update', (event) => {
+        console.log(event.detail)
+      })
+    </script>
+  </body>
 </html>
