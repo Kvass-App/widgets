@@ -26,13 +26,20 @@ const props = defineProps({
     type: String,
   },
 
-  /**
-   * The map zoom level. Lower is more zoomed out
-   */
+  center: {
+    type: String,
+  },
 
+  /**
+   * Pop up content for additional map markers in the format of 'thumbnail,description,action,actionLabel'
+   */
   popUpContent: {
     type: String,
   },
+
+  /**
+   * The map zoom level. Lower is more zoomed out
+   */
   zoom: {
     type: String,
     default: '8',
@@ -51,6 +58,10 @@ const props = defineProps({
 
 const coordinatesComp = computed(() =>
   props.coordinates ? props.coordinates.split(',') : null,
+)
+
+const centerComp = computed(() =>
+  props.center ? props.center.split(',') : null,
 )
 
 const markersComp = computed(() => {
@@ -90,6 +101,7 @@ const mapOptions = reactive({
       :address="address"
       :show-address="Boolean(address)"
       :aspect-ratio="aspectRatio"
+      :center="centerComp"
     />
   </LazyLoad>
 </template>
