@@ -45,6 +45,9 @@ export default defineConfig({
         'icon-selector': fileURLToPath(
           new URL('./src/icon-selector/main.js', import.meta.url),
         ),
+        'location-selector': fileURLToPath(
+          new URL('./src/location-selector/main.js', import.meta.url),
+        ),
       },
     },
   },
