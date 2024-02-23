@@ -1,6 +1,5 @@
 <script setup>
 import { LocationSelector as Selector } from '@kvass/location-selector'
-import { LazyLoad } from '@kvass/ui'
 import { reactive, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 const value = defineModel('value')
@@ -68,18 +67,16 @@ watch(
 </script>
 
 <template>
-  <LazyLoad>
-    <Selector
-      v-model="value"
-      :zoom="parseInt(props.zoom)"
-      :map-options="mapOptions"
-      :aspect-ratio="aspectRatio"
-      :autocomplete="props.autocomplete"
-      :label="props.label"
-      :show-selected="props.showSelected"
-      :show-warning="props.showWarning"
-    />
-  </LazyLoad>
+  <Selector
+    v-model="value"
+    :zoom="parseInt(props.zoom)"
+    :map-options="mapOptions"
+    :aspect-ratio="aspectRatio"
+    :autocomplete="props.autocomplete"
+    :label="props.label"
+    :show-selected="props.showSelected"
+    :show-warning="props.showWarning"
+  />
 </template>
 
 <style lang="scss">
