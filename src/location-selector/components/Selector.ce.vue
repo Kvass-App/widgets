@@ -68,7 +68,7 @@ watch(
 
 <template>
   <Selector
-    v-model="value"
+    v-model.lazy="value"
     :zoom="parseInt(props.zoom)"
     :map-options="mapOptions"
     :aspect-ratio="aspectRatio"
