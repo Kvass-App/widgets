@@ -1,8 +1,7 @@
 <script setup>
 import { LocationSelector as Selector } from '@kvass/location-selector'
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref, onMounted } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
-const value = defineModel('value')
 
 const props = defineProps({
   theme: {
@@ -28,6 +27,9 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  value: {
+    type: String,
+  },
   /**
    * The map zoom level. Lower is more zoomed out
    */
@@ -47,13 +49,19 @@ const mapOptions = reactive({
   accessToken: props.mapboxApiToken,
 })
 
+const item = ref({})
+if (props.value) {
+  const content = JSON.parse(`${props.value}`)
+  if (content.location) item.value = content
+}
+
 const element = useCurrentElement()
 
 watch(
-  () => value.value,
+  () => item.value,
   (val) => {
-    if (!val) return
-    // emit custom event
+    if (!val || !element.value) return
+
     element.value.dispatchEvent(
       new CustomEvent('webcomponent:update', {
         detail: val,
@@ -62,13 +70,13 @@ watch(
       }),
     )
   },
-  { immediate: true, deep: true },
+  { deep: true },
 )
 </script>
 
 <template>
   <Selector
-    v-model.lazy="value"
+    v-model="item"
     :zoom="parseInt(props.zoom)"
     :map-options="mapOptions"
     :aspect-ratio="aspectRatio"
