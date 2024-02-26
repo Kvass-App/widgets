@@ -57,6 +57,7 @@ const item = ref({
   street: '',
   formatted: '',
 })
+
 if (props.value) {
   const content = JSON.parse(`${props.value}`)
   if (content.location) item.value = content
