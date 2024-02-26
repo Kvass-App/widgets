@@ -49,7 +49,14 @@ const mapOptions = reactive({
   accessToken: props.mapboxApiToken,
 })
 
-const item = ref({})
+const item = ref({
+  location: {},
+  postcode: 0,
+  county: '',
+  city: '',
+  street: '',
+  formatted: '',
+})
 if (props.value) {
   const content = JSON.parse(`${props.value}`)
   if (content.location) item.value = content
