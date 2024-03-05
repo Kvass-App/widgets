@@ -34,8 +34,8 @@ const selectedProvider = computed(() => {
 })
 
 const selectedFont = ref(
-  selectedProvider.value?.fonts.find(
-    (f) => f === (JSON.parse(`${props.value}`) || {}).font,
+  selectedProvider.value?.fonts.find((f) =>
+    f === props.value ? (JSON.parse(`${props.value}`) || {}).font : '',
   ) || selectedProvider.value?.fonts[0],
 )
 
