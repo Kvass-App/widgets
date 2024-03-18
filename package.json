@@ -13,7 +13,7 @@
     "@kvass/location-selector": "^1.0.13",
     "@kvass/map": "^1.0.12",
     "@kvass/ui": "^1.6.1",
-    "@kvass/vue3-flatfinder": "^1.0.19",
+    "@kvass/vue3-flatfinder": "^1.0.20",
     "@vueuse/core": "^10.9.0",
     "vue": "^3.4.21",
     "webfontloader": "^1.6.28"
