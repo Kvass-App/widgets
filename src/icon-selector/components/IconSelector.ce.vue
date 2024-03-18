@@ -75,6 +75,11 @@ function selectCollection(prefix) {
   selectedCollection.value = selectedCollection.value === prefix ? '' : prefix
 }
 
+function update() {
+  if (!selectedIconUnsaved.value) return
+  selectedIcon.value = selectedIconUnsaved.value
+}
+
 const element = useCurrentElement()
 
 watch(selectedIcon, async (icon) => {
@@ -316,7 +321,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
           <Button
             @click="
               () => {
-                selectedIcon = selectedIconUnsaved
+                update()
                 close()
               }
             "
