@@ -32,22 +32,7 @@
   </head>
 
   <body>
-    <kvass-location-selector
-      id="location"
-      label="Posisjon"
-      mapbox-api-token="pk.eyJ1IjoiY3JzdGVuIiwiYSI6ImNrNTZxa3gzMDE3dGszaHBod2RnMXQ0anYifQ.FBWO3jVL_VK4RCznouV-iA"
-      theme="mapbox://styles/crsten/ckbuozmry0ioj1iqwqmkls4o7"
-    ></kvass-location-selector>
-
-    <script type="module" src="/dist/location-selector.js"></script>
-
-    <script>
-      const fontSelector = document.getElementById('location')
-      const iconSelector = document.getElementById('icon')
-
-      fontSelector.addEventListener('webcomponent:update', (event) => {
-        console.log(event.detail)
-      })
-    </script>
+    <kvass-table-selector></kvass-table-selector>
+    <script type="module" src="/src/table-selector/main.js"></script>
   </body>
 </html>

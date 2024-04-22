@@ -48,6 +48,9 @@ export default defineConfig({
         'location-selector': fileURLToPath(
           new URL('./src/location-selector/main.js', import.meta.url),
         ),
+        'table-selector': fileURLToPath(
+          new URL('./src/table-selector/main.js', import.meta.url),
+        ),
       },
     },
   },
