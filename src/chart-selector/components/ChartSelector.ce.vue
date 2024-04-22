@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { set, useCurrentElement } from '@vueuse/core'
+import { useCurrentElement } from '@vueuse/core'
 import Doughnut from './Doughnut.ce.vue'
 import {
   FormControl,
@@ -253,7 +253,7 @@ watch(
     class="kvass-chart-selector"
     columns="1fr min-content"
     areas="chart settings | table table"
-    gap="0rem 2rem"
+    gap="1rem 2rem"
   >
     <Flex
       :direction="getLabelPosition"
