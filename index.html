@@ -32,7 +32,19 @@
   </head>
 
   <body>
-    <kvass-chart-selector></kvass-chart-selector>
-    <script type="module" src="/src/chart-selector/main.js"></script>
+    <kvass-chart-builder id="chart"></kvass-chart-builder>
+
+    <script type="module" src="/src/chart-builder/main.js"></script>
+    <script>
+      const fontSelector = document.getElementById('location')
+      const iconSelector = document.getElementById('icon')
+      const chartSelector = document.getElementById('chart')
+
+      console.log(chartSelector)
+
+      chartSelector.addEventListener('webcomponent:update', (event) => {
+        console.log(event.detail)
+      })
+    </script>
   </body>
 </html>

@@ -48,8 +48,8 @@ export default defineConfig({
         'location-selector': fileURLToPath(
           new URL('./src/location-selector/main.js', import.meta.url),
         ),
-        'chart-selector': fileURLToPath(
-          new URL('./src/chart-selector/main.js', import.meta.url),
+        'chart-builder': fileURLToPath(
+          new URL('./src/chart-builder/main.js', import.meta.url),
         ),
       },
     },
