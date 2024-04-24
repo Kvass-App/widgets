@@ -18,14 +18,6 @@ const emit = defineEmits<{
     <template #default="{ close }">
       <Button
         size="small"
-        label="Slett rad"
-        variant="tertiary"
-        icon="fa-pro-solid:xmark"
-        @click="() => emit('delete-row')"
-        :disabled="deleteDisabled"
-      />
-      <Button
-        size="small"
         label="Legg til rad"
         iconRight="fa-pro-light:arrow-up-to-line"
         variant="tertiary"
@@ -39,6 +31,15 @@ const emit = defineEmits<{
         iconRight="fa-pro-light:arrow-down-to-line"
         @click="() => emit('add-row-down')"
         :disabled="addDisabled"
+      />
+
+      <Button
+        size="small"
+        label="Slett rad"
+        variant="danger"
+        icon="fa-pro-solid:xmark"
+        @click="() => emit('delete-row')"
+        :disabled="deleteDisabled"
       />
     </template>
   </Dropdown>

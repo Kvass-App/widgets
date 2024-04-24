@@ -1,0 +1,271 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useCurrentElement } from '@vueuse/core'
+import { DataTable, Input } from '@kvass/ui'
+
+import RowSettings from './RowSettings.ce.vue'
+import ColumnSettings from './ColumnSettings.ce.vue'
+
+const element = useCurrentElement()
+
+const props = withDefaults(
+  defineProps<{
+    columns: string
+    rows: string
+    maxColumns: number
+    maxRows: number
+    value: string
+  }>(),
+  {
+    value: '',
+    maxRows: Infinity,
+    maxColumns: Infinity,
+  },
+)
+
+type Column = {
+  id: string
+  label: string
+}
+type Row = {
+  [x: string]: {
+    value: string
+  }
+}
+
+const columns = ref<Column[]>([
+  { id: '0', label: 'tittel 1' },
+  { id: '1', label: 'tittel 2' },
+  { id: '2', label: 'tittel 3' },
+])
+
+const rows = ref<Row[]>([
+  {
+    '0': { value: 'item 1' },
+    '1': { value: 'item 2' },
+    '2': { value: 'item 3' },
+  },
+  {
+    '0': { value: 'item 1' },
+    '1': { value: 'item 2' },
+    '2': { value: 'item 3' },
+  },
+])
+
+//set data from prop value
+if (props.value) {
+  let v = JSON.parse(props.value) || []
+
+  Object.entries(v).forEach(([key, value]) => {
+    if (!value) return
+    switch (key) {
+      case 'rows':
+        rows.value = v.rows
+      case 'columns':
+        columns.value = v.columns
+    }
+  })
+}
+
+const addColumn = (index: number) => {
+  const length = columns.value.length
+
+  const newColum = {
+    id: `${length}`,
+    label: `tittel ${length + 1}`,
+    disabled: false,
+    size: '',
+    align: '',
+  }
+
+  //@ts-ignore
+  columns.value.splice(index, 0, newColum)
+
+  rows.value = rows.value.map((i, index) => {
+    return {
+      ...i,
+      [length]: {
+        value: `item ${index + 1}`,
+      },
+    }
+  })
+}
+
+const addRow = (index: number) => {
+  const item = Object.fromEntries(
+    columns.value.map((c, index) => {
+      return [c.id, { value: `item ${index}` }]
+    }),
+  )
+
+  //@ts-ignore
+  rows.value.splice(index, 0, item)
+}
+
+const deleteColumn = (index: number) => {
+  columns.value.splice(index, 1)
+}
+
+const deleteRow = (index: number) => {
+  rows.value.splice(index, 1)
+}
+
+const rowWrapper = (item) => {
+  return {
+    component: 'div',
+    bind: {
+      class: 'table-builder-row',
+    },
+  }
+}
+
+const cellWrapper = (item) => {
+  return {
+    component: 'div',
+    bind: {
+      class: 'table-builder-cell',
+    },
+  }
+}
+
+watch(
+  [rows, columns],
+  ([rows, columns]) => {
+    // emit custom event
+    //@ts-ignore
+    element.value.dispatchEvent(
+      new CustomEvent('webcomponent:update', {
+        detail: {
+          rows,
+          columns,
+        },
+        bubbles: true,
+        composed: true,
+      }),
+    )
+  },
+  {
+    deep: true,
+  },
+)
+</script>
+
+<template>
+  <div
+    class="table-builder"
+    :style="`--table-builder--columns-count: ${columns?.length - 1}`"
+  >
+    <DataTable
+      :columns="columns"
+      :items="rows"
+      theme="default"
+      :rowWrapper="rowWrapper"
+      :cellWrapper="cellWrapper"
+    >
+      <!-- Columns -->
+      <template
+        v-for="(column, index) in columns"
+        v-slot:[`${column.id}-label`]="{ item }"
+      >
+        <ColumnSettings
+          class="table-builder__column-settings"
+          @delete-column="deleteColumn(index)"
+          @add-column-right="addColumn(index + 1)"
+          @add-column-left="addColumn(index)"
+          :deleteDisabled="columns.length <= 1"
+          :addDisabled="columns.length >= maxColumns"
+        ></ColumnSettings>
+
+        <Input v-model="item.label" :class="`cell-${column.id}`" />
+      </template>
+      <!-- Rows -->
+      <template
+        v-for="(column, idx) in columns"
+        v-slot:[column.id]="{ item, rowIndex }"
+      >
+        <RowSettings
+          v-if="idx === 0"
+          class="table-builder__row-settings"
+          @delete-row="deleteRow(rowIndex)"
+          @add-row-up="addRow(rowIndex)"
+          @add-row-down="addRow(rowIndex + 1)"
+          :deleteDisabled="rows.length <= 1"
+          :addDisabled="rows.length >= maxRows"
+        ></RowSettings>
+
+        <Input v-model="item[column.id].value" :class="`cell-${column.id}`" />
+      </template>
+    </DataTable>
+  </div>
+</template>
+
+<style lang="scss">
+@import url('@kvass/ui/style.css');
+
+.table-builder {
+  --__kvass-table-builder-border: 1px solid #eaeaea;
+  --__kvass-table-builder-wrapper-width: 900px;
+
+  padding: 2rem;
+  width: auto;
+
+  .k-datatable:not(.k-datatable--no-header) .k-datatable__row:first-child {
+    font-size: 1rem;
+
+    .k-input {
+      font-weight: bold;
+    }
+  }
+
+  &__row-settings {
+    top: 50%;
+    transform: translate(-80%, -50%);
+    position: absolute;
+    left: 0;
+    opacity: 0;
+  }
+
+  &__column-settings {
+    top: 0;
+    transform: translate(-50%, -80%);
+    position: absolute;
+    left: 50%;
+    opacity: 0;
+  }
+
+  .k-datatable {
+    border: var(
+      --kvass-table-builder-border,
+      var(--__kvass-table-builder-border)
+    );
+
+    &__cell-sort-icon {
+      display: none;
+    }
+    &__cell {
+      padding: 0.5rem;
+
+      position: relative;
+      &:hover {
+        .table-builder__row-settings,
+        .table-builder__column-settings {
+          background-color: hsl(var(--secondary-h), var(--secondary-s), 92%);
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .k-input {
+    width: 100%;
+    max-width: calc(
+      var(--table-builder-max-width, var(--__kvass-table-builder-wrapper-width)) /
+        var(--table-builder--columns-count)
+    );
+  }
+
+  .k-dropdown {
+    min-width: unset;
+  }
+}
+</style>

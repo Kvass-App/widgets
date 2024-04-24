@@ -32,7 +32,17 @@
   </head>
 
   <body>
-    <kvass-table-selector></kvass-table-selector>
-    <script type="module" src="/src/table-selector/main.js"></script>
+    <kvass-table-builder id="table"></kvass-table-builder>
+    <script type="module" src="/src/table-builder/main.js"></script>
+
+    <script>
+      const fontSelector = document.getElementById('location')
+      const iconSelector = document.getElementById('icon')
+      const tableBuilder = document.getElementById('table')
+
+      tableBuilder.addEventListener('webcomponent:update', (event) => {
+        console.log(event.detail)
+      })
+    </script>
   </body>
 </html>
