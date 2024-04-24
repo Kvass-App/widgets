@@ -14,29 +14,34 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Dropdown label="" placement="bottom" size="small">
+  <Dropdown
+    class="table-builder__column-settings"
+    label=""
+    placement="top-center"
+    size="small"
+    iconRight="fa-pro-light:grip-dots"
+    :offset="2"
+  >
     <template #default="{ close }">
       <Button
         size="small"
-        label="Legg til kolonne"
-        icon="fa-pro-light:arrow-right-to-line"
-        variant="tertiary"
-        @click="() => emit('add-column-right')"
-        :disabled="addDisabled"
-      />
-      <Button
-        size="small"
-        label="Legg til kolonne"
-        variant="tertiary"
+        variant="secondary"
         iconRight="fa-pro-light:arrow-left-to-line"
         @click="() => emit('add-column-left')"
         :disabled="addDisabled"
       />
       <Button
         size="small"
-        label="Slett kolonne"
-        variant="danger"
-        icon="fa-pro-solid:xmark"
+        icon="fa-pro-light:arrow-right-to-line"
+        variant="secondary"
+        @click="() => emit('add-column-right')"
+        :disabled="addDisabled"
+      />
+
+      <Button
+        size="small"
+        variant="secondary"
+        icon="fa-pro-light:xmark"
         @click="() => emit('delete-column')"
         :disabled="deleteDisabled"
       />

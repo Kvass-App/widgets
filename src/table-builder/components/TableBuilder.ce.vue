@@ -34,21 +34,21 @@ type Row = {
 }
 
 const columns = ref<Column[]>([
-  { id: '0', label: 'tittel 1' },
-  { id: '1', label: 'tittel 2' },
-  { id: '2', label: 'tittel 3' },
+  { id: '0', label: 'Kolonne 1' },
+  { id: '1', label: 'Kolonne 2' },
+  { id: '2', label: 'Kolonne 3' },
 ])
 
 const rows = ref<Row[]>([
   {
-    '0': { value: 'item 1' },
-    '1': { value: 'item 2' },
-    '2': { value: 'item 3' },
+    '0': { value: '' },
+    '1': { value: '' },
+    '2': { value: '' },
   },
   {
-    '0': { value: 'item 1' },
-    '1': { value: 'item 2' },
-    '2': { value: 'item 3' },
+    '0': { value: '' },
+    '1': { value: '' },
+    '2': { value: '' },
   },
 ])
 
@@ -72,7 +72,7 @@ const addColumn = (index: number) => {
 
   const newColum = {
     id: `${length}`,
-    label: `tittel ${length + 1}`,
+    label: `Kolonne ${length + 1}`,
     disabled: false,
     size: '',
     align: '',
@@ -85,7 +85,7 @@ const addColumn = (index: number) => {
     return {
       ...i,
       [length]: {
-        value: `item ${index + 1}`,
+        value: ``,
       },
     }
   })
@@ -94,7 +94,7 @@ const addColumn = (index: number) => {
 const addRow = (index: number) => {
   const item = Object.fromEntries(
     columns.value.map((c, index) => {
-      return [c.id, { value: `item ${index}` }]
+      return [c.id, { value: `` }]
     }),
   )
 
@@ -176,7 +176,11 @@ watch(
           :addDisabled="columns.length >= maxColumns"
         ></ColumnSettings>
 
-        <Input v-model="item.label" :class="`cell-${column.id}`" />
+        <Input
+          v-model="item.label"
+          placeholder="..."
+          :class="`cell-${column.id}`"
+        />
       </template>
       <!-- Rows -->
       <template
@@ -193,7 +197,11 @@ watch(
           :addDisabled="rows.length >= maxRows"
         ></RowSettings>
 
-        <Input v-model="item[column.id].value" :class="`cell-${column.id}`" />
+        <Input
+          v-model="item[column.id].value"
+          placeholder="..."
+          :class="`cell-${column.id}`"
+        />
       </template>
     </DataTable>
   </div>
@@ -206,7 +214,14 @@ watch(
   --__kvass-table-builder-border: 1px solid #eaeaea;
   --__kvass-table-builder-wrapper-width: 900px;
 
-  padding: 2rem;
+  --k-button-secondary-background-hover: hsl(
+    var(--secondary-h),
+    var(--secondary-s),
+    90%
+  );
+  --k-button-secondary-border: transparent;
+
+  padding: 1rem;
   width: auto;
 
   .k-datatable:not(.k-datatable--no-header) .k-datatable__row:first-child {
@@ -216,21 +231,41 @@ watch(
       font-weight: bold;
     }
   }
+  &__row-settings,
+  &__column-settings {
+    background-color: hsl(var(--secondary-h), var(--secondary-s), 92%);
+  }
 
   &__row-settings {
     top: 50%;
-    transform: translate(-80%, -50%);
+    transform: translate(-50%, -50%) rotate(90deg);
     position: absolute;
     left: 0;
     opacity: 0;
+
+    & + .k-dropdown {
+      flex-direction: row !important;
+    }
+
+    &:focus {
+      opacity: 1;
+    }
   }
 
   &__column-settings {
     top: 0;
-    transform: translate(-50%, -80%);
+    transform: translate(-50%, -50%);
     position: absolute;
     left: 50%;
     opacity: 0;
+
+    & + .k-dropdown {
+      flex-direction: row !important;
+    }
+
+    &:focus {
+      opacity: 1;
+    }
   }
 
   .k-datatable {
@@ -246,10 +281,10 @@ watch(
       padding: 0.5rem;
 
       position: relative;
+
       &:hover {
         .table-builder__row-settings,
         .table-builder__column-settings {
-          background-color: hsl(var(--secondary-h), var(--secondary-s), 92%);
           opacity: 1;
         }
       }
@@ -265,7 +300,13 @@ watch(
   }
 
   .k-dropdown {
+    padding: 0;
+    background-color: hsl(var(--secondary-h), var(--secondary-s), 92%);
     min-width: unset;
+    &__trigger {
+      :hover: {
+      }
+    }
   }
 }
 </style>
