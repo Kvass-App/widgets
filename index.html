@@ -32,17 +32,13 @@
   </head>
 
   <body>
-    <kvass-chart-builder id="chart"></kvass-chart-builder>
+    <kvass-table-builder id="table"></kvass-table-builder>
+    <script type="module" src="/src/table-builder/main.js"></script>
 
-    <script type="module" src="/src/chart-builder/main.js"></script>
     <script>
-      const fontSelector = document.getElementById('location')
-      const iconSelector = document.getElementById('icon')
-      const chartSelector = document.getElementById('chart')
+      const tableBuilder = document.getElementById('table')
 
-      console.log(chartSelector)
-
-      chartSelector.addEventListener('webcomponent:update', (event) => {
+      tableBuilder.addEventListener('webcomponent:update', (event) => {
         console.log(event.detail)
       })
     </script>
