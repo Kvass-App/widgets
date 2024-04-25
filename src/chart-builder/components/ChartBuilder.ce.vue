@@ -123,6 +123,17 @@ const family = computed(() => {
   return getProperty('font-family', chart.value)
 })
 
+const inlinePadding = computed(() => {
+  if (!chart.value) return 60
+
+  return (
+    getProperty('--kvass-chart-builder-inline-padding', chart.value).replace(
+      /\D/g,
+      '',
+    ) || 60
+  )
+})
+
 const addItem = () => {
   const length = items.value.length
 
@@ -169,7 +180,7 @@ const chartOptions = computed(() => {
     radius: '100%',
     cutout: cutout.value,
     layout: {
-      padding: 60,
+      padding: inlinePadding.value,
     },
     events: [],
     elements: {
@@ -484,6 +495,7 @@ if (props.value) {
   --__kvass-chart-builder-size-min: 400px;
   --__kvass-chart-builder-size-max: 800px;
   --__kvass-chart-builder-border: 1px solid #eaeaea;
+  --__kvass-chart-builder-height: 100%;
 
   background-color: var(
     --kvass-chart-builder-background-color,
@@ -494,6 +506,11 @@ if (props.value) {
     var(--__kvass-chart-builder-max-width)
   );
   margin-top: 0.5rem;
+
+  height: var(
+    --kvass-chart-builder-height,
+    var(--__kvass-chart-builder-height)
+  );
 
   border: var(
     --kvass-chart-builder-border,
