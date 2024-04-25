@@ -14,30 +14,33 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Dropdown label="" placement="bottom" size="small">
+  <Dropdown
+    label=""
+    iconRight="fa-pro-light:grip-dots"
+    placement="top-end"
+    size="small"
+    :offset="2"
+  >
     <template #default="{ close }">
       <Button
         size="small"
-        label="Legg til rad"
         iconRight="fa-pro-light:arrow-up-to-line"
-        variant="tertiary"
+        variant="secondary"
         @click="() => emit('add-row-up')"
         :disabled="addDisabled"
       />
       <Button
         size="small"
-        label="Legg til rad"
-        variant="tertiary"
+        variant="secondary"
         iconRight="fa-pro-light:arrow-down-to-line"
         @click="() => emit('add-row-down')"
         :disabled="addDisabled"
       />
 
       <Button
+        variant="secondary"
         size="small"
-        label="Slett rad"
-        variant="danger"
-        icon="fa-pro-solid:xmark"
+        icon="fa-pro-light:xmark"
         @click="() => emit('delete-row')"
         :disabled="deleteDisabled"
       />
