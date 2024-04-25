@@ -81,7 +81,7 @@ const heading = ref('Overskrift')
 const footerTitle = ref('')
 const itemTitle = ref('Diagram')
 
-const formatInput = (input: string) => {
+const formatInput = (input: any) => {
   switch (format.value) {
     case 'percentage':
       return `${input} %`
@@ -100,16 +100,27 @@ const cutout = computed(() => {
   }
 })
 
-const main = ref<HTMLDivElement>()
+const chart = ref<HTMLDivElement>()
+
+const getProperty = (property: string, el: any): any =>
+  getComputedStyle(el).getPropertyValue(property)
 
 const color = computed(() => {
-  if (!main.value) return 'black'
+  if (!chart.value) return 'black'
 
-  const getProperty = (property: string): any =>
-    getComputedStyle(main.value).getPropertyValue(property)
+  return getProperty('color', chart.value)
+})
 
-  console.log(getProperty('color'))
-  return getProperty('color')
+const fontSize = computed(() => {
+  if (!chart.value) return '16'
+
+  return getProperty('font-size', chart.value).replace(/\D/g, '')
+})
+
+const family = computed(() => {
+  if (!chart.value) return 'Arial'
+
+  return getProperty('font-family', chart.value)
 })
 
 const addItem = () => {
@@ -158,7 +169,7 @@ const chartOptions = computed(() => {
     radius: '100%',
     cutout: cutout.value,
     layout: {
-      padding: showDataLabels.value ? 60 : 60,
+      padding: 60,
     },
     events: [],
     elements: {
@@ -172,6 +183,10 @@ const chartOptions = computed(() => {
       },
       datalabels: {
         color: color.value,
+        font: {
+          family: family.value,
+          size: fontSize.value,
+        },
         display: Boolean(showDataLabels.value),
         clamp: false,
         clip: false,
@@ -289,7 +304,7 @@ if (props.value) {
   <div
     class="kvass-chart-builder__wrapper"
     :class="`kvass-chart-builder__wrapper-mode--${props.mode}`"
-    ref="main"
+    ref="chart"
   >
     <b>{{ props.label }}</b>
     <Grid
@@ -450,6 +465,8 @@ if (props.value) {
 .kvass-chart-builder {
   &__wrapper {
     color: var(--kvass-chart-builder-color, inherit);
+    font-size: var(--kvass-chart-builder-font-size, inherit);
+    font-family: var(--kvass-chart-builder-font-family, inherit);
     &-mode--build {
       padding: 1rem;
       background-color: white;
