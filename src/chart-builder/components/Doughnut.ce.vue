@@ -10,12 +10,6 @@ import {
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 
-const getProperty = (property: string): any =>
-  window.getComputedStyle(document.body).getPropertyValue(property)
-
-ChartJS.defaults.font.size = getProperty('font-size').replace(/\D/g, '') as any
-ChartJS.defaults.font.family = getProperty('font-family')
-
 ChartJS.register(
   Title,
   Tooltip,
