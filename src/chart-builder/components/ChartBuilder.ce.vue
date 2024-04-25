@@ -311,7 +311,7 @@ if (props.value) {
       class="kvass-chart-builder"
       columns="1fr min-content"
       areas="chart settings | table table"
-      gap="1rem 2rem"
+      :gap="props.mode === 'build' ? '1rem 2rem' : 0"
     >
       <Flex
         :direction="getLabelPosition"
