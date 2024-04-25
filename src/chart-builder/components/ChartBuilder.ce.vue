@@ -40,7 +40,7 @@ const props = withDefaults(
     colors:
       '#00075A,#B5DCFF,#81A0EE,#2A3793,#FCFAF6,#D4D5E9,#D37468,#DE7549,#4A1A29,#7C2A26',
     value: '',
-    mode: 'build',
+    mode: 'view',
   },
 )
 
@@ -322,7 +322,7 @@ if (props.value) {
       class="kvass-chart-builder"
       columns="1fr min-content"
       areas="chart settings | table table"
-      :gap="props.mode === 'build' ? '1rem 2rem' : 0"
+      :gap="props.mode === 'build' ? '1rem 2rem' : '0rem'"
     >
       <Flex
         :direction="getLabelPosition"
