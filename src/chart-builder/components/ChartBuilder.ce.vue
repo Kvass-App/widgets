@@ -32,13 +32,15 @@ const props = withDefaults(
     colors: string
     value: string
     label: string
+    mode: 'view' | 'build'
   }>(),
   {
     labelPosition: 'right',
     type: 'doughnut',
     colors:
-      '#102B37,#27525D,#D6E4EB,#FBECD9,#FCFAF6,#8E789D,#D37468,#DE7549,#4A1A29,#7C2A26',
+      '#00075A,#B5DCFF,#81A0EE,#2A3793,#FCFAF6,#D4D5E9,#D37468,#DE7549,#4A1A29,#7C2A26',
     value: '',
+    mode: 'build',
   },
 )
 
@@ -70,12 +72,14 @@ const showLabels = ref<boolean>(true)
 const showDataLabels = ref<boolean>(true)
 const colors = computed(() => props.colors.split(','))
 const items = ref<Item[]>([
-  { color: '#102B37', label: 'item 1', value: 100, selected: false },
-  { color: '#27525D', label: 'item 2', value: 100, selected: false },
+  { color: '#00075A', label: 'item 1', value: 100, selected: false },
+  { color: '#B5DCFF', label: 'item 2', value: 100, selected: false },
 ])
 const element = useCurrentElement()
 const format = ref('percentage')
-const label = ref('Diagram')
+const heading = ref('Overskrift')
+const footerTitle = ref('')
+const itemTitle = ref('Diagram')
 
 const formatInput = (input: string) => {
   switch (format.value) {
@@ -94,6 +98,18 @@ const cutout = computed(() => {
     default:
       return '0%'
   }
+})
+
+const main = ref<HTMLDivElement>()
+
+const color = computed(() => {
+  if (!main.value) return 'black'
+
+  const getProperty = (property: string): any =>
+    getComputedStyle(main.value).getPropertyValue(property)
+
+  console.log(getProperty('color'))
+  return getProperty('color')
 })
 
 const addItem = () => {
@@ -142,7 +158,7 @@ const chartOptions = computed(() => {
     radius: '100%',
     cutout: cutout.value,
     layout: {
-      padding: showDataLabels.value ? 60 : 0,
+      padding: showDataLabels.value ? 60 : 60,
     },
     events: [],
     elements: {
@@ -155,7 +171,7 @@ const chartOptions = computed(() => {
         display: false,
       },
       datalabels: {
-        color: 'black',
+        color: color.value,
         display: Boolean(showDataLabels.value),
         clamp: false,
         clip: false,
@@ -208,8 +224,16 @@ const formatTypes = computed(() => {
 })
 
 watch(
-  [items, label, showLabels, showDataLabels, format],
-  ([items, label, showLabels, showDataLabels, format]) => {
+  [items, heading, itemTitle, footerTitle, showLabels, showDataLabels, format],
+  ([
+    items,
+    heading,
+    itemTitle,
+    footerTitle,
+    showLabels,
+    showDataLabels,
+    format,
+  ]) => {
     // emit custom event
     //@ts-ignore
     element.value.dispatchEvent(
@@ -218,7 +242,9 @@ watch(
           format,
           showLabels,
           showDataLabels,
-          label,
+          heading,
+          footerTitle,
+          itemTitle,
           items,
         },
         bubbles: true,
@@ -240,8 +266,14 @@ if (props.value) {
     switch (key) {
       case 'items':
         items.value = v.items
-      case 'label':
-        label.value = v.label
+      case 'itemTitle':
+        itemTitle.value = v.itemTitle
+      case 'footerTitle':
+        footerTitle.value = v.footerTitle
+      case 'heading':
+        heading.value = v.heading
+      case 'heading':
+        heading.value = v.heading
       case 'showLabels':
         showLabels.value = v.showLabels
       case 'showDataLabels':
@@ -254,7 +286,11 @@ if (props.value) {
 </script>
 
 <template>
-  <div class="kvass-chart-builder__wrapper">
+  <div
+    class="kvass-chart-builder__wrapper"
+    :class="`kvass-chart-builder__wrapper-mode--${props.mode}`"
+    ref="main"
+  >
     <b>{{ props.label }}</b>
     <Grid
       class="kvass-chart-builder"
@@ -270,28 +306,37 @@ if (props.value) {
         class="kvass-chart-builder__chart-wrapper"
       >
         <div class="kvass-chart-builder__chart">
-          <Doughnut
-            class="kvass-chart-builder__chart-chart"
-            :data="chartData"
-            :options="chartOptions"
-            :items="items"
-            :key="format"
-          />
-          <Flex
-            v-if="selected"
-            direction="column"
-            justify="center"
-            align="center"
-            gap="xxs"
-            class="kvass-chart-builder__chart-center"
+          <h2 v-if="heading">{{ heading }}</h2>
+          <div class="kvass-chart-builder__chart-content">
+            <Doughnut
+              class="kvass-chart-builder__chart-chart"
+              :data="chartData"
+              :options="chartOptions"
+              :items="items"
+              :key="format"
+            />
+
+            <Flex
+              v-if="selected"
+              direction="column"
+              justify="center"
+              align="center"
+              gap="xxs"
+              class="kvass-chart-builder__chart-center"
+            >
+              <strong class="kvass-chart-builder__chart-center-label">
+                {{ formatInput(selected.value) }}
+              </strong>
+              <span class="kvass-chart-builder__chart-center-sublabel">
+                {{ selected.label }}
+              </span>
+            </Flex>
+          </div>
+          <span
+            v-if="footerTitle"
+            class="kvass-chart-builder__chart-footer-title"
+            >{{ footerTitle }}</span
           >
-            <span class="kvass-chart-builder__chart-center-label">
-              {{ formatInput(selected.value) }}
-            </span>
-            <span class="kvass-chart-builder__chart-center-sublabel">
-              {{ selected.label }}
-            </span>
-          </Flex>
         </div>
         <Flex
           direction="column"
@@ -300,7 +345,7 @@ if (props.value) {
           justify="center"
           class="kvass-chart-builder__labels"
         >
-          <div>{{ label }}</div>
+          <b v-if="itemTitle">{{ itemTitle }}</b>
           <Flex :direction="getLabelItemPosition" align="start">
             <Flex
               direction="row"
@@ -320,17 +365,19 @@ if (props.value) {
         </Flex>
       </Flex>
 
-      <Grid
-        :columns="1"
-        areas="title | format | show-labels | show-data-labels"
+      <Flex
+        v-if="props.mode === 'build'"
         class="kvass-chart-builder__settings"
         gap="lg"
       >
-        <FormControl
-          label="Hovedtittel"
-          class="kvass-chart-builder__chart-title"
-        >
-          <Input v-model="label" />
+        <FormControl label="Overskrift">
+          <Input v-model="heading" />
+        </FormControl>
+        <FormControl label="Tittel">
+          <Input v-model="itemTitle" />
+        </FormControl>
+        <FormControl label="Bunntekst">
+          <Input v-model="footerTitle" />
         </FormControl>
 
         <FormControl
@@ -356,9 +403,12 @@ if (props.value) {
         >
           <Switch v-model="showDataLabels" />
         </FormControl>
-      </Grid>
+      </Flex>
 
-      <FormControl class="kvass-chart-builder__table">
+      <FormControl
+        v-if="props.mode === 'build'"
+        class="kvass-chart-builder__table"
+      >
         <DataTable :columns="columns" :items="items">
           <template #color="{ item }">
             <Input type="color" v-model="item.color" />
@@ -398,12 +448,25 @@ if (props.value) {
 @import url('@kvass/ui/style.css');
 
 .kvass-chart-builder {
+  &__wrapper {
+    color: var(--kvass-chart-builder-color, inherit);
+    &-mode--build {
+      padding: 1rem;
+      background-color: white;
+
+      .kvass-chart-builder__chart {
+        padding: 2rem 0;
+      }
+    }
+  }
+
   // Default variables
-  --__kvass-chart-builder-background-color: white;
+  --__kvass-chart-builder-background-color: transparent;
   --__kvass-chart-builder-max-width: 100%;
-  --__kvass-chart-builder-size: 350px;
+  --__kvass-chart-builder-size: 35vw;
+  --__kvass-chart-builder-size-min: 400px;
+  --__kvass-chart-builder-size-max: 800px;
   --__kvass-chart-builder-border: 1px solid #eaeaea;
-  padding: 1rem;
 
   background-color: var(
     --kvass-chart-builder-background-color,
@@ -422,21 +485,41 @@ if (props.value) {
 
   border-radius: var(--kvass-chart-builder-border-radius, 3px);
 
+  h2 {
+    margin: 0;
+  }
   &__chart {
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+
+    &-footer-title {
+      font-size: 0.8em;
+    }
+
+    &-content {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
 
     &-chart {
-      width: var(
-        --kvass-chart-builder-size,
-        var(--__kvass-chart-builder-size)
-      ) !important;
-      height: var(
-        --kvass-chart-builder-size,
-        var(--__kvass-chart-builder-size)
-      ) !important;
+      $size: clamp(
+        var(
+          (--kvass-chart-builder-size-min),
+          var(--__kvass-chart-builder-size-min)
+        ),
+        var((--kvass-chart-builder-size), var(--__kvass-chart-builder-size)),
+        var(
+          (--kvass-chart-builder-size-max),
+          var(--__kvass-chart-builder-size-max)
+        )
+      );
+      width: $size !important;
+      height: $size !important;
     }
 
     &-center {
@@ -445,8 +528,7 @@ if (props.value) {
       height: 100%;
 
       &-label {
-        font-weight: bold;
-        font-size: 1.2rem;
+        font-size: 1.2em;
       }
     }
   }
@@ -456,27 +538,26 @@ if (props.value) {
     align-content: start;
     justify-self: end;
     align-self: start;
+    min-width: 300px;
 
     background-color: whitesmoke;
     padding: 2rem;
     border-radius: var(--k-ui-rounding);
+
+    .k-formcontrol {
+      flex-grow: 1;
+    }
+    .k-input {
+      width: 100%;
+    }
   }
 
   &__chart-wrapper {
     --k-grid-item-area: chart;
-    // --k-grid-item-align-self:
-  }
-  &__chart-title {
-    --k-grid-item-area: title;
-  }
-  &__format {
-    --k-grid-item-area: format;
-  }
-  &__show-labels {
-    --k-grid-item-area: show-labels;
-  }
-  &__show-data-labels {
-    --k-grid-item-area: show-data-labels;
+    @media (max-width: 767px) {
+      flex-direction: column;
+      gap: 2rem;
+    }
   }
   &__table {
     --k-grid-item-area: table;
