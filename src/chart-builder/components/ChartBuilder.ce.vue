@@ -260,6 +260,7 @@ watch(
     showDataLabels,
     format,
   ]) => {
+    if (props.mode === 'view') return
     // emit custom event
     //@ts-ignore
     element.value.dispatchEvent(
@@ -279,6 +280,7 @@ watch(
     )
   },
   {
+    immediate: true,
     deep: true,
   },
 )
