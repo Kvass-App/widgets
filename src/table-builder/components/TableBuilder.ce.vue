@@ -224,6 +224,21 @@ watch(
   padding: 1rem;
   width: auto;
 
+  &__icon {
+    &--left {
+      transform: rotate(180deg);
+    }
+    &--up {
+      transform: rotate(270deg);
+    }
+    &--down {
+      transform: rotate(90deg);
+    }
+    &--right {
+      transform: rotate(0deg);
+    }
+  }
+
   .k-datatable:not(.k-datatable--no-header) .k-datatable__row:first-child {
     font-size: 1rem;
 
@@ -303,10 +318,6 @@ watch(
     padding: 0;
     background-color: hsl(var(--secondary-h), var(--secondary-s), 92%);
     min-width: unset;
-    &__trigger {
-      :hover: {
-      }
-    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button, Dropdown } from '@kvass/ui'
+import { Button, Dropdown, Icon } from '@kvass/ui'
 
 const props = defineProps<{
   addDisabled: boolean
@@ -15,7 +15,6 @@ const emit = defineEmits<{
 
 <template>
   <Dropdown
-    class="table-builder__column-settings"
     label=""
     placement="top-center"
     size="small"
@@ -26,17 +25,29 @@ const emit = defineEmits<{
       <Button
         size="small"
         variant="secondary"
-        iconRight="fa-pro-light:arrow-left-to-line"
         @click="() => emit('add-column-left')"
         :disabled="addDisabled"
-      />
+      >
+        <template #icon-left>
+          <Icon
+            icon="majesticons:add-column"
+            class="table-builder__icon--left"
+          />
+        </template>
+      </Button>
       <Button
         size="small"
-        icon="fa-pro-light:arrow-right-to-line"
         variant="secondary"
         @click="() => emit('add-column-right')"
         :disabled="addDisabled"
-      />
+      >
+        <template #icon-right>
+          <Icon
+            icon="majesticons:add-column"
+            class="table-builder__icon--right"
+          />
+        </template>
+      </Button>
 
       <Button
         size="small"
