@@ -250,7 +250,16 @@ const formatTypes = computed(() => {
 })
 
 watch(
-  [items, heading, itemTitle, footerTitle, showLabels, showDataLabels, format],
+  [
+    items,
+    heading,
+    itemTitle,
+    footerTitle,
+    showLabels,
+    showDataLabels,
+    format,
+    element,
+  ],
   ([
     items,
     heading,
@@ -260,10 +269,10 @@ watch(
     showDataLabels,
     format,
   ]) => {
-    if (props.mode === 'view') return
+    if (props.mode === 'view' || !element.value) return
     // emit custom event
+
     //@ts-ignore
-    if (!element.value) return
     element.value.dispatchEvent(
       new CustomEvent('webcomponent:update', {
         detail: {
@@ -281,7 +290,6 @@ watch(
     )
   },
   {
-    immediate: true,
     deep: true,
   },
 )
