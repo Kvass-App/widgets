@@ -263,6 +263,7 @@ watch(
     if (props.mode === 'view') return
     // emit custom event
     //@ts-ignore
+    if (!element.value) return
     element.value.dispatchEvent(
       new CustomEvent('webcomponent:update', {
         detail: {
@@ -493,7 +494,7 @@ if (props.value) {
   // Default variables
   --__kvass-chart-builder-background-color: transparent;
   --__kvass-chart-builder-max-width: 100%;
-  --__kvass-chart-builder-size: 35vw;
+  --__kvass-chart-builder-size: 25vw;
   --__kvass-chart-builder-size-min: 400px;
   --__kvass-chart-builder-size-max: 800px;
   --__kvass-chart-builder-border: 1px solid #eaeaea;

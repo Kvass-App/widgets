@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { DataTable, Input } from '@kvass/ui'
 
@@ -7,6 +7,8 @@ import RowSettings from './RowSettings.ce.vue'
 import ColumnSettings from './ColumnSettings.ce.vue'
 
 const element = useCurrentElement()
+const main = ref<HTMLDivElement>()
+const width = ref(0)
 
 const props = withDefaults(
   defineProps<{
@@ -110,6 +112,12 @@ const deleteRow = (index: number) => {
   rows.value.splice(index, 1)
 }
 
+const style = computed(() => {
+  return `--kvass-table-builder-max-width: ${
+    width.value
+  }px; --kvass-table-builder--columns-count: ${columns.value?.length - 1}`
+})
+
 const rowWrapper = (item) => {
   return {
     component: 'div',
@@ -148,13 +156,27 @@ watch(
     deep: true,
   },
 )
+
+const setWidth = () => {
+  const value = main.value?.clientWidth || 0
+  if (value > 900) width.value = 900
+  else width.value = value
+
+  console.log(width.value)
+}
+
+onMounted(() => {
+  setWidth()
+  window.addEventListener('resize', setWidth)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', setWidth)
+})
 </script>
 
 <template>
-  <div
-    class="table-builder"
-    :style="`--table-builder--columns-count: ${columns?.length - 1}`"
-  >
+  <div class="table-builder" ref="main" :style="style">
     <DataTable
       :columns="columns"
       :items="rows"
@@ -309,8 +331,10 @@ watch(
   .k-input {
     width: 100%;
     max-width: calc(
-      var(--table-builder-max-width, var(--__kvass-table-builder-wrapper-width)) /
-        var(--table-builder--columns-count)
+      var(
+          --kvass-table-builder-max-width,
+          var(--__kvass-table-builder-wrapper-width)
+        ) / var(--kvass-table-builder--columns-count)
     );
   }
 
