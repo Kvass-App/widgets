@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import Doughnut from './Doughnut.ce.vue'
 import {
@@ -249,17 +249,33 @@ const formatTypes = computed(() => {
   ]
 })
 
+const allItems = computed(() => {
+  return {
+    items: items.value,
+    heading: heading.value,
+    itemTitle: itemTitle.value,
+    footerTitle: footerTitle.value,
+    showLabels: showLabels.value,
+    showDataLabels: showDataLabels.value,
+    format: format.value,
+  }
+})
+
+const update = (value) => {
+  if (props.mode === 'view' || !element.value) return
+  // emit custom event
+  //@ts-ignore
+  element.value.dispatchEvent(
+    new CustomEvent('webcomponent:update', {
+      detail: value,
+      bubbles: true,
+      composed: true,
+    }),
+  )
+}
+
 watch(
-  [
-    items,
-    heading,
-    itemTitle,
-    footerTitle,
-    showLabels,
-    showDataLabels,
-    format,
-    element,
-  ],
+  [items, heading, itemTitle, footerTitle, showLabels, showDataLabels, format],
   ([
     items,
     heading,
@@ -269,25 +285,15 @@ watch(
     showDataLabels,
     format,
   ]) => {
-    if (props.mode === 'view' || !element.value) return
-    // emit custom event
-
-    //@ts-ignore
-    element.value.dispatchEvent(
-      new CustomEvent('webcomponent:update', {
-        detail: {
-          format,
-          showLabels,
-          showDataLabels,
-          heading,
-          footerTitle,
-          itemTitle,
-          items,
-        },
-        bubbles: true,
-        composed: true,
-      }),
-    )
+    update({
+      items,
+      heading,
+      itemTitle,
+      footerTitle,
+      showLabels,
+      showDataLabels,
+      format,
+    })
   },
   {
     deep: true,
@@ -320,6 +326,10 @@ if (props.value) {
     }
   })
 }
+
+onMounted(() => {
+  update(allItems.value)
+})
 </script>
 
 <template>
