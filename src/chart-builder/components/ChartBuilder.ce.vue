@@ -342,7 +342,9 @@ onMounted(() => {
     <Grid
       class="kvass-chart-builder"
       columns="1fr min-content"
-      areas="chart settings | table table"
+      :areas="
+        props.mode === 'build' ? 'chart settings | table table' : 'chart chart'
+      "
       :gap="props.mode === 'build' ? '1rem 2rem' : '0rem'"
     >
       <Flex
@@ -499,12 +501,16 @@ onMounted(() => {
     color: var(--kvass-chart-builder-color, inherit);
     font-size: var(--kvass-chart-builder-font-size, inherit);
     font-family: var(--kvass-chart-builder-font-family, inherit);
+
+    height: 100%;
+
     &-mode--build {
       padding: 1rem;
       background-color: white;
 
       .kvass-chart-builder__chart {
-        padding: 2rem 0;
+        padding: 2rem;
+        padding-right: 0rem;
       }
     }
   }

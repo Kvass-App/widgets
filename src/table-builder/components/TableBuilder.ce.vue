@@ -70,14 +70,20 @@ if (props.value) {
 }
 
 const addColumn = (index: number) => {
-  const length = columns.value.length
+  const getColumn = (tempId = 0) => {
+    if (columns.value.some((c) => c.id === tempId.toString()))
+      return getColumn(tempId + 1)
+    return tempId
+  }
+
+  const columnId = getColumn()
 
   const newColum = {
-    id: `${length}`,
-    label: `Kolonne ${length + 1}`,
-    disabled: false,
-    size: '',
-    align: '',
+    id: `${columnId}`,
+    label: `Kolonne ${Math.max(columnId, columns.value.length) + 1}`,
+    // disabled: false,
+    // size: '',
+    // align: '',
   }
 
   //@ts-ignore
@@ -86,7 +92,7 @@ const addColumn = (index: number) => {
   rows.value = rows.value.map((i, index) => {
     return {
       ...i,
-      [length]: {
+      [columnId]: {
         value: ``,
       },
     }
@@ -105,7 +111,16 @@ const addRow = (index: number) => {
 }
 
 const deleteColumn = (index: number) => {
-  columns.value.splice(index, 1)
+  const removedElement = columns.value.splice(index, 1)
+
+  rows.value = rows.value.map((row) => {
+    return Object.fromEntries(
+      Object.entries(row).filter(([id, val]) => {
+        return removedElement?.[0]?.id !== id
+        // return !removedElement.some((e) => e.id === id)
+      }),
+    )
+  })
 }
 
 const deleteRow = (index: number) => {
@@ -113,9 +128,7 @@ const deleteRow = (index: number) => {
 }
 
 const style = computed(() => {
-  return `--kvass-table-builder-max-width: ${
-    width.value
-  }px; --kvass-table-builder--columns-count: ${columns.value?.length - 1}`
+  return `--kvass-table-builder-max-width: ${width.value}px; --kvass-table-builder--columns-count: ${columns.value?.length}`
 })
 
 const rowWrapper = (item) => {
@@ -161,8 +174,6 @@ const setWidth = () => {
   const value = main.value?.clientWidth || 0
   if (value > 900) width.value = 900
   else width.value = value
-
-  console.log(width.value)
 }
 
 onMounted(() => {
@@ -220,6 +231,7 @@ onBeforeUnmount(() => {
         ></RowSettings>
 
         <Input
+          v-if="item[column.id]"
           v-model="item[column.id].value"
           placeholder="..."
           :class="`cell-${column.id}`"
