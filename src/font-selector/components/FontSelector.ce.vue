@@ -55,18 +55,15 @@ const providers = ref(
 )
 
 const selectedFont = ref(
-  (props.value ? (JSON.parse(`${props.value}`) || {}).font : '') ||
-    props.defaultFont,
+  props.value
+    ? (JSON.parse(`${props.value}`) || {}).font
+    : props.templateFont || providers.value?.[0]?.fonts?.[0],
 )
 
 const selectedProvider = computed(() => {
-  // console.log(props.value ? (JSON.parse(`${props.value}`) || {}).provider : '')
-  console.log(providers.value)
   const provider = providers.value.find((p) =>
     p.fonts?.includes(selectedFont.value),
   )?.value
-
-  //find provider based on selected font
 
   if (!provider) return
 
@@ -76,8 +73,6 @@ const selectedProvider = computed(() => {
   //   const fonts = props.fonts.split(',').map((f) => f.trim())
   //   provider.fonts = fonts
   // }
-
-  console.log(provider)
 
   return provider
 })
