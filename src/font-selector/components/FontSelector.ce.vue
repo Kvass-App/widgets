@@ -1,14 +1,20 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
-import { providers } from '../providers.js'
+import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
+import { Alert } from '@kvass/ui'
 
 const props = defineProps({
-  provider: {
+  customPriovider: {
     type: String,
     default: 'google',
   },
+  customLabel: {
+    type: String,
+    default: 'Skreddersydd font',
+  },
+  customFonts: String,
   type: {
     type: String,
     default: 'text',
@@ -16,48 +22,85 @@ const props = defineProps({
   },
   value: String,
   label: String,
-  fonts: String,
+  templateFont: {
+    type: String,
+  },
+  templateProvider: {
+    type: String,
+    default: 'google',
+  },
+  disablePreviewOn: {
+    type: Array,
+    default: () => [],
+  },
 })
 
+const providers = ref(
+  getProviders([
+    props.customFonts
+      ? {
+          value: props.customPriovider,
+          fonts: props.customFonts.split(',').map((f) => f.trim()),
+          label: props.customLabel,
+        }
+      : {},
+    props.templateFont
+      ? {
+          value: props.templateProvider,
+          fonts: [props.templateFont],
+          label: 'Font tilknyttet valgt tema mal',
+        }
+      : {},
+  ]),
+)
+
+const selectedFont = ref(
+  (props.value ? (JSON.parse(`${props.value}`) || {}).font : '') ||
+    props.defaultFont,
+)
+
 const selectedProvider = computed(() => {
-  const provider = providers.find((p) => p.value === props.provider)
+  // console.log(props.value ? (JSON.parse(`${props.value}`) || {}).provider : '')
+  console.log(providers.value)
+  const provider = providers.value.find((p) =>
+    p.fonts?.includes(selectedFont.value),
+  )?.value
+
+  //find provider based on selected font
+
   if (!provider) return
 
   // If custom fonts are specified for the current provider,
   // replace the default fonts with the custom fonts.
-  if (props.fonts) {
-    const fonts = props.fonts.split(',').map((f) => f.trim())
-    provider.fonts = fonts
-  }
+  // if (props.fonts) {
+  //   const fonts = props.fonts.split(',').map((f) => f.trim())
+  //   provider.fonts = fonts
+  // }
+
+  console.log(provider)
 
   return provider
 })
 
-const selectedFont = ref(
-  selectedProvider.value?.fonts.find(
-    (f) =>
-      f ===
-      ((props.value ? (JSON.parse(`${props.value}`) || {}).font : '') ||
-        selectedProvider.value?.fonts[0]),
-  ),
-)
-
-const element = useCurrentElement()
-
-watch(selectedFont, (newFont) => {
-  if (!newFont) return
-
-  // emit custom event
+function update(font) {
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
-        font: newFont,
+        font,
         provider: selectedProvider.value.value,
       },
       bubbles: true,
       composed: true,
     }),
   )
+}
+const element = useCurrentElement()
+
+watch(selectedFont, (newFont) => {
+  if (!newFont) return
+
+  // emit custom event
+  update(newFont)
 })
 
 const styles = computed(
@@ -71,13 +114,14 @@ onMounted(() => {
 
   // Initialize WebFontLoader
   const config = Object.fromEntries(
-    Object.entries(providers).map(([_, provider]) => [
+    Object.entries(providers.value).map(([_, provider]) => [
       provider.value,
       { families: provider.fonts.map((font) => `${font}:400,700`) },
     ]),
   )
 
   WebFontLoader.load(config)
+  update(selectedFont.value)
 })
 </script>
 
@@ -104,17 +148,28 @@ onMounted(() => {
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
       ]"
     >
-      <small class="kvass-font-selector__preview-label">Forhåndsvisning</small>
-      <template v-if="props.type === 'heading'">
-        <h1>Hovedtittel</h1>
-        <h2>Sekundærtittel</h2>
-        <h3>Tertiærtittel</h3>
-      </template>
-      <template v-if="props.type === 'text'">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-          imperdiet, nulla et dictum interdum.
-        </p>
+      <Alert
+        v-if="props.disablePreviewOn.includes(selectedFont)"
+        variant="neutral"
+      >
+        Forhåndsvisning ikke tilgjengelig for valgt font
+      </Alert>
+
+      <template v-else>
+        <small class="kvass-font-selector__preview-label"
+          >Forhåndsvisning</small
+        >
+        <template v-if="props.type === 'heading'">
+          <h1>Hovedtittel</h1>
+          <h2>Sekundærtittel</h2>
+          <h3>Tertiærtittel</h3>
+        </template>
+        <template v-if="props.type === 'text'">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
+            imperdiet, nulla et dictum interdum.
+          </p>
+        </template>
       </template>
     </div>
   </div>
