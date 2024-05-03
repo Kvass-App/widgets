@@ -343,10 +343,12 @@ onBeforeUnmount(() => {
   .k-input {
     width: 100%;
     max-width: calc(
-      var(
-          --kvass-table-builder-max-width,
-          var(--__kvass-table-builder-wrapper-width)
-        ) / var(--kvass-table-builder--columns-count)
+      (
+          var(
+              --kvass-table-builder-max-width,
+              var(--__kvass-table-builder-wrapper-width)
+            ) / var(--kvass-table-builder--columns-count)
+        ) - 1rem
     );
   }
 
