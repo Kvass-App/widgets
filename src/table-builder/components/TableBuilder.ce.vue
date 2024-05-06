@@ -12,8 +12,6 @@ const width = ref(0)
 
 const props = withDefaults(
   defineProps<{
-    columns: string
-    rows: string
     maxColumns: number
     maxRows: number
     value: string
