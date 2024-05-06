@@ -12,8 +12,6 @@ const width = ref(0)
 
 const props = withDefaults(
   defineProps<{
-    columns: string
-    rows: string
     maxColumns: number
     maxRows: number
     value: string
@@ -40,6 +38,10 @@ const columns = ref<Column[]>([
   { id: '1', label: 'Kolonne 2' },
   { id: '2', label: 'Kolonne 3' },
 ])
+
+const displayColumns = computed(() =>
+  columns.value.filter((i) => !i.id.startsWith('Delete:')),
+)
 
 const rows = ref<Row[]>([
   {
@@ -71,7 +73,7 @@ if (props.value) {
 
 const addColumn = (index: number) => {
   const getColumn = (tempId = 0) => {
-    if (columns.value.some((c) => c.id === tempId.toString()))
+    if (columns.value.some((c) => c.id === `${tempId}`))
       return getColumn(tempId + 1)
     return tempId
   }
@@ -80,7 +82,7 @@ const addColumn = (index: number) => {
 
   const newColum = {
     id: `${columnId}`,
-    label: `Kolonne ${Math.max(columnId, columns.value.length) + 1}`,
+    label: `Kolonne ${Math.max(columnId, displayColumns.value.length) + 1}`,
     // disabled: false,
     // size: '',
     // align: '',
@@ -92,7 +94,7 @@ const addColumn = (index: number) => {
   rows.value = rows.value.map((i, index) => {
     return {
       ...i,
-      [columnId]: {
+      [`${columnId}`]: {
         value: ``,
       },
     }
@@ -111,14 +113,21 @@ const addRow = (index: number) => {
 }
 
 const deleteColumn = (index: number) => {
-  const removedElement = columns.value.splice(index, 1)
+  columns.value = columns.value.map((i, idx) => {
+    if (index !== idx) return i
+    return {
+      ...i,
+      id: `Delete:${i.id}`,
+    }
+  })
+
+  const removedElement = columns.value.find((i, idx) => idx === index)
+
+  if (!removedElement) return
 
   rows.value = rows.value.map((row) => {
     return Object.fromEntries(
-      Object.entries(row).filter(([id, val]) => {
-        return removedElement?.[0]?.id !== id
-        // return !removedElement.some((e) => e.id === id)
-      }),
+      Object.entries(row).filter(([id, val]) => removedElement.id !== id),
     )
   })
 }
@@ -128,7 +137,7 @@ const deleteRow = (index: number) => {
 }
 
 const style = computed(() => {
-  return `--kvass-table-builder-max-width: ${width.value}px; --kvass-table-builder--columns-count: ${columns.value?.length}`
+  return `--kvass-table-builder-max-width: ${width.value}px; --kvass-table-builder--columns-count: ${displayColumns.value?.length}`
 })
 
 const rowWrapper = (item) => {
@@ -189,7 +198,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="table-builder" ref="main" :style="style">
     <DataTable
-      :columns="columns"
+      :columns="displayColumns"
       :items="rows"
       theme="default"
       :rowWrapper="rowWrapper"
@@ -197,7 +206,7 @@ onBeforeUnmount(() => {
     >
       <!-- Columns -->
       <template
-        v-for="(column, index) in columns"
+        v-for="(column, index) in displayColumns"
         v-slot:[`${column.id}-label`]="{ item }"
       >
         <ColumnSettings
@@ -217,7 +226,7 @@ onBeforeUnmount(() => {
       </template>
       <!-- Rows -->
       <template
-        v-for="(column, idx) in columns"
+        v-for="(column, idx) in displayColumns"
         v-slot:[column.id]="{ item, rowIndex }"
       >
         <RowSettings
