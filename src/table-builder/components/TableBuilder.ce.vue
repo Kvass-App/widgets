@@ -24,8 +24,9 @@ const props = withDefaults(
 )
 
 type Column = {
-  id: string
+  columnId: string
   label: string
+  id: string
 }
 type Row = {
   [x: string]: {
@@ -34,14 +35,10 @@ type Row = {
 }
 
 const columns = ref<Column[]>([
-  { id: '0', label: 'Kolonne 1' },
-  { id: '1', label: 'Kolonne 2' },
-  { id: '2', label: 'Kolonne 3' },
+  { id: '0', columnId: '0', label: 'Kolonne 1' },
+  { id: '1', columnId: '1', label: 'Kolonne 2' },
+  { id: '2', columnId: '2', label: 'Kolonne 3' },
 ])
-
-const displayColumns = computed(() =>
-  columns.value.filter((i) => !i.id.startsWith('Delete:')),
-)
 
 const rows = ref<Row[]>([
   {
@@ -66,14 +63,19 @@ if (props.value) {
       case 'rows':
         rows.value = v.rows
       case 'columns':
-        columns.value = v.columns
+        columns.value = v.columns.map((c) => {
+          return {
+            id: c.columnId,
+            ...c,
+          }
+        })
     }
   })
 }
 
 const addColumn = (index: number) => {
   const getColumn = (tempId = 0) => {
-    if (columns.value.some((c) => c.id === `${tempId}`))
+    if (columns.value.some((c) => c.columnId === `${tempId}`))
       return getColumn(tempId + 1)
     return tempId
   }
@@ -82,10 +84,8 @@ const addColumn = (index: number) => {
 
   const newColum = {
     id: `${columnId}`,
-    label: `Kolonne ${Math.max(columnId, displayColumns.value.length) + 1}`,
-    // disabled: false,
-    // size: '',
-    // align: '',
+    columnId: `${columnId}`,
+    label: `Kolonne ${Math.max(columnId, columns.value.length) + 1}`,
   }
 
   //@ts-ignore
@@ -103,8 +103,8 @@ const addColumn = (index: number) => {
 
 const addRow = (index: number) => {
   const item = Object.fromEntries(
-    columns.value.map((c, index) => {
-      return [c.id, { value: `` }]
+    columns.value.map((c) => {
+      return [c.columnId, { value: `` }]
     }),
   )
 
@@ -113,13 +113,7 @@ const addRow = (index: number) => {
 }
 
 const deleteColumn = (id: string) => {
-  columns.value = columns.value.map((i) => {
-    if (i.id !== id) return i
-    return {
-      ...i,
-      id: `Delete:${i.id}`,
-    }
-  })
+  columns.value = columns.value.filter((i) => i.columnId !== id)
 
   rows.value = rows.value.map((row) => {
     return Object.fromEntries(
@@ -133,7 +127,7 @@ const deleteRow = (index: number) => {
 }
 
 const style = computed(() => {
-  return `--kvass-table-builder-max-width: ${width.value}px; --kvass-table-builder--columns-count: ${displayColumns.value?.length}`
+  return `--kvass-table-builder-max-width: ${width.value}px; --kvass-table-builder--columns-count: ${columns.value?.length}`
 })
 
 const rowWrapper = (item) => {
@@ -163,7 +157,12 @@ watch(
       new CustomEvent('webcomponent:update', {
         detail: {
           rows,
-          columns,
+          columns: columns.map((v) => {
+            const { id, ...rest } = v
+            return {
+              ...rest,
+            }
+          }),
         },
         bubbles: true,
         composed: true,
@@ -194,7 +193,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="table-builder" ref="main" :style="style">
     <DataTable
-      :columns="displayColumns"
+      :columns="columns"
       :items="rows"
       theme="default"
       :rowWrapper="rowWrapper"
@@ -202,28 +201,28 @@ onBeforeUnmount(() => {
     >
       <!-- Columns -->
       <template
-        v-for="(column, index) in displayColumns"
-        v-slot:[`${column.id}-label`]="{ item }"
+        v-for="(column, index) in columns"
+        v-slot:[`${column.columnId}-label`]="{ item }"
       >
         <ColumnSettings
           class="table-builder__column-settings"
-          @delete-column="deleteColumn(column.id)"
+          @delete-column="deleteColumn(column.columnId)"
           @add-column-right="addColumn(index + 1)"
           @add-column-left="addColumn(index)"
-          :deleteDisabled="displayColumns.length <= 1"
-          :addDisabled="displayColumns.length >= maxColumns"
+          :deleteDisabled="columns.length <= 1"
+          :addDisabled="columns.length >= maxColumns"
         ></ColumnSettings>
 
         <Input
           v-model="item.label"
           placeholder="..."
-          :class="`cell-${column.id}`"
+          :class="`cell-${column.columnId}`"
         />
       </template>
       <!-- Rows -->
       <template
-        v-for="(column, idx) in displayColumns"
-        v-slot:[column.id]="{ item, rowIndex }"
+        v-for="(column, idx) in columns"
+        v-slot:[column.columnId]="{ item, rowIndex }"
       >
         <RowSettings
           v-if="idx === 0"
@@ -236,10 +235,10 @@ onBeforeUnmount(() => {
         ></RowSettings>
 
         <Input
-          v-if="item[column.id]"
-          v-model="item[column.id].value"
+          v-if="item[column.columnId]"
+          v-model="item[column.columnId].value"
           placeholder="..."
-          :class="`cell-${column.id}`"
+          :class="`cell-${column.columnId}`"
         />
       </template>
     </DataTable>
