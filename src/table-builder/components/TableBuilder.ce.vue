@@ -26,6 +26,7 @@ const props = withDefaults(
 type Column = {
   columnId: string
   label: string
+  id: string
 }
 type Row = {
   [x: string]: {
@@ -34,9 +35,9 @@ type Row = {
 }
 
 const columns = ref<Column[]>([
-  { columnId: '0', label: 'Kolonne 1' },
-  { columnId: '1', label: 'Kolonne 2' },
-  { columnId: '2', label: 'Kolonne 3' },
+  { id: '0', columnId: '0', label: 'Kolonne 1' },
+  { id: '1', columnId: '1', label: 'Kolonne 2' },
+  { id: '2', columnId: '2', label: 'Kolonne 3' },
 ])
 
 const rows = ref<Row[]>([
@@ -62,7 +63,12 @@ if (props.value) {
       case 'rows':
         rows.value = v.rows
       case 'columns':
-        columns.value = v.columns
+        columns.value = v.columns.map((c) => {
+          return {
+            id: c.columnId,
+            ...c,
+          }
+        })
     }
   })
 }
@@ -77,6 +83,7 @@ const addColumn = (index: number) => {
   const columnId = getColumn()
 
   const newColum = {
+    id: `${columnId}`,
     columnId: `${columnId}`,
     label: `Kolonne ${Math.max(columnId, columns.value.length) + 1}`,
   }
@@ -150,7 +157,12 @@ watch(
       new CustomEvent('webcomponent:update', {
         detail: {
           rows,
-          columns,
+          columns: columns.map((v) => {
+            const { id, ...rest } = v
+            return {
+              ...rest,
+            }
+          }),
         },
         bubbles: true,
         composed: true,
@@ -181,14 +193,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="table-builder" ref="main" :style="style">
     <DataTable
-      :columns="
-        columns.map((c) => {
-          return {
-            id: c.columnId,
-            ...c,
-          }
-        })
-      "
+      :columns="columns"
       :items="rows"
       theme="default"
       :rowWrapper="rowWrapper"
