@@ -112,22 +112,18 @@ const addRow = (index: number) => {
   rows.value.splice(index, 0, item)
 }
 
-const deleteColumn = (index: number) => {
-  columns.value = columns.value.map((i, idx) => {
-    if (index !== idx) return i
+const deleteColumn = (id: string) => {
+  columns.value = columns.value.map((i) => {
+    if (i.id !== id) return i
     return {
       ...i,
       id: `Delete:${i.id}`,
     }
   })
 
-  const removedElement = columns.value.find((i, idx) => idx === index)
-
-  if (!removedElement) return
-
   rows.value = rows.value.map((row) => {
     return Object.fromEntries(
-      Object.entries(row).filter(([id, val]) => removedElement.id !== id),
+      Object.entries(row).filter(([ID, val]) => id !== ID),
     )
   })
 }
@@ -211,11 +207,11 @@ onBeforeUnmount(() => {
       >
         <ColumnSettings
           class="table-builder__column-settings"
-          @delete-column="deleteColumn(index)"
+          @delete-column="deleteColumn(column.id)"
           @add-column-right="addColumn(index + 1)"
           @add-column-left="addColumn(index)"
-          :deleteDisabled="columns.length <= 1"
-          :addDisabled="columns.length >= maxColumns"
+          :deleteDisabled="displayColumns.length <= 1"
+          :addDisabled="displayColumns.length >= maxColumns"
         ></ColumnSettings>
 
         <Input
