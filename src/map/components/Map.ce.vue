@@ -6,11 +6,13 @@ import { computed, reactive } from 'vue'
 const props = defineProps({
   theme: {
     type: String,
-    required: true,
   },
   mapboxApiToken: {
     type: String,
-    required: true,
+  },
+  mapOptions: {
+    type: String,
+    default: '{}',
   },
   /**
    * The coordinates in the format of 'latitude,longitude'
@@ -88,6 +90,7 @@ const markersComp = computed(() => {
 const mapOptions = reactive({
   style: props.theme,
   accessToken: props.mapboxApiToken,
+  ...(JSON.parse(props.mapOptions) || {}),
 })
 </script>
 
