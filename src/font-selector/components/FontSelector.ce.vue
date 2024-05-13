@@ -82,7 +82,7 @@ function update(font) {
     new CustomEvent('webcomponent:update', {
       detail: {
         font,
-        provider: selectedProvider.value.value,
+        provider: selectedProvider.value,
       },
       bubbles: true,
       composed: true,
