@@ -55,9 +55,7 @@ const providers = ref(
 )
 
 const selectedFont = ref(
-  props.value
-    ? (JSON.parse(`${props.value}`) || {}).font
-    : props.templateFont || providers.value?.[0]?.fonts?.[0],
+  props.value ? (JSON.parse(`${props.value}`) || {}).font : '',
 )
 
 const selectedProvider = computed(() => {
@@ -65,14 +63,7 @@ const selectedProvider = computed(() => {
     p.fonts?.includes(selectedFont.value),
   )?.value
 
-  if (!provider) return
-
-  // If custom fonts are specified for the current provider,
-  // replace the default fonts with the custom fonts.
-  // if (props.fonts) {
-  //   const fonts = props.fonts.split(',').map((f) => f.trim())
-  //   provider.fonts = fonts
-  // }
+  if (!provider) return 'google'
 
   return provider
 })
@@ -131,6 +122,7 @@ onMounted(() => {
             :key="provider.value"
             :label="provider.label"
           >
+            <option value="">Velg</option>
             <option v-for="font in provider.fonts" :key="font" :value="font">
               {{ font }}
             </option>
@@ -143,17 +135,16 @@ onMounted(() => {
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
       ]"
     >
+      <small class="kvass-font-selector__preview-label">Forhåndsvisning</small>
       <Alert
-        v-if="props.disablePreviewOn.includes(selectedFont)"
+        v-if="
+          props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
+        "
         variant="neutral"
       >
-        Forhåndsvisning ikke tilgjengelig for valgt font
+        <span> Forhåndsvisning ikke tilgjengelig </span>
       </Alert>
-
       <template v-else>
-        <small class="kvass-font-selector__preview-label"
-          >Forhåndsvisning</small
-        >
         <template v-if="props.type === 'heading'">
           <h1>Hovedtittel</h1>
           <h2>Sekundærtittel</h2>
