@@ -190,6 +190,10 @@ onMounted(() => {
     var(--__kvass-font-selector-max-width)
   );
 
+  &__preview-label,
+  .k-alert {
+    font-weight: 400 !important;
+  }
   &__input {
     appearance: none;
     font: inherit;
