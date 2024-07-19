@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
-import { Alert } from '@kvass/ui'
+import { Alert, Dropdown } from '@kvass/ui'
 
 const props = defineProps({
   customPriovider: {
@@ -95,6 +95,22 @@ const styles = computed(
     `--kvass-font-selector-font-family: '${selectedFont.value}'`,
 )
 
+const items = computed(() => {
+  return providers.value
+    .map((provider) =>
+      provider.fonts.map((font) => {
+        return {
+          icon: props.disablePreviewOn.includes(font)
+            ? 'gridicons:customize'
+            : `simple-icons:${provider.value}fonts`,
+          label: font,
+          provider: provider.value,
+          action: () => (selectedFont.value = font),
+        }
+      }),
+    )
+    .flat()
+})
 onMounted(() => {
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
@@ -115,20 +131,13 @@ onMounted(() => {
   <div class="kvass-font-selector" :style="styles">
     <label>
       <span v-if="label" class="kvass-font-selector__label">{{ label }}</span>
-      <div class="kvass-font-selector__input-wrapper">
-        <select v-model="selectedFont" class="kvass-font-selector__input">
-          <optgroup
-            v-for="provider in providers"
-            :key="provider.value"
-            :label="provider.label"
-          >
-            <option value="">Velg</option>
-            <option v-for="font in provider.fonts" :key="font" :value="font">
-              {{ font }}
-            </option>
-          </optgroup>
-        </select>
-      </div>
+
+      <Dropdown
+        class="kvass-font-selector__dropdown"
+        :label="selectedFont"
+        :items="items"
+      >
+      </Dropdown>
     </label>
     <div
       :class="[
@@ -165,6 +174,10 @@ onMounted(() => {
 @import url('@kvass/ui/style.css');
 
 .kvass-font-selector {
+  --k-button-medium-font-size: 0.8rem;
+  --k-button-medium-padding-inline: 0.5rem;
+  --k-button-medium-padding-block: 0.5rem;
+  --k-ui-rounding: 0;
   // Default variables
   --__kvass-font-selector-background-color: white;
   --__kvass-font-selector-padding-y: 1rem;
@@ -194,18 +207,18 @@ onMounted(() => {
   .k-alert {
     font-weight: 400 !important;
   }
-  &__input {
-    appearance: none;
-    font: inherit;
+  &__dropdown {
     width: 100%;
-    padding: var(
-        --kvass-font-selector-padding-y,
-        var(--__kvass-font-selector-padding-y)
-      )
-      var(
-        --kvass-font-selector-padding-x,
-        var(--__kvass-font-selector-padding-x)
-      );
+
+    border-radius: var(
+      --kvass-font-selector-border-radius,
+      var(--__kvass-font-selector-border-radius)
+    );
+    border-end-end-radius: 0;
+    border-end-start-radius: 0;
+
+    font-size: 1em;
+    padding: 1rem;
     border: var(
         --kvass-font-selector-border-width,
         var(--__kvass-font-selector-border-width)
@@ -218,34 +231,11 @@ onMounted(() => {
         --kvass-font-selector-border-color,
         var(--__kvass-font-selector-border-color)
       );
-    border-top-left-radius: var(
-      --kvass-font-selector-border-radius,
-      var(--__kvass-font-selector-border-radius)
-    );
-    border-top-right-radius: var(
-      --kvass-font-selector-border-radius,
-      var(--__kvass-font-selector-border-radius)
-    );
-    border-bottom: none;
-
-    &-wrapper {
-      position: relative;
-
-      &::after {
-        content: url('../selector.svg');
-        position: absolute;
-        right: var(
-          --kvass-font-selector-padding-x,
-          var(--__kvass-font-selector-padding-x)
-        );
-        top: var(
-          --kvass-font-selector-padding-y,
-          var(--__kvass-font-selector-padding-y)
-        );
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
+    border-bottom: 0;
+  }
+  .k-dropdown {
+    border-radius: 0;
+    padding: 0;
   }
 
   &__preview {
