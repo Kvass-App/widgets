@@ -4,6 +4,7 @@ import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
 import { Alert, Dropdown } from '@kvass/ui'
+import { Translate } from '../../utils/index.js'
 
 const props = defineProps({
   customPriovider: {
@@ -48,7 +49,8 @@ const providers = ref(
       ? {
           value: props.templateProvider,
           fonts: [props.templateFont],
-          label: 'Font tilknyttet valgt tema mal',
+
+          label: Translate('fontAssociatedWithSelectedThemeTemplate'),
         }
       : {},
   ]),
@@ -131,10 +133,9 @@ onMounted(() => {
   <div class="kvass-font-selector" :style="styles">
     <label>
       <span v-if="label" class="kvass-font-selector__label">{{ label }}</span>
-
       <Dropdown
         class="kvass-font-selector__dropdown"
-        :label="selectedFont"
+        :label="selectedFont || Translate('select')"
         :items="items"
       >
       </Dropdown>
@@ -144,20 +145,21 @@ onMounted(() => {
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
       ]"
     >
-      <small class="kvass-font-selector__preview-label">Forhåndsvisning</small>
+      <small class="kvass-font-selector__preview-label">{{
+        Translate('fontPreview')
+      }}</small>
       <Alert
         v-if="
           props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
         "
         variant="neutral"
       >
-        <span> Forhåndsvisning ikke tilgjengelig </span>
+        <span>{{ Translate('fontPreviewDisabled') }}</span>
       </Alert>
       <template v-else>
         <template v-if="props.type === 'heading'">
-          <h1>Hovedtittel</h1>
-          <h2>Sekundærtittel</h2>
-          <h3>Tertiærtittel</h3>
+          <h1>{{ Translate('primaryTitle') }}</h1>
+          <h2>{{ Translate('secondaryTitle') }}</h2>
         </template>
         <template v-if="props.type === 'text'">
           <p>

@@ -17,6 +17,7 @@ import { useIconApi } from '../composables/useIconApi.js'
 
 import Collection from './Collection.ce.vue'
 import IconButton from './IconButton.ce.vue'
+import { Translate } from '../../utils/index.js'
 
 const props = defineProps({
   apiUrl: {
@@ -34,7 +35,7 @@ const props = defineProps({
   },
   searchPlaceholder: {
     type: String,
-    default: 'Søk på engelsk etter ikonet du leter etter. Eks. "Helicopter"',
+    default: Translate('iconSelectWidgetHelpText'),
   },
   featuredIcons: String,
 })
@@ -139,7 +140,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
   <div class="kvass-icon-selector">
     <Dialog
       class="kvass-icon-selector__dialog"
-      title="Velg ikon"
+      :title="Translate('selectIcon')"
       :close-on-outside-click="false"
       :teleport="false"
       @close="reset"
@@ -163,7 +164,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
 
       <template #title="{ titleProps }">
         <strong v-bind="titleProps" style="margin-bottom: 1rem; display: block">
-          Velg ikon
+          {{ Translate('selectIcon') }}
         </strong>
         <Input :placeholder="searchPlaceholder" v-model="search" />
       </template>
@@ -183,16 +184,17 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
                     style="background: none; border: none; font: inherit"
                   >
                     <Icon icon="tabler:arrow-left" />
-                    Gå tilbake
+                    {{ Translate('goBack') }}
                   </button>
                   <h3
-                    v-if="selectedCollection && collection.title"
+                    v-if="selectedCollection && collection.prefix"
                     style="margin-bottom: 0"
                   >
-                    {{ collection.title }}
+                    {{ Translate(collection.prefix) }}
                   </h3>
                   <p v-if="collection.total" style="opacity: 0.5">
-                    {{ collection.total }} treff
+                    {{ collection.total }}
+                    {{ Translate('iconsSelectWidgetIconsFound') }}
                   </p>
                 </div>
               </GridItem>
@@ -208,7 +210,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
               <template v-else-if="!slicedIcons?.length">
                 <GridItem>
                   <div style="grid-column: 1 / -1; text-align: center">
-                    Ingen ikoner passer søket ditt.
+                    {{ Translate('iconsSelectWidgetNoIconsMatchYourSearch') }}
                   </div>
                 </GridItem>
               </template>
@@ -237,7 +239,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
                       margin-block-end: 0.2rem;
                     "
                   >
-                    Fremhevede ikoner
+                    {{ Translate('highlightedIcons') }}
                   </small>
                   <IconButton
                     v-for="icon in featuredIcons"
@@ -271,16 +273,16 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
                     style="background: none; border: none; font: inherit"
                   >
                     <Icon icon="tabler:arrow-left" />
-                    Gå tilbake
+                    {{ Translate('goBack') }}
                   </button>
-                  <h3 v-if="collection.title" style="margin-bottom: 0">
-                    {{ collection.title }}
+                  <h3 v-if="collection.prefix" style="margin-bottom: 0">
+                    {{ Translate(collection.prefix) }}
                   </h3>
                   <p
                     v-if="collection.total"
                     style="opacity: 0.5; margin-block: 0.5rem 1.5rem"
                   >
-                    {{ collection.total }} ikoner
+                    {{ collection.total }} {{ Translate('icon', 2) }}
                   </p>
                 </div>
               </GridItem>
@@ -301,7 +303,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
                     @click="loadAllIcons = true"
                     :loading="loadAllIcons"
                   >
-                    Last alle ikoner
+                    {{ Translate('loadAllElements') }}
                   </Button>
                 </Flex>
               </GridItem>
@@ -317,7 +319,9 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
           gap="0.5rem"
           class="kvass-icon-selector__footer"
         >
-          <Button @click="close" variant="tertiary">Avbryt</Button>
+          <Button @click="close" variant="tertiary">{{
+            Translate('cancel')
+          }}</Button>
           <Button
             @click="
               () => {
@@ -327,7 +331,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
             "
             variant="primary"
           >
-            Bekreft valg
+            {{ Translate('confirm') }}
           </Button>
         </Flex>
       </template>

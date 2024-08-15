@@ -1,0 +1,20 @@
+{
+  "cancel" : "Cancel",
+  "confirm" : "Confirm",
+  "fa-pro-brands" : "Brands icons",
+  "fa-pro-duotone" : "Duotone icons",
+  "fa-pro-light" : "Light icons",
+  "fa-pro-regular" : "Regular icons",
+  "fa-pro-solid" : "Solid icons",
+  "fontAssociatedWithSelectedThemeTemplate" : "\nFont associated with selected theme template",
+  "fontForBody" : "Body font",
+  "fontForTitle" : "Heading font",
+  "fontPreview" : "Preview",
+  "fontPreviewDisabled" : "Preview not available",
+  "goBack" : "Back",
+  "icon" : "Icon | Icons",
+  "primaryTitle" : "Main title",
+  "secondaryTitle" : "Secondary title",
+  "select" : "Select",
+  "selectIcon" : "Select icon"
+}

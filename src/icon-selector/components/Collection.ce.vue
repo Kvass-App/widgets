@@ -1,7 +1,7 @@
 <script setup>
 import { Icon } from '@kvass/ui'
 import { computed } from 'vue'
-import { translateCollectionName } from '../i18n.js'
+import { Translate } from '../../utils/index.js'
 
 const props = defineProps({
   collection: {
@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const collectionName = computed(
-  () => translateCollectionName(props.prefix) || props.collection.name,
+  () => Translate(props.prefix) || props.collection.name,
 )
 </script>
 

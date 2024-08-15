@@ -30,6 +30,9 @@ const props = defineProps({
   value: {
     type: String,
   },
+  language: {
+    type: String,
+  },
   /**
    * The map zoom level. Lower is more zoomed out
    */
@@ -92,6 +95,7 @@ watch(
     :label="props.label"
     :show-selected="props.showSelected"
     :show-warning="props.showWarning"
+    :language="language"
   />
 </template>
 

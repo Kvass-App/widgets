@@ -1,3 +1,6 @@
+import en from '../../i18n/en.json'
+import nb from '../../i18n/nb.json'
+
 function ExtractString(str, pattern, options = {}) {
   let { group = 1 } = options
   let match = str.match(pattern)
@@ -37,4 +40,17 @@ function LoadScript(src) {
   document.body.appendChild(script)
 }
 
-export { ExtractString, Wait, WaitUntil, LoadScript }
+function Translate(key, plural = 1) {
+  const messages = { en, nb }
+
+  const lang = document.documentElement.getAttribute('lang') || 'nb'
+  let value = messages[lang]?.[key] || key
+
+  if (value.includes('|')) {
+    const split = value.split('|')
+    value = split[plural - 1]
+  }
+  return value
+}
+
+export { ExtractString, Wait, WaitUntil, LoadScript, Translate }
