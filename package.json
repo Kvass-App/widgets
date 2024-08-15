@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "i18n:build": "curl -s0 https://localize.kvass.no/v2/projects/export?filterTag=widgets --header 'x-api-key: ' -o i18n.zip && unzip -qo i18n.zip -d i18n && rm i18n.zip"
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",

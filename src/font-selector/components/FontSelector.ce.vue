@@ -132,7 +132,9 @@ onMounted(() => {
 <template>
   <div class="kvass-font-selector" :style="styles">
     <label>
-      <span v-if="label" class="kvass-font-selector__label">{{ label }}</span>
+      <span v-if="label" class="kvass-font-selector__label">{{
+        Translate(label)
+      }}</span>
       <Dropdown
         class="kvass-font-selector__dropdown"
         :label="selectedFont || Translate('select')"
