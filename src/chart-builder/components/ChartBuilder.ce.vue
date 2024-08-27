@@ -502,12 +502,7 @@ onMounted(() => {
     font-size: var(--kvass-chart-builder-font-size, inherit);
     font-family: var(--kvass-chart-builder-font-family, inherit);
 
-    height: 100%;
-
     &-mode--build {
-      padding: 1rem;
-      background-color: white;
-
       .kvass-chart-builder__chart {
         padding: 2rem;
         padding-right: 0rem;
