@@ -4,6 +4,7 @@ export function getProviders(customProviders) {
       value: 'google',
       label: 'Google Fonts',
       fonts: [
+        'Mulish',
         'Montserrat',
         'Roboto',
         'Open Sans',
