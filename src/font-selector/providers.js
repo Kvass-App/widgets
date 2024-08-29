@@ -9,6 +9,7 @@ export function getProviders(customProviders) {
         'Roboto',
         'Open Sans',
         'Lato',
+        'Lexend Deca',
         'Lora',
         'Roboto Condensed',
         'Oswald',
