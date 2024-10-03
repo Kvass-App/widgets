@@ -1,6 +1,25 @@
 {
   "cancel" : "Avbryt",
   "confirm" : "Bekräfta",
+  "fa-pro-brands" : "Varumärkesikoner",
+  "fa-pro-duotone" : "Tvåfärgade ikoner",
+  "fa-pro-light" : "Tunna ikoner",
+  "fa-pro-regular" : "Normala ikoner",
+  "fa-pro-solid" : "Ikoner med heltäckande färg",
+  "fontAssociatedWithSelectedThemeTemplate" : "Typsnitt kopplat till vald temamall",
+  "fontForBody" : "Teckensnitt för brödtext",
+  "fontForHeading" : "Teckensnitt för titel",
+  "fontPreview" : "Förhandsvisning",
+  "fontPreviewDisabled" : "Förhandsvisning inte tillgänglig",
   "goBack" : "Gå tillbaka",
-  "select" : "Välj"
+  "highlightedIcons" : "Framhävda ikoner",
+  "icon" : "Ikon | Ikoner",
+  "iconSelectWidgetHelpText" : "Sök på engelska efter ikonen du letar efter. T.ex. \"Helicopter\"",
+  "iconsSelectWidgetIconsFound" : "träff",
+  "iconsSelectWidgetNoIconsMatchYourSearch" : "Inga ikoner matchade din sökning.",
+  "loadAllElements" : "Ladda alla",
+  "primaryTitle" : "Huvudtitel",
+  "secondaryTitle" : "Sekundär titel",
+  "select" : "Välj",
+  "selectIcon" : "Välj ikon"
 }

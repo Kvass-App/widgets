@@ -1,6 +1,25 @@
 {
   "cancel" : "Afbryd",
   "confirm" : "Bekræft",
+  "fa-pro-brands" : "Mærkevareikoner",
+  "fa-pro-duotone" : "Tofarvede ikoner",
+  "fa-pro-light" : "Light ikoner",
+  "fa-pro-regular" : "Normale ikoner",
+  "fa-pro-solid" : "Ikoner med heldækkende farve",
+  "fontAssociatedWithSelectedThemeTemplate" : "Font tilknyttet den valgte temaskabelon",
+  "fontForBody" : "Skrifttype til tekst",
+  "fontForHeading" : "Skrifttype til titel",
+  "fontPreview" : "Forhåndsvisning",
+  "fontPreviewDisabled" : "Forhåndsvisning ikke tilgængelig",
   "goBack" : "Gå tilbage",
-  "select" : "Vælg"
+  "highlightedIcons" : "Fremhævede ikoner",
+  "icon" : "Ikon | Ikoner",
+  "iconSelectWidgetHelpText" : "Søg på engelsk efter det ikon, du leder efter. F.eks. 'Helicopter'.",
+  "iconsSelectWidgetIconsFound" : "Resultat",
+  "iconsSelectWidgetNoIconsMatchYourSearch" : "Der er ingen ikoner, der matcher din søgning",
+  "loadAllElements" : "Tilfjøj alle",
+  "primaryTitle" : "Hovedtitel",
+  "secondaryTitle" : "Sekundærtitel",
+  "select" : "Vælg",
+  "selectIcon" : "Vælg ikon"
 }
