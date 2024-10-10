@@ -6,11 +6,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "i18n:build": "curl -s0 https://localize.kvass.no/v2/projects/export?filterTag=widgets --header 'x-api-key: tgpak_gfptcodjnrrtcmbvmrygc4dnnvute3diga3dsmbzm42ts' -o i18n.zip && unzip -qo i18n.zip -d i18n && rm i18n.zip"
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.16",
+    "@kvass/location-selector": "^1.0.17",
     "@kvass/map": "^1.0.14",
     "@kvass/ui": "^1.6.3",
     "@kvass/vue3-flatfinder": "^1.0.20",
