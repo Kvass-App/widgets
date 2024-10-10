@@ -12,7 +12,7 @@
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
     "@kvass/location-selector": "^1.0.17",
-    "@kvass/map": "^1.0.14",
+    "@kvass/map": "^1.0.15",
     "@kvass/ui": "^1.6.3",
     "@kvass/vue3-flatfinder": "^1.0.20",
     "@vueuse/core": "^10.9.0",

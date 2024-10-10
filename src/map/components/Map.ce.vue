@@ -81,6 +81,7 @@ const markersComp = computed(() => {
               description: content?.[index]?.[1],
               action: content?.[index]?.[2],
               actionLabel: content?.[index]?.[3],
+              actionIcon: content?.[index]?.[4],
             }
           : null,
       }
