@@ -32,15 +32,26 @@
   </head>
 
   <body>
-    <kvass-table-builder id="table"></kvass-table-builder>
-    <script type="module" src="/src/table-builder/main.js"></script>
+    <kvass-residential-expenses
+      price="4390000"
+      deposit="995000"
+      deposit-type="fixed"
+      joint-dept="70"
+      joint-dept-type="percent"
+      joint-dept-interest-rate="5"
+      operating-costs="2240"
+      part-ownership-enabled
+      part-ownership-discount="7.5"
+      part-ownership-hidden-elements="price,jointDept,monthlyCosts"
+    ></kvass-residential-expenses>
+    <script type="module" src="/src/residential-expenses/main.js"></script>
 
     <script>
-      const tableBuilder = document.getElementById('table')
+      // const tableBuilder = document.getElementById('table')
 
-      tableBuilder.addEventListener('webcomponent:update', (event) => {
-        console.log(event.detail)
-      })
+      // tableBuilder.addEventListener('webcomponent:update', (event) => {
+      //   console.log(event.detail)
+      // })
     </script>
   </body>
 </html>

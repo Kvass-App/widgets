@@ -13,7 +13,7 @@
     "@img-comparison-slider/vue": "^8.0.0",
     "@kvass/location-selector": "^1.0.18",
     "@kvass/map": "^1.0.15",
-    "@kvass/ui": "^1.6.3",
+    "@kvass/ui": "^1.6.22",
     "@kvass/vue3-flatfinder": "^1.0.41",
     "@vueuse/core": "^10.9.0",
     "chart.js": "^4.4.2",

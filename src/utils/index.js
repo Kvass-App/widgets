@@ -53,4 +53,23 @@ function Translate(key, plural = 1) {
   return value
 }
 
-export { ExtractString, Wait, WaitUntil, LoadScript, Translate }
+function PropEnumValidator(enums) {
+  return {
+    validator(value, props) {
+      if (enums instanceof Array)
+        return value instanceof Array
+          ? value.every((v) => enums.includes(v))
+          : enums.includes(value)
+      return enums(value, props)
+    },
+  }
+}
+
+export {
+  ExtractString,
+  Wait,
+  WaitUntil,
+  LoadScript,
+  Translate,
+  PropEnumValidator,
+}

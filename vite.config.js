@@ -48,16 +48,19 @@ export default defineConfig({
         'location-selector': fileURLToPath(
           new URL('./src/location-selector/main.js', import.meta.url),
         ),
-         'table-builder': fileURLToPath(
+        'table-builder': fileURLToPath(
           new URL('./src/table-builder/main.js', import.meta.url),
         ),
-         'chart-builder': fileURLToPath(
+        'chart-builder': fileURLToPath(
           new URL('./src/chart-builder/main.js', import.meta.url),
-        )
+        ),
+        'residential-expenses': fileURLToPath(
+          new URL('./src/residential-expenses/main.js', import.meta.url),
+        ),
       },
     },
   },
   server: {
-    port: 3001,
+    port: 3010,
   },
 })
