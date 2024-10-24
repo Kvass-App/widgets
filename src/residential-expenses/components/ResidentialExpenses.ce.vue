@@ -29,6 +29,7 @@ const defaultLabels = {
 }
 
 const props = defineProps({
+  title: String,
   price: Number,
   jointDeptType: {
     type: String,
@@ -85,7 +86,8 @@ const defaultJointDept = convert(
   props.jointDeptType,
   props.price,
 )
-const defaultDeposit = props.price - defaultJointDept
+const total = computed(() => props.price + defaultJointDept)
+const defaultDeposit = total.value - defaultJointDept
 const deposit = ref(defaultDeposit)
 const depositInput = ref(defaultDeposit)
 
@@ -99,7 +101,7 @@ const depositMarkers = computed(() => {
     ...Array(count)
       .fill(undefined)
       .map((v, i) => stepStart + step * (i + 1)),
-    props.price,
+    total.value,
   ]
 })
 
@@ -176,11 +178,13 @@ const getLabel = (key) => {
 
 <template>
   <div class="kvass-residential-expenses" ref="root">
+    <h1 v-if="title">{{ title }}</h1>
+
     <table v-if="isVisible('price')" data-field="price">
       <tr>
         <td>{{ getLabel('price') }}</td>
         <td>
-          {{ currency(price) }}
+          {{ currency(total) }}
         </td>
       </tr>
     </table>
@@ -231,7 +235,7 @@ const getLabel = (key) => {
       <Slider
         v-model="deposit"
         :min="defaultDeposit"
-        :max="price"
+        :max="total"
         :step="1000"
         :marker="depositMarkers"
         :marker-highlight="true"
@@ -315,6 +319,11 @@ const getLabel = (key) => {
   flex-direction: column;
 
   gap: var(--k-ui-spacing-lg);
+
+  h1 {
+    margin: 0;
+    font-size: var(--kvass-residential-expenses-title-font-size, 2.7rem);
+  }
 
   [data-field='price'] {
     font-size: 1.5em;
@@ -401,6 +410,10 @@ const getLabel = (key) => {
         padding-right: 0;
       }
     }
+  }
+
+  [data-state='at-value'] {
+    z-index: 1;
   }
 
   [data-field='value'] {
