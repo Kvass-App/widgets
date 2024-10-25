@@ -14,15 +14,17 @@ import {
 const defaultLabels = {
   price: 'Totalpris',
   partOwnership: 'Deleie',
+  partOwnershipValueLabel: 'Pris Deleie',
   partOwnershipDescription: '',
   partOwnershipLinkLabel: 'Les mer',
   partOwnershipLink: '',
-  partOwnershipAnswerYes: 'Ja, jeg ønsker deleie',
-  partOwnershipAnswerNo: 'Nei, jeg ønsker ikke deleie',
+  partOwnershipAnswerNo: 'Ja, jeg ønsker deleie',
+  partOwnershipAnswerYes: 'Nei, jeg ønsker ikke deleie',
   partOwnershipAnswerLabel: 'Ønsket eierskap',
   adjustDeposit: 'Tilpass innskudd',
   deposit: 'Innskudd',
   jointDept: 'Fellesgjeld',
+  jointDeptInterest: 'Renter fellesgjeld',
   monthlyCosts: 'Månedlige utgifter',
   operatingCosts: 'Driftskostnader',
   total: 'Totalt',
@@ -247,20 +249,22 @@ const getLabel = (key) => {
     </Alert>
 
     <table>
-      <tr>
+      <tr v-if="isVisible('deposit')">
         <td>{{ getLabel('deposit') }}</td>
         <td>
-          <div v-if="!partOwnershipState" data-field="deposit-input">
-            <Input
-              v-model="depositInput"
-              align="right"
-              v-bind="depositInputProps"
-              @blur="onDepositInputBlur"
-            />
-          </div>
-          <span data-field="value" v-else>{{
-            currency(partOwnershopDeposit)
-          }}</span>
+          <Input
+            v-model="depositInput"
+            align="right"
+            v-bind="depositInputProps"
+            data-field="deposit-input"
+            @blur="onDepositInputBlur"
+          />
+        </td>
+      </tr>
+      <tr v-if="partOwnershipState">
+        <td>{{ getLabel('partOwnershipValueLabel') }}</td>
+        <td>
+          <span data-field="value">{{ currency(partOwnershopDeposit) }}</span>
         </td>
       </tr>
       <tr v-if="isVisible('jointDept')">
@@ -280,14 +284,14 @@ const getLabel = (key) => {
       </thead>
       <tbody>
         <tr>
-          <td>{{ getLabel('jointDept') }}</td>
+          <td>{{ getLabel('jointDeptInterest') }}</td>
           <td>
             <span data-field="value">{{
               currency(jointDeptInterestCost)
             }}</span>
           </td>
         </tr>
-        <tr>
+        <tr v-if="operatingCosts">
           <td>{{ getLabel('operatingCosts') }}</td>
           <td>
             <span data-field="value">{{ currency(operatingCosts) }}</span>
