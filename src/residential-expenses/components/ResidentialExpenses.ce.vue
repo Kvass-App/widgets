@@ -107,12 +107,9 @@ const depositMarkers = computed(() => {
   ]
 })
 
-const partOwnershopDeposit = computed(() => {
-  return (
-    (defaultDeposit -
-      defaultDeposit * ((props.partOwnershipDiscount || 0) / 100)) *
-    (partOwnership.value / 100)
-  )
+const partOwnershipDeposit = computed(() => {
+  const discount = total * ((props.partOwnershipDiscount || 0) / 100)
+  return (defaultDeposit - discount) * (partOwnership.value / 100)
 })
 
 const jointDept = computed(
@@ -264,7 +261,7 @@ const getLabel = (key) => {
       <tr v-if="partOwnershipState">
         <td>{{ getLabel('partOwnershipValueLabel') }}</td>
         <td>
-          <span data-field="value">{{ currency(partOwnershopDeposit) }}</span>
+          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
         </td>
       </tr>
       <tr v-if="isVisible('jointDept')">
