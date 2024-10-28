@@ -108,7 +108,7 @@ const depositMarkers = computed(() => {
 })
 
 const partOwnershipDeposit = computed(() => {
-  const discount = total * ((props.partOwnershipDiscount || 0) / 100)
+  const discount = total.value * ((props.partOwnershipDiscount || 0) / 100)
   return (defaultDeposit - discount) * (partOwnership.value / 100)
 })
 
