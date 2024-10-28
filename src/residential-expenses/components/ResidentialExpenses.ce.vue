@@ -188,6 +188,15 @@ const getLabel = (key) => {
       </tr>
     </table>
 
+    <table v-if="partOwnershipState" data-field="partOwnershipPrice">
+      <tr>
+        <td>{{ getLabel('partOwnershipValueLabel') }}</td>
+        <td>
+          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
+        </td>
+      </tr>
+    </table>
+
     <Alert v-if="partOwnershipEnabled">
       <Flex justify="space-between">
         <b>{{ getLabel('partOwnership') }}</b>
@@ -258,12 +267,6 @@ const getLabel = (key) => {
           />
         </td>
       </tr>
-      <tr v-if="partOwnershipState">
-        <td>{{ getLabel('partOwnershipValueLabel') }}</td>
-        <td>
-          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
-        </td>
-      </tr>
       <tr v-if="isVisible('jointDept')">
         <td>{{ getLabel('jointDept') }}</td>
         <td>
@@ -326,7 +329,8 @@ const getLabel = (key) => {
     font-size: var(--kvass-residential-expenses-title-font-size, 2.7rem);
   }
 
-  [data-field='price'] {
+  [data-field='price'],
+  [data-field='partOwnershipPrice'] {
     font-size: 1.5em;
   }
 
