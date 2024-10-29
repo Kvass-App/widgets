@@ -7,7 +7,6 @@ import {
   Input,
   Switch,
   Alert,
-  Icon,
   Flex,
   Button,
 } from '@kvass/ui'
@@ -65,7 +64,7 @@ const props = defineProps({
 })
 
 const root = ref(null)
-const partOwnershipState = ref(true)
+const partOwnershipState = ref(false)
 
 const convert = (value, type, base) => {
   switch (type) {
