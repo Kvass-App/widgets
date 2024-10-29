@@ -9,12 +9,13 @@ import {
   Alert,
   Icon,
   Flex,
+  Button,
 } from '@kvass/ui'
 
 const defaultLabels = {
   price: 'Totalpris',
   partOwnership: 'Deleie',
-  partOwnershipValueLabel: 'Pris Deleie',
+  partOwnershipValueLabel: 'Du betaler',
   partOwnershipDescription: '',
   partOwnershipLinkLabel: 'Les mer',
   partOwnershipLink: '',
@@ -22,10 +23,14 @@ const defaultLabels = {
   partOwnershipAnswerYes: 'Nei, jeg ønsker ikke deleie',
   partOwnershipAnswerLabel: 'Ønsket eierskap',
   adjustDeposit: 'Tilpass innskudd',
+  adjustDepositAnnotation:
+    'Du har friheten til å nedbetale fellesgjelden i det tempoet som passer deg, og se de månedlige kostnadene synke tilsvarende. Prøv deg frem og finn den balansen som gir deg den beste boopplevelsen – det er du som styrer!',
   deposit: 'Innskudd',
   jointDept: 'Fellesgjeld',
-  jointDeptInterest: 'Renter fellesgjeld',
-  monthlyCosts: 'Månedlige utgifter',
+  jointDeptInterest: 'Renter fellesgjeld**',
+  monthlyCosts: 'Månedlige utgifter*',
+  monthlyCostsAnnotation:
+    '*Månedlige utgifter i den avdragsfrie  perioden\n**Du får rentefradrag for denne summen, gitt du har skattbar inntekt.',
   operatingCosts: 'Driftskostnader',
   total: 'Totalt',
 }
@@ -42,6 +47,7 @@ const props = defineProps({
   jointDeptInterestRate: Number,
   operatingCosts: Number,
   partOwnershipEnabled: Boolean,
+  partOwnershipLogo: String,
   partOwnershipDiscount: Number,
   partOwnershipHiddenElements: String,
   labels: {
@@ -59,7 +65,7 @@ const props = defineProps({
 })
 
 const root = ref(null)
-const partOwnershipState = ref(false)
+const partOwnershipState = ref(true)
 
 const convert = (value, type, base) => {
   switch (type) {
@@ -188,18 +194,15 @@ const getLabel = (key) => {
       </tr>
     </table>
 
-    <table v-if="partOwnershipState" data-field="partOwnershipPrice">
-      <tr>
-        <td>{{ getLabel('partOwnershipValueLabel') }}</td>
-        <td>
-          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
-        </td>
-      </tr>
-    </table>
-
     <Alert v-if="partOwnershipEnabled">
       <Flex justify="space-between">
-        <b>{{ getLabel('partOwnership') }}</b>
+        <img
+          v-if="partOwnershipLogo"
+          :src="partOwnershipLogo"
+          :alt="getLabel('partOwnership')"
+          height="20"
+        />
+        <b v-else>{{ getLabel('partOwnership') }}</b>
         <Switch
           v-model="partOwnershipState"
           :labels="{
@@ -208,34 +211,41 @@ const getLabel = (key) => {
           }"
         />
       </Flex>
-      <p v-if="partOwnershipState && getLabel('partOwnershipDescription')">
-        <span v-html="getLabel('partOwnershipDescription')"></span>
-        <a
+
+      <template v-if="partOwnershipState">
+        <hr />
+        <p
+          v-if="getLabel('partOwnershipDescription')"
+          v-html="getLabel('partOwnershipDescription')"
+        ></p>
+
+        <Button
+          as="a"
           v-if="getLabel('partOwnershipLink')"
           :href="getLabel('partOwnershipLink')"
+          :label="getLabel('partOwnershipLinkLabel')"
           target="_blank"
-          >{{ getLabel('partOwnershipLinkLabel') }}
-          <Icon icon="fa-pro-light:arrow-up-right-from-square"
-        /></a>
-      </p>
-
-      <FormControl
-        v-if="partOwnershipState"
-        :label="getLabel('partOwnershipLabel')"
-        data-field="partOwnership"
-      >
-        <Slider
-          v-model="partOwnership"
-          :min="10"
-          :max="90"
-          :step="10"
-          :marker="10"
-          :marker-highlight="true"
-          :format="(v) => `${v} %`"
-          :getRootNode="getRootNode"
-          class="k-mt-lg k-px"
+          variant="secondary"
+          icon-right="fa-pro-light:arrow-up-right-from-square"
         />
-      </FormControl>
+
+        <FormControl
+          :label="getLabel('partOwnershipLabel')"
+          data-field="partOwnership"
+        >
+          <Slider
+            v-model="partOwnership"
+            :min="10"
+            :max="90"
+            :step="10"
+            :marker="10"
+            :marker-highlight="true"
+            :format="(v) => `${v} %`"
+            :getRootNode="getRootNode"
+            class="k-mt-lg k-px"
+          />
+        </FormControl>
+      </template>
     </Alert>
 
     <Alert v-if="!partOwnershipState" data-field="deposit">
@@ -252,6 +262,12 @@ const getLabel = (key) => {
         :getRootNode="getRootNode"
         class="k-mt-lg k-px-lg"
       />
+      <div
+        v-if="getLabel('adjustDepositAnnotation')"
+        data-field="adjustDepositAnnotation"
+      >
+        {{ getLabel('adjustDepositAnnotation') }}
+      </div>
     </Alert>
 
     <table>
@@ -307,6 +323,24 @@ const getLabel = (key) => {
         </tr>
       </tfoot>
     </table>
+
+    <div
+      v-if="isVisible('monthlyCosts') && getLabel('monthlyCostsAnnotation')"
+      data-field="monthlyCostsAnnotation"
+    >
+      {{ getLabel('monthlyCostsAnnotation') }}
+    </div>
+
+    <table v-if="partOwnershipState" data-field="partOwnershipPrice">
+      <tr>
+        <td data-field="partOwnershipValueLabel">
+          {{ getLabel('partOwnershipValueLabel') }}
+        </td>
+        <td>
+          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -351,10 +385,21 @@ const getLabel = (key) => {
     margin-left: 0.25em;
   }
 
+  hr {
+    border: none;
+    height: 1px;
+    background-color: var(--k-ui-color-neutral);
+    margin-block: var(--k-ui-spacing);
+  }
+
   table {
     border-collapse: collapse;
 
     --hf-spacing: var(--k-ui-spacing-xxs);
+
+    &:empty {
+      display: none;
+    }
 
     th {
       border-bottom: 1px solid var(--k-ui-color-neutral);
@@ -423,6 +468,22 @@ const getLabel = (key) => {
 
   [data-field='value'] {
     padding-right: 13px;
+  }
+
+  [data-field='monthlyCostsAnnotation'] {
+    white-space: pre-line;
+    font-style: italic;
+    font-size: 0.8em;
+  }
+
+  [data-field='adjustDepositAnnotation'] {
+    white-space: pre-line;
+    font-size: 0.8em;
+    margin-top: var(--k-ui-spacing);
+  }
+
+  [data-field='partOwnershipValueLabel'] {
+    font-weight: bold;
   }
 
   [data-field='partOwnership'] {
