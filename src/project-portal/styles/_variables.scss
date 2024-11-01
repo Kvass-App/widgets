@@ -1,19 +1,19 @@
 $kvass-project-selector-resposive: 767px;
 
 $variables: (
-	'primary': #0523a8,
-	'secondary': #3d495b,
-	'background-color': #efeded,
-	'dark': #272727,
-	'sale': #2da71d,
-	'sold': #cc3434,
-	'upcoming': #e9b03d,
-	'development': #3d495b,
-	'border-radius': 3px,
-	'card-spacing': 2.5rem,
-	'light-grey': #efefef,
+  'primary': #0523a8,
+  'secondary': #3d495b,
+  'background-color': #efeded,
+  'dark': #272727,
+  'sale': #2da71d,
+  'sold': #cc3434,
+  'upcoming': #e9b03d,
+  'development': #3d495b,
+  'border-radius': 3px,
+  'card-spacing': 2.5rem,
+  'light-grey': #efefef,
 );
 
 @function GetVariable($key) {
-	@return var(--kvass-project-selector-#{$key}, map-get($variables, $key));
+  @return var(--kvass-project-selector-#{$key}, map-get($variables, $key));
 }

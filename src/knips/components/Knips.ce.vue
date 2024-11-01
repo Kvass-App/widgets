@@ -162,13 +162,5 @@ onMounted(() => {
 <style lang="scss">
 .knips-feed {
   border: none;
-  display: block;
-  min-height: 40vh;
-  //set height on mobile for scroll-anchor optimize
-  @media (max-width: 767px) {
-    height: 50vh;
-
-    overflow: auto;
-  }
 }
 </style>
