@@ -87,6 +87,11 @@ const currencyShorter = (val) => {
   return Intl.NumberFormat(props.locale, { notation: 'compact' }).format(val)
 }
 
+const getDivisor = (n, d = 10) => {
+  while (n % d === 0) d *= 10
+  return d / 10
+}
+
 const partOwnership = ref(50)
 const defaultJointDept = convert(
   props.jointDept,
@@ -97,6 +102,9 @@ const total = computed(() => props.price + defaultJointDept)
 const defaultDeposit = total.value - defaultJointDept
 const deposit = ref(defaultDeposit)
 const depositInput = ref(defaultDeposit)
+const step = computed(() => {
+  return Math.min(getDivisor(defaultDeposit), getDivisor(total.value), 10000)
+})
 
 const depositMarkers = computed(() => {
   const step = 1000000
@@ -219,7 +227,7 @@ const getLabel = (key) => {
         ></p>
 
         <Button
-          as="a"
+          is="a"
           v-if="getLabel('partOwnershipLink')"
           :href="getLabel('partOwnershipLink')"
           :label="getLabel('partOwnershipLinkLabel')"
@@ -253,7 +261,7 @@ const getLabel = (key) => {
         v-model="deposit"
         :min="defaultDeposit"
         :max="total"
-        :step="1000"
+        :step="step"
         :marker="depositMarkers"
         :marker-highlight="true"
         :format="currency"
