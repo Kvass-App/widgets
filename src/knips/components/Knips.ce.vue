@@ -33,6 +33,9 @@ const props = defineProps({
   },
 })
 
+const getTitle = (item) =>
+  item.blog.find((b) => ['h1', 'h2'].includes(b.type))?.text
+
 const el = ref(null)
 const dialog = ref(null)
 
@@ -41,11 +44,18 @@ const item = ref(null)
 const mapItem = (item) => {
   return {
     id: item.id,
-    title: Shorten(item.text, 110),
+    title: getTitle(item),
     date: FormatDate(item.publishDate),
     author: item?.author?.name,
     thumbnail: item.featuredImage.src,
     claps: item.clapCount,
+    shortContent: Shorten(
+      item.blog
+        .filter((b) => b.type === 'regular')
+        .map((b) => b.text)
+        .join('\n'),
+      125,
+    ),
     content: [
       ...item.blog
         .flatMap((b) => {
@@ -159,7 +169,8 @@ onMounted(getPosts)
               {{ item.claps }}
             </Flex>
           </Flex>
-          <div data-field="title">{{ item.title }}</div>
+          <div v-if="item.title" data-field="title">{{ item.title }}</div>
+          <div data-field="content">{{ item.shortContent }}</div>
         </template>
         <template #footer>
           <Button
@@ -257,6 +268,11 @@ onMounted(getPosts)
     .k-card__header {
       padding: 0;
     }
+  }
+
+  [data-field='title'] {
+    font-weight: bold;
+    margin-bottom: 5px;
   }
 
   .k-button--variant-tertiary {
