@@ -58,6 +58,7 @@ export default defineConfig({
           new URL('./src/residential-expenses/main.js', import.meta.url),
         ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
+        finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
       },
     },
   },
