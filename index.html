@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nb">
   <head>
     <meta charset="UTF-8" />
@@ -18,33 +18,60 @@
       }
 
       body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-          Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          'Open Sans',
+          'Helvetica Neue',
           sans-serif;
         max-width: 70ch;
+        font-size: 16px;
         margin-inline: auto;
         display: flex;
         flex-direction: column;
         gap: 2rem;
         justify-content: center;
+        background-color: #eaeaea;
+      }
+
+      :root {
+        --k-loan-background-color: #202020;
+        --k-loan-primary: #e7cfa7;
+        --k-loan-cta-alignment: center;
+        --k-loan-slider-track-background: rgb(255 255 255 / 0.2);
+        --k-loan-border-radius: 0px;
+      }
+
+      kvass-loan-calculator {
+        max-width: 400px;
       }
     </style>
   </head>
 
   <body>
-    <kvass-residential-expenses
-      price="4390000"
-      deposit="995000"
-      deposit-type="fixed"
-      joint-dept="70"
-      joint-dept-type="percent"
-      joint-dept-interest-rate="5"
-      operating-costs="2240"
-      part-ownership-enabled
-      part-ownership-discount="7.5"
-      part-ownership-hidden-elements="price,jointDept,monthlyCosts"
-    ></kvass-residential-expenses>
-    <script type="module" src="/src/residential-expenses/main.js"></script>
+    <kvass-loan-calculator
+      logo="https://assets.kvass.no/675ae751343f1d3fb4fa9e67"
+      equity-percent-default="0.3"
+      nominel-interest-rate-default="4.5"
+      nominel-interest-rate-min="0"
+      nominel-interest-rate-max="10"
+      repayment-period-default="25"
+      repayment-period-max="30"
+      repayment-period-min="5"
+      fee-monthly="65"
+      fee-establishing="3200"
+      purchase-price="3800000"
+      purchase-price-fixed="false"
+      cta-link="https://google.com"
+      cta-label="Få tilbud på boliglån"
+    ></kvass-loan-calculator>
+    <script type="module" src="/src/loan-calculator/main.js"></script>
 
     <script>
       // const tableBuilder = document.getElementById('table')

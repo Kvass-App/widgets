@@ -57,6 +57,9 @@ export default defineConfig({
         'residential-expenses': fileURLToPath(
           new URL('./src/residential-expenses/main.js', import.meta.url),
         ),
+        'loan-calculator': fileURLToPath(
+          new URL('./src/loan-calculator/main.js', import.meta.url),
+        ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
       },
     },
