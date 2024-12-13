@@ -257,6 +257,8 @@ const onPurchasePriceInput = () => {
   );
 
   --k-button-primary-background: #{useVar(primary)};
+  --k-button-primary-background-hover: #{darkenVar(primary, 10%)};
+  --k-button-primary-background-active: #{darkenVar(primary, 15%)};
   --k-button-primary-text: #{contrastVar(primary)};
   --k-button-border-radius: #{useVar(border-radius)};
 
