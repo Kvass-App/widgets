@@ -157,6 +157,7 @@ const onPurchasePriceInput = () => {
       :label="t('purchasePrice')"
       :min="Math.round(purchasePrice / 2)"
       :max="Math.round(purchasePrice * 2)"
+      :disabled="purchasePriceFixed"
       format="currency"
     />
     <Slider
@@ -276,6 +277,10 @@ const onPurchasePriceInput = () => {
 
   img {
     max-width: useVar('logo-width');
+  }
+
+  &-slider--disabled {
+    margin-bottom: calc(useVar(padding) * -0.5);
   }
 
   .k-button {

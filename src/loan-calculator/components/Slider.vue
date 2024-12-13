@@ -11,6 +11,7 @@ const props = defineProps({
   max: Number,
   step: Number,
   format: String,
+  disabled: Boolean,
 })
 
 const formatting = computed(() => {
@@ -46,8 +47,11 @@ const onInputBlur = () => {
 
 <template>
   <Grid
-    class="kvass-loan-calculator-slider"
-    areas="label input | slider slider"
+    :class="[
+      'kvass-loan-calculator-slider',
+      { 'kvass-loan-calculator-slider--disabled': disabled },
+    ]"
+    :areas="!disabled ? 'label input | slider slider' : 'label input'"
   >
     <GridItem area="label">
       <label>{{ label }}</label>
@@ -57,10 +61,11 @@ const onInputBlur = () => {
         v-model="input"
         align="right"
         v-bind="formatting"
+        :disabled="disabled"
         @blur="onInputBlur"
       />
     </GridItem>
-    <GridItem area="slider">
+    <GridItem v-if="!disabled" area="slider">
       <Slider
         v-model="model"
         :min="min"
