@@ -49,6 +49,7 @@ const t = getLabelFactory(props.labels, {
   loanAmount: 'Lånesum',
   cost: 'Kostnad',
   total: 'Totalt',
+  loanCalculator: 'Lånekalkulator',
 })
 
 const currency = formatFactory('currency', {
@@ -150,6 +151,7 @@ const onPurchasePriceInput = () => {
 <template>
   <div class="kvass-loan-calculator" ref="root">
     <img v-if="logo" :src="logo" />
+    <div data-part="title">{{ t('loanCalculator') }}</div>
 
     <Slider
       v-model="purchasePriceInput"
@@ -246,7 +248,14 @@ const onPurchasePriceInput = () => {
   @include setVar(thumb-size, 20px);
   @include setVar(thumb-border-width, 7px);
   @include setVar(cta-alignment, 'flex-start');
+  @include setVar(cta-border-radius, var(--k-loan-border-radius));
   @include setVar(slider-track-background, rgb(0 0 0 / 0.2));
+  @include setVar(title-weight, 600);
+  @include setVar(title-size, 2rem);
+  @include setVar(title-font, inherit);
+  @include setVar(result-weight, 600);
+  @include setVar(result-size, 2rem);
+  @include setVar(result-font, inherit);
 
   --k-slider-range-background: #{useVar(primary)};
   --k-slider-track-background: #{useVar(slider-track-background)};
@@ -261,7 +270,7 @@ const onPurchasePriceInput = () => {
   --k-button-primary-background-hover: #{darkenVar(primary, 10%)};
   --k-button-primary-background-active: #{darkenVar(primary, 15%)};
   --k-button-primary-text: #{contrastVar(primary)};
-  --k-button-border-radius: #{useVar(border-radius)};
+  --k-button-border-radius: #{useVar(cta-border-radius)};
 
   display: flex;
   flex-direction: column;
@@ -279,6 +288,12 @@ const onPurchasePriceInput = () => {
     max-width: useVar('logo-width');
   }
 
+  [data-part='title'] {
+    font-family: useVar('title-font');
+    font-size: useVar('title-size');
+    font-weight: useVar('title-weight');
+  }
+
   &-slider--disabled {
     margin-bottom: calc(useVar(padding) * -0.5);
   }
@@ -292,8 +307,9 @@ const onPurchasePriceInput = () => {
   }
 
   [data-part='cost'] {
-    font-size: 2.5rem;
-    font-weight: bold;
+    font-family: useVar('result-font');
+    font-size: useVar('result-size');
+    font-weight: useVar('result-weight');
   }
 
   [data-part='summary'] {
