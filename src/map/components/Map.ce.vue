@@ -14,6 +14,10 @@ const props = defineProps({
     type: String,
     default: '{}',
   },
+  markerIcon: {
+    type: String,
+    default: '{}',
+  },
   /**
    * The coordinates in the format of 'latitude,longitude'
    */
@@ -93,6 +97,10 @@ const mapOptions = reactive({
   accessToken: props.mapboxApiToken,
   ...(JSON.parse(props.mapOptions) || {}),
 })
+
+const markerIcon = reactive({
+  ...(JSON.parse(props.markerIcon) || {}),
+})
 </script>
 
 <template>
@@ -106,6 +114,7 @@ const mapOptions = reactive({
       :show-address="Boolean(address)"
       :aspect-ratio="aspectRatio"
       :center="centerComp"
+      :marker-icon="markerIcon"
     />
   </LazyLoad>
 </template>
