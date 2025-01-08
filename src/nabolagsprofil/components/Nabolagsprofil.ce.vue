@@ -7,8 +7,6 @@ import Distance from './Distance.ce.vue'
 import Qualities from './Qualities.ce.vue'
 import Disclaimer from './Disclaimer.ce.vue'
 
-import data from './data.json'
-
 const profile = ref(null)
 const readMore = ref(false)
 
@@ -62,9 +60,6 @@ const interactiveUrl = computed(() => {
 
 const getProfile = () => {
   const { url } = props
-
-  profile.value = data.profile
-  return
 
   fetch(url)
     .then((res) => res.json())
