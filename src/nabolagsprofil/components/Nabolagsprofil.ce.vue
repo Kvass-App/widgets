@@ -64,7 +64,7 @@ const getProfile = () => {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      profile.value = data
+      profile.value = data.profile
     })
     .catch((err) => {
       console.error(err)
