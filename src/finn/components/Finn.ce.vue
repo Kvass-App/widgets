@@ -12,6 +12,7 @@ import {
   RadioGroup,
   Grid,
   Stepper,
+  Card,
 } from '@kvass/ui'
 
 const props = withDefaults(
@@ -36,7 +37,26 @@ type State = 'dashboard' | 'create' | 'update' | 'mutate' | ''
 const state = ref('dashboard')
 </script>
 
-<template></template>
+<template>
+  <Card
+    title="Dine Finn-annonser"
+    subtitle="Her får du en oversikt over dine Finn-annonser."
+    variant="default"
+    appearance="shadow"
+  >
+    <template #default>
+      <div>test</div>
+      <!-- <Card title="test 2" appearance="shadow">
+        <template #default>
+          <div>Body</div>
+        </template>
+      </Card> -->
+    </template>
+    <template #actions>
+      <Button>actions</Button>
+    </template>
+  </Card>
+</template>
 
 <style lang="scss">
 @import url('@kvass/ui/style.css');
