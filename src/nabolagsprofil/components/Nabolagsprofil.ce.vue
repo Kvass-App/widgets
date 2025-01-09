@@ -64,7 +64,7 @@ function click(v) {
   if (readMore.value) {
     v.target.scrollIntoView({
       behavior: 'smooth',
-      block: 'nearest',
+      block: 'center',
       inline: 'nearest',
     })
   }
