@@ -137,9 +137,11 @@ onMounted(getProfile)
   // --kvass-nabolagsprofil-demographics-columns
   --kvass-nabolagsprofil-demographics-value-font-size: 3rem;
   --kvass-nabolagsprofil-demographics-value-font-weight: 400;
+  --kvass-nabolagsprofil-demographics-value-font-family: var(--primary-font);
   --kvass-nabolagsprofil-demographics-value-color: currentColor;
   --kvass-nabolagsprofil-demographics-label-font-size: 0.8rem;
   --kvass-nabolagsprofil-demographics-label-font-weight: 400;
+  --kvass-nabolagsprofil-demographics-label-font-family: var(--primary-font);
   --kvass-nabolagsprofil-demographics-label-color: currentColor;
   --kvass-nabolagsprofil-demographics-title-spacing-y: 0rem 1rem;
 
@@ -173,10 +175,16 @@ onMounted(getProfile)
   /* Doughnut */
   --kvass-nabolagsprofil-doughnut-title-font-size: 1rem;
   --kvass-nabolagsprofil-doughnut-title-font-weight: 400;
+  --kvass-nabolagsprofil-doughnut-title-font-family: var(--primary-font);
+
   --kvass-nabolagsprofil-doughnut-subtitle-font-size: 1rem;
   --kvass-nabolagsprofil-doughnut-subtitle-font-weight: 400;
+  --kvass-nabolagsprofil-doughnut-subtitle-font-family: var(--primary-font);
+
   --kvass-nabolagsprofil-doughnut-content-font-size: 1.5rem;
   --kvass-nabolagsprofil-doughnut-content-font-weight: 400;
+  --kvass-nabolagsprofil-doughnut-content-font-family: var(--primary-font);
+
   --kvass-nabolagsprofil-doughnut-size: 200px;
   --kvass-nabolagsprofil-doughnut-color-primary: var(
     --primary,

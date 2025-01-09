@@ -64,11 +64,13 @@ const getLabel = (item) => {
     &__value {
       font-size: var(--kvass-nabolagsprofil-demographics-value-font-size);
       font-weight: var(--kvass-nabolagsprofil-demographics-value-font-weight);
+      font-family: var(--kvass-nabolagsprofil-demographics-value-font-family);
       color: var(--kvass-nabolagsprofil-demographics-value-color);
     }
     &__label {
       font-size: var(--kvass-nabolagsprofil-demographics-label-font-size);
       font-weight: var(--kvass-nabolagsprofil-demographics-label-font-weight);
+      font-family: var(--kvass-nabolagsprofil-demographics-label-font-family);
       color: var(--kvass-nabolagsprofil-demographics-label-color);
 
       &:first-letter {

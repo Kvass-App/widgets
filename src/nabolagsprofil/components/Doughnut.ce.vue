@@ -91,12 +91,14 @@ const chartOptions = computed(() => {
     }
 
     font-size: var(--kvass-nabolagsprofil-doughnut-title-font-size);
-    font-size: var(--kvass-nabolagsprofil-doughnut-title-font-weight);
+    font-weight: var(--kvass-nabolagsprofil-doughnut-title-font-weight);
+    font-family: var(--kvass-nabolagsprofil-doughnut-title-font-family);
   }
   &__subtitle {
     text-align: center;
     font-size: var(--kvass-nabolagsprofil-doughnut-subtitle-font-size);
-    font-size: var(--kvass-nabolagsprofil-doughnut-subtitle-font-weight);
+    font-weight: var(--kvass-nabolagsprofil-doughnut-subtitle-font-weight);
+    font-family: var(--kvass-nabolagsprofil-doughnut-subtitle-font-family);
   }
   &__content {
     position: absolute;
@@ -106,6 +108,7 @@ const chartOptions = computed(() => {
 
     font-size: var(--kvass-nabolagsprofil-doughnut-content-font-size);
     font-weight: var(--kvass-nabolagsprofil-doughnut-content-font-weight);
+    font-family: var(--kvass-nabolagsprofil-doughnut-content-font-family);
   }
   &__chart {
     margin: 0 auto;
