@@ -81,7 +81,7 @@ const getDistance = (item) => {
 
 const getDuration = (item) => {
   const property = item.distances.selected
-  const distance = item.duration[property]
+  const distance = item?.duration?.[property]
 
   if (!distance) return ''
   return `${Math.floor(distance / 60)} min`
