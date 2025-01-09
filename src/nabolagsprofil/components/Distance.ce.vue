@@ -200,9 +200,6 @@ const getIcon = (id) => {
 <style lang="scss">
 .distance {
   .k-datatable {
-    // --k-datatable-odd-color: 'inherit';
-    // --k-datatable-border-color: black:
-
     &__cell-sort-icon {
       display: none;
     }
@@ -214,6 +211,7 @@ const getIcon = (id) => {
     &__row {
       &:first-child {
         .k-datatable__cell {
+          background-color: initial;
           font-weight: var(--kvass-nabolagsprofil-distance-header-font-weight);
           font-size: var(--kvass-nabolagsprofil-distance-header-font-size);
         }
