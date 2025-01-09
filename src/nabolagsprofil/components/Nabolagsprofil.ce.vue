@@ -118,12 +118,20 @@ onMounted(getProfile)
   h2 {
     font-weight: var(--kvass-nabolagsprofil-title-font-weight);
     font-size: var(--kvass-nabolagsprofil-title-font-size);
+    font-family: var(--kvass-nabolagsprofil-title-font-family);
     margin: 0;
   }
 
   /* Title */
-  --kvass-nabolagsprofil-title-font-weight: 400;
-  --kvass-nabolagsprofil-title-font-size: 2rem;
+  --kvass-nabolagsprofil-title-font-weight: var(
+    --custom-heading-font-weight,
+    400
+  );
+  --kvass-nabolagsprofil-title-font-size: var(--custom-h2-font-size, 2rem);
+  --kvass-nabolagsprofil-title-font-family: var(
+    --custom-heading-font-family,
+    var(--secondary-font)
+  );
 
   /* Demographics */
   // --kvass-nabolagsprofil-demographics-columns
@@ -136,10 +144,13 @@ onMounted(getProfile)
   --kvass-nabolagsprofil-demographics-title-spacing-y: 0rem 1rem;
 
   /* Population */
-  --kvass-nabolagsprofil-population-color-primary: var(--k-ui-color-primary);
+  --kvass-nabolagsprofil-population-color-primary: var(
+    --primary,
+    var(--k-ui-color-primary)
+  );
   --kvass-nabolagsprofil-population-color-secondary: var(
-    --k-ui-color-secondary,
-    var(--k-ui-color-neutral)
+    --secondary,
+    var(--k-ui-color-secondary)
   );
   --kvass-nabolagsprofil-population-box-size: 1.25rem;
   --kvass-nabolagsprofil-population-box-rounding: 0px;
@@ -167,10 +178,13 @@ onMounted(getProfile)
   --kvass-nabolagsprofil-doughnut-content-font-size: 1.5rem;
   --kvass-nabolagsprofil-doughnut-content-font-weight: 400;
   --kvass-nabolagsprofil-doughnut-size: 200px;
-  --kvass-nabolagsprofil-doughnut-color-primary: var(--k-ui-color-primary);
+  --kvass-nabolagsprofil-doughnut-color-primary: var(
+    --primary,
+    var(--k-ui-color-primary)
+  );
   --kvass-nabolagsprofil-doughnut-color-secondary: var(
-    --k-ui-color-secondary,
-    var(--k-ui-color-neutral)
+    --secondary,
+    var(--k-ui-color-secondary)
   );
 }
 </style>

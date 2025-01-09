@@ -59,6 +59,7 @@ const getData = (item) => {
 
 <template>
   <Flex
+    v-if="items.length"
     class="qualities"
     gap="2rem"
     is="section"
