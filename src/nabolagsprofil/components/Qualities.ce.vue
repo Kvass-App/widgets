@@ -61,8 +61,8 @@ const getData = (item) => {
   <Flex
     v-if="items.length"
     class="qualities"
-    gap="2rem"
     is="section"
+    gap="3rem"
     :columns="items.length"
     wrap
     justify="center"
@@ -89,13 +89,14 @@ const getData = (item) => {
 </template>
 
 <style lang="scss">
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
 .qualities {
   &__title {
     width: 100%;
     grid-column: 1/-1;
-    margin-block: var(
-      --kvass-nabolagsprofil-qualities-title-spacing-y
-    ) !important;
+    margin-block: useVar(qualities-title-spacing-y) !important;
   }
 
   @media (max-width: 992px) {

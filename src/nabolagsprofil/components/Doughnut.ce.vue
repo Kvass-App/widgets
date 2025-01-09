@@ -27,10 +27,10 @@ const chartData = computed(() => {
   const style = window.getComputedStyle(doughnut.value.$el)
 
   const primaryColor = style.getPropertyValue(
-    '--kvass-nabolagsprofil-doughnut-color-primary',
+    '--k-scoped-nabolagsprofil-doughnut-primary',
   )
   const secondaryColor = style.getPropertyValue(
-    '--kvass-nabolagsprofil-doughnut-color-secondary',
+    '--k-scoped-nabolagsprofil-doughnut-secondary',
   )
 
   return {
@@ -82,6 +82,10 @@ const chartOptions = computed(() => {
 </template>
 
 <style lang="scss">
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
+
 .doughnut {
   &__title {
     text-align: center;
@@ -90,15 +94,15 @@ const chartOptions = computed(() => {
       text-transform: uppercase;
     }
 
-    font-size: var(--kvass-nabolagsprofil-doughnut-title-font-size);
-    font-weight: var(--kvass-nabolagsprofil-doughnut-title-font-weight);
-    font-family: var(--kvass-nabolagsprofil-doughnut-title-font-family);
+    font-size: useVar(doughnut-title-size);
+    font-weight: useVar(doughnut-title-weight);
+    font-family: useVar(doughnut-title-font);
   }
   &__subtitle {
     text-align: center;
-    font-size: var(--kvass-nabolagsprofil-doughnut-subtitle-font-size);
-    font-weight: var(--kvass-nabolagsprofil-doughnut-subtitle-font-weight);
-    font-family: var(--kvass-nabolagsprofil-doughnut-subtitle-font-family);
+    font-size: useVar(doughnut-subtitle-size);
+    font-weight: useVar(doughnut-subtitle-weight);
+    font-family: useVar(doughnut-subtitle-font);
   }
   &__content {
     position: absolute;
@@ -106,15 +110,15 @@ const chartOptions = computed(() => {
     left: 50%;
     transform: translate(-50%, -50%);
 
-    font-size: var(--kvass-nabolagsprofil-doughnut-content-font-size);
-    font-weight: var(--kvass-nabolagsprofil-doughnut-content-font-weight);
-    font-family: var(--kvass-nabolagsprofil-doughnut-content-font-family);
+    font-size: useVar(doughnut-content-size);
+    font-weight: useVar(doughnut-content-weight);
+    font-family: useVar(doughnut-content-font);
   }
   &__chart {
     margin: 0 auto;
     position: relative;
-    height: var(--kvass-nabolagsprofil-doughnut-size);
-    width: var(--kvass-nabolagsprofil-doughnut-size);
+    height: useVar(doughnut-size);
+    width: useVar(doughnut-size);
   }
 }
 </style>

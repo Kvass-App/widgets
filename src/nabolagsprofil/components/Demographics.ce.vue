@@ -35,43 +35,48 @@ const getLabel = (item) => {
 </template>
 
 <style lang="scss">
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
+
 .demographics {
   &__title {
-    margin-block: var(
-      --kvass-nabolagsprofil-demographics-title-spacing-y
-    ) !important;
-  }
-  grid-template-columns: var(
-    --kvass-nabolagsprofil-demographics-columns,
-    repeat(3, 1fr)
-  );
-
-  @media (max-width: 992px) {
-    grid-template-columns: var(
-      --kvass-nabolagsprofil-demographics-columns,
-      repeat(2, 1fr)
-    );
+    margin-block: useVar(demographics-title-spacing-y) !important;
   }
 
-  @media (max-width: 767px) {
-    grid-template-columns: var(
-      --kvass-nabolagsprofil-demographics-columns,
-      repeat(1, 1fr)
-    );
-  }
+  grid-template-columns: useVar(demographics-columns);
+
+  // grid-template-columns: var(
+  //   --kvass-nabolagsprofil-demographics-columns,
+  //   repeat(3, 1fr)
+  // );
+
+  // @media (max-width: 992px) {
+  //   grid-template-columns: var(
+  //     --kvass-nabolagsprofil-demographics-columns,
+  //     repeat(2, 1fr)
+  //   );
+  // }
+
+  // @media (max-width: 767px) {
+  //   grid-template-columns: var(
+  //     --kvass-nabolagsprofil-demographics-columns,
+  //     repeat(1, 1fr)
+  //   );
+  // }
 
   &-item {
     &__value {
-      font-size: var(--kvass-nabolagsprofil-demographics-value-font-size);
-      font-weight: var(--kvass-nabolagsprofil-demographics-value-font-weight);
-      font-family: var(--kvass-nabolagsprofil-demographics-value-font-family);
-      color: var(--kvass-nabolagsprofil-demographics-value-color);
+      font-size: useVar(demographics-value-size);
+      font-weight: useVar(demographics-value-weight);
+      font-family: useVar(demographics-value-font);
+      color: useVar(demographics-value-color);
     }
     &__label {
-      font-size: var(--kvass-nabolagsprofil-demographics-label-font-size);
-      font-weight: var(--kvass-nabolagsprofil-demographics-label-font-weight);
-      font-family: var(--kvass-nabolagsprofil-demographics-label-font-family);
-      color: var(--kvass-nabolagsprofil-demographics-label-color);
+      font-size: useVar(demographics-label-size);
+      font-weight: useVar(demographics-label-weight);
+      font-family: useVar(demographics-label-font);
+      color: useVar(demographics-label-color);
 
       &:first-letter {
         text-transform: uppercase;

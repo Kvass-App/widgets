@@ -58,6 +58,18 @@ const interactiveUrl = computed(() => {
   return `https://profil.nabolag.no/${id}`
 })
 
+function click(v) {
+  readMore.value = !readMore.value
+
+  if (readMore.value) {
+    v.target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'nearest',
+    })
+  }
+}
+
 const getProfile = () => {
   const { url } = props
 
@@ -83,7 +95,7 @@ onMounted(getProfile)
           :label="readMore ? readLessLabel : readMoreLabel"
           variant="secondary"
           :iconRight="readMore ? 'fa-pro-solid:minus' : 'fa-pro-solid:plus'"
-          @click="() => (readMore = !readMore)"
+          @click="click"
         />
 
         <Button
@@ -114,85 +126,114 @@ onMounted(getProfile)
 <style lang="scss">
 @import url('@kvass/ui/style.css');
 
+@mixin setVar($name, $default) {
+  --k-scoped-nabolagsprofil-#{$name}: var(
+    --k-nabolagsprofil-#{$name},
+    #{$default}
+  );
+}
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
+
 .nabolagsprofil {
+  @include setVar(primary, var(--primary, var(--k-ui-color-primary)));
+  @include setVar(
+    secondary,
+    var(--secondary, var(--k-ui-color-secondary, var(--k-ui-color-neutral)))
+  );
+
+  /* Title */
+  @include setVar(title-weight, var(--custom-heading-font-weight, 400));
+  @include setVar(title-size, var(--custom-h2-font-size, 2rem));
+  @include setVar(
+    title-font,
+    var(--custom-heading-font-family, var(--secondary-font))
+  );
+
   h2 {
-    font-weight: var(--kvass-nabolagsprofil-title-font-weight);
-    font-size: var(--kvass-nabolagsprofil-title-font-size);
-    font-family: var(--kvass-nabolagsprofil-title-font-family);
+    font-weight: useVar(title-weight);
+    font-size: useVar(title-size);
+    font-family: useVar(title-font);
     margin: 0;
   }
 
-  /* Title */
-  --kvass-nabolagsprofil-title-font-weight: var(
-    --custom-heading-font-weight,
-    400
-  );
-  --kvass-nabolagsprofil-title-font-size: var(--custom-h2-font-size, 2rem);
-  --kvass-nabolagsprofil-title-font-family: var(
-    --custom-heading-font-family,
-    var(--secondary-font)
-  );
-
   /* Demographics */
   // --kvass-nabolagsprofil-demographics-columns
-  --kvass-nabolagsprofil-demographics-value-font-size: 3rem;
-  --kvass-nabolagsprofil-demographics-value-font-weight: 400;
-  --kvass-nabolagsprofil-demographics-value-font-family: var(--primary-font);
-  --kvass-nabolagsprofil-demographics-value-color: currentColor;
-  --kvass-nabolagsprofil-demographics-label-font-size: 0.8rem;
-  --kvass-nabolagsprofil-demographics-label-font-weight: 400;
-  --kvass-nabolagsprofil-demographics-label-font-family: var(--primary-font);
-  --kvass-nabolagsprofil-demographics-label-color: currentColor;
-  --kvass-nabolagsprofil-demographics-title-spacing-y: 0rem 1rem;
+
+  @include setVar(demographics-columns, repeat(3, 1fr));
+  @media (max-width: 992px) {
+    @include setVar(demographics-columns, repeat(2, 1fr));
+  }
+  @media (max-width: 767px) {
+    @include setVar(demographics-columns, repeat(1, 1fr));
+  }
+
+  @include setVar(demographics-value-size, 3rem);
+  @include setVar(demographics-value-weight, 400);
+  @include setVar(demographics-value-font, inherit);
+  @include setVar(demographics-value-color, currentColor);
+
+  @include setVar(demographics-label-size, 0.8rem);
+  @include setVar(demographics-label-weight, 400);
+  @include setVar(demographics-label-font, inherit);
+  @include setVar(demographics-label-color, currentColor);
+
+  @include setVar(demographics-title-spacing-y, 0rem 1rem);
 
   /* Population */
-  --kvass-nabolagsprofil-population-color-primary: var(
-    --primary,
-    var(--k-ui-color-primary)
-  );
-  --kvass-nabolagsprofil-population-color-secondary: var(
-    --secondary,
-    var(--k-ui-color-secondary)
-  );
-  --kvass-nabolagsprofil-population-box-size: 1.25rem;
-  --kvass-nabolagsprofil-population-box-rounding: 0px;
-  --kvass-nabolagsprofil-population-bar-height: 200px;
-  --kvass-nabolagsprofil-population-bar-gap: 0.75rem;
-  --kvass-nabolagsprofil-population-bar-font-size: 1rem;
-  --kvass-nabolagsprofil-population-bar-font-weight: 400;
-  --kvass-nabolagsprofil-population-bar-padding: 0rem;
+
+  @include setVar(population-primary, useVar(primary));
+
+  @include setVar(population-secondary, useVar(secondary));
+
+  @include setVar(population-box-size, 1.25rem);
+  @include setVar(population-box-rounding, 0px);
+  @include setVar(population-bar-height, 200px);
+  @include setVar(population-bar-gap, 0.75rem);
+  @include setVar(population-bar-size, 1rem);
+  @include setVar(population-bar-weight, 400);
+  @include setVar(population-bar-font, inherit);
+  @include setVar(population-bar-padding, 0rem);
 
   /* Distance */
-  --kvass-nabolagsprofil-distance-cell-padding: 0.75rem;
-  --kvass-nabolagsprofil-distance-header-padding: 0.5rem 0.75rem;
-  --kvass-nabolagsprofil-distance-header-font-weight: bold;
-  --kvass-nabolagsprofil-distance-header-font-size: 1rem;
-  --kvass-nabolagsprofil-distance-header-spacing-y: 0rem 1rem;
+  @include setVar(distance-cell-padding, 0.75rem);
+  @include setVar(distance-header-padding, 0.5rem 0.75rem);
+  @include setVar(distance-header-weight, bold);
+  @include setVar(distance-header-font, inherit);
+  @include setVar(distance-header-size, 1rem);
+  @include setVar(distance-header-spacing-y, 0rem 1rem);
+
+  @include setVar(
+    distance-header-seperator,
+    1px solid var(--k-datatable-border-color, var(--k-ui-color-neutral-light))
+  );
+  @include setVar(distance-seperator, none);
+  @media (max-width: 992px) {
+    @include setVar(
+      distance-seperator,
+      1px solid var(--k-datatable-border-color, var(--k-ui-color-neutral-light))
+    );
+  }
 
   /* Qualities */
-  --kvass-nabolagsprofil-qualities-title-spacing-y: 0rem 1rem;
+  @include setVar(qualities-title-spacing-y, 0rem 1rem);
 
   /* Doughnut */
-  --kvass-nabolagsprofil-doughnut-title-font-size: 1rem;
-  --kvass-nabolagsprofil-doughnut-title-font-weight: 400;
-  --kvass-nabolagsprofil-doughnut-title-font-family: var(--primary-font);
+  @include setVar(doughnut-title-size, 1rem);
+  @include setVar(doughnut-title-weight, 400);
+  @include setVar(doughnut-title-font, inherit);
 
-  --kvass-nabolagsprofil-doughnut-subtitle-font-size: 1rem;
-  --kvass-nabolagsprofil-doughnut-subtitle-font-weight: 400;
-  --kvass-nabolagsprofil-doughnut-subtitle-font-family: var(--primary-font);
+  @include setVar(doughnut-subtitle-size, 1rem);
+  @include setVar(doughnut-subtitle-weight, 400);
+  @include setVar(doughnut-subtitle-font, inherit);
 
-  --kvass-nabolagsprofil-doughnut-content-font-size: 1.5rem;
-  --kvass-nabolagsprofil-doughnut-content-font-weight: 400;
-  --kvass-nabolagsprofil-doughnut-content-font-family: var(--primary-font);
+  @include setVar(doughnut-content-size, 1.5rem);
+  @include setVar(doughnut-content-weight, 400);
+  @include setVar(doughnut-content-font, inherit);
 
-  --kvass-nabolagsprofil-doughnut-size: 200px;
-  --kvass-nabolagsprofil-doughnut-color-primary: var(
-    --primary,
-    var(--k-ui-color-primary)
-  );
-  --kvass-nabolagsprofil-doughnut-color-secondary: var(
-    --secondary,
-    var(--k-ui-color-secondary)
-  );
+  @include setVar(doughnut-size, 200px);
+  @include setVar(doughnut-primary, useVar(primary));
+  @include setVar(doughnut-secondary, useVar(secondary));
 }
 </style>

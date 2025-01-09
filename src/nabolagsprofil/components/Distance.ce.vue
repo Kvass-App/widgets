@@ -198,6 +198,10 @@ const getIcon = (id) => {
 </template>
 
 <style lang="scss">
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
+
 .distance {
   .k-datatable {
     &__cell-sort-icon {
@@ -205,15 +209,16 @@ const getIcon = (id) => {
     }
 
     &__cell {
-      padding: var(--kvass-nabolagsprofil-distance-cell-padding);
+      padding: useVar(distance-cell-padding);
     }
 
     &__row {
       &:first-child {
         .k-datatable__cell {
           background-color: initial;
-          font-weight: var(--kvass-nabolagsprofil-distance-header-font-weight);
-          font-size: var(--kvass-nabolagsprofil-distance-header-font-size);
+          font-weight: useVar(distance-header-weight);
+          font-size: useVar(distance-header-size);
+          font-family: useVar(distance-header-font);
         }
       }
     }
@@ -227,13 +232,19 @@ const getIcon = (id) => {
       &__row {
         &:first-child {
           .k-datatable__cell {
-            padding: var(--kvass-nabolagsprofil-distance-header-padding);
-            margin-block: var(--kvass-nabolagsprofil-distance-header-spacing-y);
+            padding: useVar(distance-header-padding);
+            margin-block: useVar(distance-header-spacing-y);
           }
         }
+        &:first-child {
+          .k-datatable__cell {
+            border-bottom: useVar(distance-header-seperator);
+          }
+        }
+
         &:not(:first-child) {
           .k-datatable__cell {
-            border-bottom: none;
+            border-bottom: useVar(distance-seperator);
           }
         }
       }
@@ -254,8 +265,8 @@ const getIcon = (id) => {
         &:first-child {
           .k-datatable__cell {
             // padding: 0.5rem;
-            border-top: 1px solid
-              var(--k-datatable-border-color, var(--k-ui-color-neutral-light));
+            border-top: useVar(distance-header-seperator);
+            border-bottom: useVar(distance-seperator);
           }
         }
       }

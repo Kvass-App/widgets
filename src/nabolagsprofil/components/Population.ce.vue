@@ -124,19 +124,23 @@ const population = ref(null)
 </template>
 
 <style lang="scss">
+@function useVar($name) {
+  @return var(--k-scoped-nabolagsprofil-#{$name});
+}
+
 .population {
   &__legend {
     &-box {
-      width: var(--kvass-nabolagsprofil-population-box-size);
-      height: var(--kvass-nabolagsprofil-population-box-size);
-      border-radius: var(--kvass-nabolagsprofil-population-box-rounding);
+      width: useVar(population-box-size);
+      height: useVar(population-box-size);
+      border-radius: useVar(population-box-rounding);
 
       &--primary {
-        background: var(--kvass-nabolagsprofil-population-color-primary);
+        background: useVar(population-primary);
       }
 
       &--secondary {
-        background: var(--kvass-nabolagsprofil-population-color-secondary);
+        background: useVar(population-secondary);
       }
     }
   }
@@ -153,27 +157,25 @@ const population = ref(null)
     }
 
     &-bars {
-      gap: var(--kvass-nabolagsprofil-population-bar-gap);
+      gap: useVar(population-bar-gap);
     }
 
     &-bar {
       width: 100%;
-      height: calc(
-        var(--percentage) * var(--kvass-nabolagsprofil-population-bar-height) /
-          100
-      );
+      height: calc(var(--percentage) * useVar(population-bar-height) / 100);
       &--primary {
-        background: var(--kvass-nabolagsprofil-population-color-primary);
+        background: useVar(population-primary);
       }
       &--secondary {
-        background: var(--kvass-nabolagsprofil-population-color-secondary);
+        background: useVar(population-secondary);
       }
     }
 
     &-value {
-      font-size: var(--kvass-nabolagsprofil-population-bar-font-size);
-      padding: var(--kvass-nabolagsprofil-population-bar-padding);
-      font-weight: var(--kvass-nabolagsprofil-population-bar-font-weight);
+      font-size: useVar(population-bar-size);
+      padding: useVar(population-bar-padding);
+      font-weight: useVar(population-bar-weight);
+      font-family: useVar(population-bar-font);
     }
   }
 }
