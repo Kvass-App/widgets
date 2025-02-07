@@ -64,6 +64,9 @@ export default defineConfig({
         directories: fileURLToPath(
           new URL('./src/directories/main.js', import.meta.url),
         ),
+        nabolagsprofil: fileURLToPath(
+          new URL('./src/nabolagsprofil/main.js', import.meta.url),
+        ),
       },
     },
   },
