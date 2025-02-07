@@ -61,6 +61,9 @@ export default defineConfig({
           new URL('./src/loan-calculator/main.js', import.meta.url),
         ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
+        directories: fileURLToPath(
+          new URL('./src/directories/main.js', import.meta.url),
+        ),
       },
     },
   },
