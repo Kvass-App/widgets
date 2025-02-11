@@ -267,8 +267,10 @@ const back = () =>
     border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
 
     background-color: white;
+    color: black;
 
     display: flex;
+    align-items: center;
     gap: 0.5em;
 
     &:focus-within {
