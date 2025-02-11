@@ -1,11 +1,18 @@
 <script setup>
 import { ref, computed, reactive } from 'vue'
 import Item from './Item.vue'
-import { Icon, Button } from '@kvass/ui'
+import { Icon, Button, Input } from '@kvass/ui'
 
 const props = defineProps({
   title: String,
-  value: Array,
+  value: {
+    type: String,
+    default: '[]',
+  },
+  showSearch: {
+    type: String,
+    transform: (value) => value === 'true',
+  },
   icons: {
     type: Object,
     default: () => ({
@@ -27,6 +34,11 @@ const icons = reactive(
 
 const currentPath = ref('')
 const layout = ref('grid')
+const search = ref('')
+
+const layoutComputed = computed(() => {
+  return search.value ? 'list' : layout.value
+})
 
 const currentPathSplitted = computed(() => currentPath.value.split('/'))
 
@@ -43,6 +55,20 @@ const items = computed(() => {
 
   value.forEach((item) => {
     const { path } = item
+
+    if (search.value) {
+      item.files
+        .map((file) => ({ ...file, fullPath: `${path}${file.name}` }))
+        .filter((item) =>
+          item.fullPath
+            .toLowerCase()
+            .trim()
+            .includes(search.value.toLowerCase().trim()),
+        )
+        .forEach((item) => files.push(item))
+
+      return files
+    }
 
     const pathSplitted = path.split('/')
 
@@ -88,6 +114,21 @@ const back = () =>
       <div v-if="title" class="k-directory__title">{{ title }}</div>
 
       <div class="k-directory__layout-settings">
+        <div class="k-directory__search">
+          <Input
+            v-if="showSearch"
+            v-model="search"
+            type="text"
+            placeholder="Søk her"
+          />
+          <Button
+            v-if="search"
+            class="k-directory__search-close"
+            @click="search = ''"
+            icon="fa-pro-duotone:x"
+          ></Button>
+        </div>
+
         <Button
           v-for="l in ['grid', 'list']"
           @click="layout = l"
@@ -96,7 +137,7 @@ const back = () =>
       </div>
     </div>
 
-    <div v-if="currentPath" class="k-directory__breadcrumbs">
+    <div v-if="currentPath && !search" class="k-directory__breadcrumbs">
       <Button
         class="k-directory__back"
         :icon="icons.back"
@@ -115,12 +156,19 @@ const back = () =>
       </div>
     </div>
 
-    <div :class="['k-directory__items', `k-directory__items--${layout}`]">
+    <div class="k-directory__no-results" v-if="search && !items.length">
+      <p>Ingen søkresultater funnet</p>
+    </div>
+
+    <div
+      :class="['k-directory__items', `k-directory__items--${layoutComputed}`]"
+    >
       <Item
         v-for="(item, index) in items"
         :key="item.url"
         :value="item"
         :icons="icons"
+        :search="search"
         @click="() => onItemClick(item)"
       />
     </div>
@@ -145,6 +193,7 @@ const back = () =>
   --_k-directory-thumbnail-width: var(--k-directory-thumbnail-width, 50px);
   --_k-directory-title-size: var(--k-directory-title-size, 1.5rem);
   --_k-directory-title-weight: var(--k-directory-title-weight, normal);
+  --k-directory-opacity: 0.5;
 
   --k-button-secondary-text: currentColor;
 
@@ -204,6 +253,34 @@ const back = () =>
 
     svg {
       font-size: 0.8em;
+    }
+  }
+
+  &__no-results {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    p {
+      opacity: var(--k-directory-opacity);
+    }
+  }
+
+  &__search {
+    position: relative;
+
+    &-close {
+      border: none;
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      height: 100%;
+
+      &:hover {
+        background: none !important;
+        outline: none !important;
+      }
     }
   }
 }
