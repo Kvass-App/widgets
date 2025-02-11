@@ -109,13 +109,8 @@ const back = () =>
 
       <div class="k-directory__layout-settings">
         <div v-if="search" class="k-directory__search">
-          <Input v-model="searchInput" type="text" placeholder="Søk her" />
-          <Button
-            v-if="searchInput"
-            class="k-directory__search-close"
-            @click="searchInput = ''"
-            icon="fa-pro-duotone:x"
-          ></Button>
+          <Input v-model="searchInput" type="text" placeholder="Søk her..." />
+          <Icon icon="fa-pro-light:search" />
         </div>
 
         <Button
@@ -266,16 +261,27 @@ const back = () =>
   &__search {
     position: relative;
 
-    &-close {
-      border: none;
-      position: absolute;
-      right: 0px;
-      top: 0px;
-      height: 100%;
+    padding-block: var(--k-input-padding-y, var(--k-ui-spacing-sm));
+    padding-inline: var(--k-input-padding-x, var(--k-ui-spacing-sm));
+    border-radius: var(--k-input-border-radius, var(--k-ui-rounding));
+    border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
 
-      &:hover {
-        background: none !important;
-        outline: none !important;
+    background-color: white;
+
+    display: flex;
+    gap: 0.5em;
+
+    &:focus-within {
+      outline: 2px solid var(--k-ui-outline-color);
+      outline-offset: var(--k-ui-outline-offset);
+    }
+
+    .k-input {
+      border: none;
+      outline: none;
+
+      &__input {
+        padding: 0;
       }
     }
   }
