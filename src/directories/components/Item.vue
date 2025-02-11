@@ -1,26 +1,38 @@
 <script setup>
-import { Icon } from "@kvass/ui";
-import { computed } from "vue";
+import { Icon } from '@kvass/ui'
+import { computed } from 'vue'
 
 const props = defineProps({
   value: Object,
   icons: Object,
-});
+  variant: {
+    type: String,
+    default: 'default',
+  },
+})
 
 const icon = computed(() => {
-  if (props.value.isDirectory) return { is: Icon, icon: props.icons.folder };
-  if (props.value.type.startsWith("image/"))
-    return { is: "img", src: props.value.url };
-  return { is: Icon, icon: props.icons[props.value.type] || props.icons.file };
-});
+  if (props.value.isDirectory) return { is: Icon, icon: props.icons.folder }
+  if (props.value.type.startsWith('image/'))
+    return { is: 'img', src: props.value.url }
+  return { is: Icon, icon: props.icons[props.value.type] || props.icons.file }
+})
 </script>
 
 <template>
-  <div class="k-directory-item" v-on="$listeners">
+  <div
+    :class="['k-directory-item', `k-directory-item--variant-${variant}`]"
+    v-on="$listeners"
+  >
     <div class="k-directory-item__icon">
       <component :is="icon.is" v-bind="icon" />
     </div>
-    <div class="k-directory-item__label">{{ value.name }}</div>
+    <div v-if="variant === 'breadcrumb'" class="k-directory-item__breadcrumb">
+      {{ value.fullPath.split('/').slice(0, -1).join('/') }}
+    </div>
+    <div class="k-directory-item__label">
+      {{ value.name }}
+    </div>
     <Icon
       v-if="!value.isDirectory"
       class="k-directory-item__action"
@@ -61,19 +73,38 @@ const icon = computed(() => {
   }
 
   .k-directory__items--list & {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: var(--_k-directory-thumbnail-width) 1fr auto;
+    grid-template-areas: 'icon label download';
     gap: var(--_k-directory-item-list-gap);
     padding: 0.5rem 1.5rem 0.5rem 0.5rem;
-
-    .k-directory-item__label {
-      flex-grow: 1;
-    }
+    align-items: center;
+    row-gap: 0.5rem;
 
     .k-directory-item__icon {
+      grid-area: icon;
       aspect-ratio: 1;
       width: 100%;
-      max-width: var(--_k-directory-thumbnail-width);
+    }
+
+    .k-directory-item__label {
+      grid-area: label;
+      align-self: center;
+    }
+
+    .k-directory-item__breadcrumb {
+      grid-area: breadcrumb;
+      opacity: var(--k-directory-opacity);
+      font-size: 0.8em;
+    }
+
+    .k-directory-item__action {
+      grid-area: download;
+    }
+
+    &--variant-breadcrumb {
+      grid-template-areas: 'icon breadcrumb download' 'icon label download';
+      row-gap: 0;
     }
   }
 }
