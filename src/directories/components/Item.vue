@@ -94,7 +94,7 @@ const icon = computed(() => {
 
     .k-directory-item__breadcrumb {
       grid-area: breadcrumb;
-      opacity: var(--k-directory-opacity);
+      opacity: 0.5;
       font-size: 0.8em;
     }
 
