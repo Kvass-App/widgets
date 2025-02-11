@@ -5,7 +5,10 @@ import { computed } from 'vue'
 const props = defineProps({
   value: Object,
   icons: Object,
-  search: String,
+  variant: {
+    type: String,
+    default: 'default',
+  },
 })
 
 const icon = computed(() => {
@@ -17,17 +20,17 @@ const icon = computed(() => {
 </script>
 
 <template>
-  <div class="k-directory-item" v-on="$listeners">
+  <div
+    :class="['k-directory-item', `k-directory-item--variant-${variant}`]"
+    v-on="$listeners"
+  >
     <div class="k-directory-item__icon">
       <component :is="icon.is" v-bind="icon" />
     </div>
-    <div v-if="search" class="k-directory-item__breadcrumb">
-      {{ value.fullPath }}
+    <div v-if="variant === 'breadcrumb'" class="k-directory-item__breadcrumb">
+      {{ value.fullPath.split('/').slice(0, -1).join('/') }}
     </div>
-    <div
-      class="k-directory-item__label"
-      :class="{ 'k-directory-item__label--nosearch': !search }"
-    >
+    <div class="k-directory-item__label">
       {{ value.name }}
     </div>
     <Icon
@@ -86,11 +89,8 @@ const icon = computed(() => {
     // }
 
     display: grid;
-    grid-template-rows: 0.25fr 0.75fr;
     grid-template-columns: var(--_k-directory-thumbnail-width) 1fr auto;
-    grid-template-areas:
-      'icon breadcrumb download'
-      'icon label download';
+    grid-template-areas: 'icon label download';
     gap: var(--_k-directory-item-list-gap);
     padding: 0.5rem 1.5rem 0.5rem 0.5rem;
     align-items: center;
@@ -104,22 +104,22 @@ const icon = computed(() => {
 
     .k-directory-item__label {
       grid-area: label;
-      align-self: start;
-
-      &--nosearch {
-        grid-row: 1 / -1;
-        align-self: center;
-      }
+      align-self: center;
     }
 
     .k-directory-item__breadcrumb {
       grid-area: breadcrumb;
       opacity: var(--k-directory-opacity);
-      font-size: 0.5rem;
+      font-size: 0.8em;
     }
 
     .k-directory-item__action {
       grid-area: download;
+    }
+
+    &--variant-breadcrumb {
+      grid-template-areas: 'icon breadcrumb download' 'icon label download';
+      row-gap: 0;
     }
   }
 }

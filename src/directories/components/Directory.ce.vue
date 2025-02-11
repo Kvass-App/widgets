@@ -9,9 +9,8 @@ const props = defineProps({
     type: String,
     default: '[]',
   },
-  showSearch: {
-    type: String,
-    transform: (value) => value === 'true',
+  search: {
+    type: Boolean,
   },
   icons: {
     type: Object,
@@ -34,10 +33,10 @@ const icons = reactive(
 
 const currentPath = ref('')
 const layout = ref('grid')
-const search = ref('')
+const searchInput = ref('')
 
 const layoutComputed = computed(() => {
-  return search.value ? 'list' : layout.value
+  return searchInput.value ? 'list' : layout.value
 })
 
 const currentPathSplitted = computed(() => currentPath.value.split('/'))
@@ -56,18 +55,13 @@ const items = computed(() => {
   value.forEach((item) => {
     const { path } = item
 
-    if (search.value) {
-      item.files
-        .map((file) => ({ ...file, fullPath: `${path}${file.name}` }))
+    if (searchInput.value) {
+      return item.files
+        .map((file) => ({ ...file, fullPath: `${path}/${file.name}` }))
         .filter((item) =>
-          item.fullPath
-            .toLowerCase()
-            .trim()
-            .includes(search.value.toLowerCase().trim()),
+          new RegExp(searchInput.value, 'i').test(item.fullPath),
         )
         .forEach((item) => files.push(item))
-
-      return files
     }
 
     const pathSplitted = path.split('/')
@@ -114,17 +108,12 @@ const back = () =>
       <div v-if="title" class="k-directory__title">{{ title }}</div>
 
       <div class="k-directory__layout-settings">
-        <div class="k-directory__search">
-          <Input
-            v-if="showSearch"
-            v-model="search"
-            type="text"
-            placeholder="Søk her"
-          />
+        <div v-if="search" class="k-directory__search">
+          <Input v-model="searchInput" type="text" placeholder="Søk her" />
           <Button
-            v-if="search"
+            v-if="searchInput"
             class="k-directory__search-close"
-            @click="search = ''"
+            @click="searchInput = ''"
             icon="fa-pro-duotone:x"
           ></Button>
         </div>
@@ -132,12 +121,16 @@ const back = () =>
         <Button
           v-for="l in ['grid', 'list']"
           @click="layout = l"
+          :disabled="searchInput.length"
           :icon="`fa-pro-solid:${l}`"
         />
       </div>
     </div>
 
-    <div v-if="currentPath && !search" class="k-directory__breadcrumbs">
+    <div
+      v-if="currentPath && !searchInput.length"
+      class="k-directory__breadcrumbs"
+    >
       <Button
         class="k-directory__back"
         :icon="icons.back"
@@ -156,11 +149,15 @@ const back = () =>
       </div>
     </div>
 
-    <div class="k-directory__no-results" v-if="search && !items.length">
-      <p>Ingen søkresultater funnet</p>
+    <div
+      class="k-directory__no-results"
+      v-if="searchInput.length && !items.length"
+    >
+      <p>Ingen treff for "{{ searchInput }}"</p>
     </div>
 
     <div
+      v-else
       :class="['k-directory__items', `k-directory__items--${layoutComputed}`]"
     >
       <Item
@@ -168,7 +165,7 @@ const back = () =>
         :key="item.url"
         :value="item"
         :icons="icons"
-        :search="search"
+        :variant="searchInput.length ? 'breadcrumb' : 'default'"
         @click="() => onItemClick(item)"
       />
     </div>
