@@ -73,21 +73,6 @@ const icon = computed(() => {
   }
 
   .k-directory__items--list & {
-    // display: flex;
-    // align-items: center;
-    // gap: var(--_k-directory-item-list-gap);
-    // padding: 0.5rem 1.5rem 0.5rem 0.5rem;
-
-    // .k-directory-item__label {
-    //   flex-grow: 1;
-    // }
-
-    // .k-directory-item__icon {
-    //   aspect-ratio: 1;
-    //   width: 100%;
-    //   max-width: var(--_k-directory-thumbnail-width);
-    // }
-
     display: grid;
     grid-template-columns: var(--_k-directory-thumbnail-width) 1fr auto;
     grid-template-areas: 'icon label download';

@@ -35,9 +35,9 @@ const currentPath = ref('')
 const layout = ref('grid')
 const searchInput = ref('')
 
-const layoutComputed = computed(() => {
-  return searchInput.value ? 'list' : layout.value
-})
+const layoutComputed = computed(() =>
+  searchInput.value ? 'list' : layout.value,
+)
 
 const currentPathSplitted = computed(() => currentPath.value.split('/'))
 
@@ -190,7 +190,6 @@ const back = () =>
   --_k-directory-thumbnail-width: var(--k-directory-thumbnail-width, 50px);
   --_k-directory-title-size: var(--k-directory-title-size, 1.5rem);
   --_k-directory-title-weight: var(--k-directory-title-weight, normal);
-  --k-directory-opacity: 0.5;
 
   --k-button-secondary-text: currentColor;
 
@@ -260,7 +259,7 @@ const back = () =>
     align-items: center;
 
     p {
-      opacity: var(--k-directory-opacity);
+      opacity: 0.5;
     }
   }
 
