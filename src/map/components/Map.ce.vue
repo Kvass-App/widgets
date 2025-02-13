@@ -92,7 +92,8 @@ const centerComp = computed(() =>
 )
 
 const markersComp = computed(() => {
-  return JSON.parse(props.markers || {})
+  if(!props.markers) return
+  return JSON.parse(props.markers)
 })
 
 const mapOptions = reactive({
