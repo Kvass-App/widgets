@@ -21,7 +21,6 @@ const props = defineProps({
   },
   search: {
     type: Boolean,
-    default: false,
   },
   /**
    * The coordinates in the format of 'latitude,longitude'
@@ -93,25 +92,7 @@ const centerComp = computed(() =>
 )
 
 const markersComp = computed(() => {
-  const content = props.popUpContent?.split(';').map((m) => m.split(','))
-
-  return props.markers
-    ?.split(';')
-    .map((m) => m.split(','))
-    .map((i, index) => {
-      return {
-        coordinates: i.map((c) => parseFloat(c)),
-        content: content?.length
-          ? {
-              thumbnail: content?.[index]?.[0],
-              description: content?.[index]?.[1],
-              action: content?.[index]?.[2],
-              actionLabel: content?.[index]?.[3],
-              actionIcon: content?.[index]?.[4],
-            }
-          : null,
-      }
-    })
+  return JSON.parse(props.markers || {})
 })
 
 const mapOptions = reactive({
