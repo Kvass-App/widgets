@@ -12,8 +12,8 @@ dependencies:
     specifier: ^1.0.18
     version: 1.0.18(vue@3.4.21)
   '@kvass/map':
-    specifier: ^1.0.18
-    version: 1.0.18(vue@3.4.21)
+    specifier: ^1.0.19
+    version: 1.0.19(vue@3.4.21)
   '@kvass/ui':
     specifier: ^1.6.30
     version: 1.6.30(vue@3.4.21)
@@ -424,8 +424,8 @@ packages:
       - '@vue/composition-api'
     dev: false
 
-  /@kvass/map@1.0.18(vue@3.4.21):
-    resolution: {integrity: sha512-j9+XDKpQG4tSklzDafahX87VqXKLKDMFi1oxUlIxlS1+waawLntVvTwHVWLAlkaoPIpXJQ9hLEqofHHGWUns/Q==}
+  /@kvass/map@1.0.19(vue@3.4.21):
+    resolution: {integrity: sha512-7rW/lB0vnEbCv31YUid1CK9caMvvCHn/LOutuW+qGBmd0nY9pLe1TB7ao0LTw6tQkWsX8R6p8CuIJ+8wGha6Pw==}
     peerDependencies:
       vue: ^3.4.0
     dependencies:

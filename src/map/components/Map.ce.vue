@@ -42,6 +42,10 @@ const props = defineProps({
   description: {
     type: String,
   },
+  resultMessage: {
+    type: String,
+    default: 'Result:',
+  },
 
   language: {
     type: String,
@@ -109,7 +113,7 @@ const markerIcon = reactive({
 
 <template>
   <LazyLoad>
-    <div class="widgets-kvass-map--search" v-if="search">
+    <div class="widgets-kvass-map__search" v-if="search">
       <MapComponent
         :coordinates="coordinatesComp"
         :zoom="parseInt(props.zoom)"
@@ -121,34 +125,36 @@ const markerIcon = reactive({
         :center="centerComp"
         :marker-icon="markerIcon"
       />
-      <div>
+      <div class="widgets-kvass-map__search-content">
         <div v-if="description" v-html="description"></div>
         <Selector
           v-model="selected"
           :zoom="parseInt(props.zoom)"
           :map-options="mapOptions"
-          :aspect-ratio="aspectRatio"
           :autocomplete="true"
-          :show-selected="true"
+          :show-selected="false"
           :show-warning="true"
           :language="language"
         />
-        <Card
-          v-for="item in match"
-          :thumbnail="item.content.thumbnail"
-          header-min-height="200px"
-          thumbnail-size="cover"
-        >
-          <div v-html="item.content?.description"></div>
-          <template #footer>
-            <Button
-              :label="item.content?.actionLabel"
-              icon-right="fa-pro-light:angle-right"
-              is="a"
-              :href="item.content?.action"
-            />
-          </template>
-        </Card>
+        <h3 v-if="match?.length">{{ props.resultMessage }}</h3>
+        <div class="widgets-kvass-map__search-result">
+          <Card
+            v-for="item in match"
+            :thumbnail="item.content.thumbnail"
+            header-min-height="200px"
+            thumbnail-size="cover"
+          >
+            <div v-html="item.content?.description"></div>
+            <template #footer>
+              <Button
+                :label="item.content?.actionLabel"
+                icon-right="fa-pro-light:angle-right"
+                is="a"
+                :href="item.content?.action"
+              />
+            </template>
+          </Card>
+        </div>
       </div>
     </div>
     <MapComponent
@@ -170,7 +176,7 @@ const markerIcon = reactive({
 @import url('@kvass/map/style.css');
 @import url('@kvass/location-selector/style.css');
 
-.widgets-kvass-map--search {
+.widgets-kvass-map__search {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
@@ -179,8 +185,9 @@ const markerIcon = reactive({
   --kvass-map-popup-gap: 0;
   --kvass-map-popup-image-width: 50px;
   --kvass-map-popup-image-aspect-ratio: 16/7;
-  --kvass-map-popup-padding: 0 0 0.75rem 0;
+  --kvass-map-popup-padding: 10px 10px 15px;
   --kvass-map-popup-width: 150px;
+  --kvass-map-popup-image-size: contain;
 
   @media screen and (max-width: 680px) {
     grid-template-columns: 1fr;
@@ -189,12 +196,36 @@ const markerIcon = reactive({
     &__content {
       color: var(--widgets-kvass-map-search-card-color, black);
     }
+    &__header {
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      --k-header-min-height: 100px;
+    }
     &__thumbnail {
-      --k-image-aspectratio: 3 / 1 !important;
+      height: 100px;
+      --k-image-size: contain !important;
     }
   }
-  .kvass-location-selector__map {
-    display: none;
+  .kvass-location-selector {
+    --kvass-location-selector-aspect-ratio: initial !important;
+    &__map {
+      display: none;
+    }
+  }
+  &-content {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    h3 {
+      margin: 0;
+    }
+  }
+  &-result {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 }
 
