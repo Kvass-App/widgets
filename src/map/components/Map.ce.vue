@@ -1,7 +1,7 @@
 <script setup>
 import { Map as MapComponent } from '@kvass/map'
 import { LocationSelector as Selector } from '@kvass/location-selector'
-import { LazyLoad, Card, Button } from '@kvass/ui'
+import { LazyLoad, Card, Button, Alert } from '@kvass/ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -44,7 +44,7 @@ const props = defineProps({
   },
   resultMessage: {
     type: String,
-    default: 'Result:',
+    default: '{"error":"Ingen resultater, prøv igjen","success":"Resultater:"}',
   },
 
   language: {
@@ -95,6 +95,10 @@ const centerComp = computed(() =>
   props.center ? props.center.split(',') : null,
 )
 
+const resultMessageComp = computed(() => {
+  if (!props.resultMessage) return
+  return JSON.parse(props.resultMessage)
+})
 const markersComp = computed(() => {
   if (!props.markers) return
   return JSON.parse(props.markers)
@@ -133,28 +137,38 @@ const markerIcon = reactive({
           :map-options="mapOptions"
           :autocomplete="true"
           :show-selected="false"
-          :show-warning="true"
+          :show-warning="false"
           :language="language"
         />
-        <h3 v-if="match?.length">{{ props.resultMessage }}</h3>
-        <div class="widgets-kvass-map__search-result">
-          <Card
-            v-for="item in match"
-            :thumbnail="item.content.thumbnail"
-            header-min-height="200px"
-            thumbnail-size="cover"
-          >
-            <div v-html="item.content?.description"></div>
-            <template #footer>
-              <Button
-                :label="item.content?.actionLabel"
-                icon-right="fa-pro-light:angle-right"
-                is="a"
-                :href="item.content?.action"
-              />
-            </template>
-          </Card>
-        </div>
+
+        <template v-if="selected">
+          <Alert :variant="match?.length ? 'neutral' : 'danger'">
+            {{
+              match?.length
+                ? resultMessageComp.success
+                : resultMessageComp.error
+            }}
+
+            <div class="widgets-kvass-map__search-result">
+              <Card
+                v-for="item in match"
+                :thumbnail="item.content.thumbnail"
+                header-min-height="200px"
+                thumbnail-size="cover"
+              >
+                <div v-html="item.content?.description"></div>
+                <template #footer>
+                  <Button
+                    :label="item.content?.actionLabel"
+                    icon-right="fa-pro-light:angle-right"
+                    is="a"
+                    :href="item.content?.action"
+                  />
+                </template>
+              </Card>
+            </div>
+          </Alert>
+        </template>
       </div>
     </div>
     <MapComponent
@@ -201,6 +215,7 @@ const markerIcon = reactive({
       display: flex;
       justify-content: center;
       align-items: center;
+      --k-card-header-background: #fbfbfb;
       --k-header-min-height: 100px;
     }
     &__thumbnail {
@@ -218,11 +233,9 @@ const markerIcon = reactive({
     display: flex;
     gap: 1rem;
     flex-direction: column;
-    h3 {
-      margin: 0;
-    }
   }
   &-result {
+    margin-top: 1rem;
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
