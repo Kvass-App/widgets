@@ -92,7 +92,7 @@ const centerComp = computed(() =>
 )
 
 const markersComp = computed(() => {
-  if(!props.markers) return
+  if (!props.markers) return
   return JSON.parse(props.markers)
 })
 
@@ -172,11 +172,26 @@ const markerIcon = reactive({
 
 .widgets-kvass-map--search {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 2fr 1fr;
   gap: 2rem;
+
   --kvass-location-selector-background: transparent;
-  .k-card__thumbnail {
-    --k-image-aspectratio: 3 / 1 !important;
+  --kvass-map-popup-gap: 0;
+  --kvass-map-popup-image-width: 50px;
+  --kvass-map-popup-image-aspect-ratio: 16/7;
+  --kvass-map-popup-padding: 0 0 0.75rem 0;
+  --kvass-map-popup-width: 150px;
+
+  @media screen and (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+  .k-card {
+    &__content {
+      color: var(--widgets-kvass-map-search-card-color, black);
+    }
+    &__thumbnail {
+      --k-image-aspectratio: 3 / 1 !important;
+    }
   }
   .kvass-location-selector__map {
     display: none;
