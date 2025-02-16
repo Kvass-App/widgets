@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.18",
+    "@kvass/location-selector": "^1.0.25",
     "@kvass/map": "^1.0.19",
     "@kvass/ui": "^1.6.30",
     "@kvass/vue3-flatfinder": "^1.0.41",

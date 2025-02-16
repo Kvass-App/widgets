@@ -51,6 +51,10 @@ const props = defineProps({
     type: String,
   },
 
+  placeholder: {
+    type: String,
+  },
+
   /**
    * The map zoom level. Lower is more zoomed out
    */
@@ -139,6 +143,8 @@ const markerIcon = reactive({
           :show-selected="false"
           :show-warning="false"
           :language="language"
+          :map-selector="false"
+          :placeholder="placeholder"
         />
 
         <template v-if="selected">
@@ -223,12 +229,7 @@ const markerIcon = reactive({
       --k-image-size: contain !important;
     }
   }
-  .kvass-location-selector {
-    --kvass-location-selector-aspect-ratio: initial !important;
-    &__map {
-      display: none;
-    }
-  }
+
   &-content {
     display: flex;
     gap: 1rem;

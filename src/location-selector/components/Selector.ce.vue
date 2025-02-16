@@ -62,6 +62,7 @@ const item = ref({
 })
 
 if (props.value) {
+  if (!props.value) return
   const content = JSON.parse(`${props.value}`)
   if (content.location) item.value = content
 }
