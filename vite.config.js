@@ -13,6 +13,9 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    extensions: ['.js', '.ts', '.json', '.vue'],
+  },
   build: {
     target: 'esnext',
     rollupOptions: {

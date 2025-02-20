@@ -1,5 +1,7 @@
 import en from '../../i18n/en.json'
 import nb from '../../i18n/nb.json'
+import Hash from 'object-hash'
+import { VueComponentUpload as upload } from '@kvass/storage'
 
 function ExtractString(str, pattern, options = {}) {
   let { group = 1 } = options
@@ -30,11 +32,15 @@ async function WaitUntil(func, options = {}) {
   return result
 }
 
-function LoadScript(src) {
+function LoadScript(src, options = { type: 'text/javascript' }) {
+  if (!document) return
+
   if (document.querySelector(`script[src="${src}"]`)) return
 
+  let { type } = options
+
   let script = document.createElement('script')
-  script.type = 'text/javascript'
+  script.type = type
   script.src = src
 
   document.body.appendChild(script)
@@ -65,6 +71,121 @@ function PropEnumValidator(enums) {
   }
 }
 
+function isObject(val) {
+  return Object.prototype.toString.call(val) === '[object Object]'
+}
+
+function PartialUpdate(result, replacer, options = {}) {
+  if (!result) result = {}
+  const { strict } = options
+
+  const canWrite = (key, target, value) => {
+    if (strict && !(key in target)) return false // Prevent property adding
+    if (
+      strict &&
+      isObject(target[key]) &&
+      [null, undefined].includes(value[key])
+    )
+      return false // Prevent object overrides
+
+    return true
+  }
+
+  Object.entries(replacer)
+    .filter(([key]) => canWrite(key, result, replacer))
+    .forEach(([key, value]) => {
+      if (result[key] && isObject(value))
+        return (result[key] = PartialUpdate(result[key], value, options))
+
+      return (result[key] = value)
+    })
+
+  return result
+}
+
+function Diff(a, b, options = {}) {
+  if (!b || !isObject(b)) return a
+
+  let { ignoreMissing = false } = options
+
+  let diffs = {}
+
+  let arraysMatch = (a, b) => {
+    return a.length === b.length && Hash(a.slice()) === Hash(b.slice())
+  }
+
+  let compare = function (previous, current, key) {
+    // Get the object type
+    let previousType = Object.prototype.toString.call(previous)
+    let currentType = Object.prototype.toString.call(current)
+
+    // If items are different types
+    if (previousType !== currentType) {
+      diffs[key] = current
+      return
+    }
+    // If an object, compare recursively
+    if (previousType === '[object Object]') {
+      let objDiff = Diff(previous, current, options)
+      if (Object.keys(objDiff).length) diffs[key] = objDiff
+      return
+    }
+
+    // If an array, compare
+    if (previousType === '[object Array]') {
+      if (!arraysMatch(previous, current)) diffs[key] = current
+      return
+    }
+
+    // Else if it's a function, convert to a string and compare
+    if (previousType === '[object Function]') {
+      if (previous.toString() !== current.toString()) diffs[key] = current
+      return
+    }
+
+    // Otherwise, just compare
+    if (previous !== current) diffs[key] = current
+  }
+
+  // Loop through the first object
+  for (let key in a) {
+    if (Object.hasOwn(a, key)) compare(a[key], b[key], key)
+  }
+
+  if (!ignoreMissing) {
+    for (let key in b) {
+      if (Object.hasOwn(b, key) && !(key in a)) diffs[key] = b[key]
+    }
+  }
+
+  // Return the object of differences
+  return diffs
+}
+
+function hasDiff(...args) {
+  return Boolean(Object.keys(Diff(...args)).length)
+}
+
+const Clone = function () {
+  return JSON.parse(JSON.stringify.apply(this, arguments))
+}
+
+function uploadFunction(rawFile, onProgress, options) {
+  return upload(rawFile, onProgress, options)
+}
+
+function toCurrency(
+  value,
+  locale = document.documentElement.getAttribute('lang') || 'nb',
+) {
+  if (!value && value !== 0) return '-'
+  return value.toLocaleString(locale, {
+    style: 'currency',
+    currency: 'NOK',
+    minimumFractionDigits: 0,
+  })
+}
+
 export {
   ExtractString,
   Wait,
@@ -72,4 +193,10 @@ export {
   LoadScript,
   Translate,
   PropEnumValidator,
+  Diff,
+  PartialUpdate,
+  Clone,
+  uploadFunction,
+  toCurrency,
+  hasDiff,
 }
