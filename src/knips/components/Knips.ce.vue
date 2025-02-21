@@ -172,7 +172,7 @@ onMounted(getPosts)
           <div v-if="item.title" data-field="title">{{ item.title }}</div>
           <div data-field="content">{{ item.shortContent }}</div>
         </template>
-        <template #footer>
+        <template #actions>
           <Button
             label="Les mer"
             size="small"
@@ -224,7 +224,7 @@ onMounted(getPosts)
           </component>
         </div>
       </template>
-      <template #footer="{ close }" v-if="item">
+      <template #actions="{ close }" v-if="item">
         <Button
           label="Lukk"
           icon-right="fa-pro-light:times"
