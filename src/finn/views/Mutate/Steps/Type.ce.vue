@@ -96,7 +96,7 @@ const selected = computed({
   },
   set(newValue) {
     modelValue.value.units = newValue.map((v) => {
-      const { price, propertyType, status, group, disabled, ...rest } = v
+      const { price, propertyType, status, disabled, ...rest } = v
 
       return {
         fields: {},

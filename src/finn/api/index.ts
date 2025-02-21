@@ -68,7 +68,7 @@ export function useAPI(element?: CurrentElementType) {
   }
 
   const remove = (id: string) => {
-    const url = getUrl('remove')
+    const url = getUrl('unpublish')
 
     url.searchParams.append('id', id)
 
@@ -82,7 +82,17 @@ export function useAPI(element?: CurrentElementType) {
 
   const unpublish = (id: string) => {
     const url = getUrl('unpublish')
+
+    url.searchParams.append('id', id)
+
+    return fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${props.token}`,
+      },
+    })
   }
+
   const publish = async (data, options: { preview?: boolean } = {}) => {
     const { preview = false } = options
 

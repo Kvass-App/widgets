@@ -9,6 +9,7 @@ import {
   Spinner,
   Dropdown,
   Dialog,
+  Badge,
 } from '@kvass/ui'
 
 import { useAPI } from '../api'
@@ -39,19 +40,54 @@ const columns = computed(() => {
       label: 'Publisert',
     },
     {
-      id: 'url',
-      label: '',
-    },
-    {
       id: 'insight',
       label: '',
     },
+    {
+      id: 'url',
+      label: '',
+    },
+
     {
       id: 'edit',
       label: '',
     },
   ]
 })
+
+const getStatus = (item: Ad) => {
+  if (!item.publishedAt) {
+    return {
+      label: 'Avpublisert',
+      variant: 'danger' as const,
+    }
+  }
+
+  if (item.preview) {
+    return {
+      label: 'Forhåndsvisning',
+      variant: 'info' as const,
+    }
+  }
+
+  return {
+    label: 'Aktiv',
+    variant: 'success' as const,
+  }
+}
+const getPublishedAt = (item: Ad) => {
+  if (!item.publishedAt) return '-'
+  if (item.preview) return '-'
+
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }
+
+  //@ts-ignore
+  return new Date(item.publishedAt).toLocaleString('nb-NO', options)
+}
 
 const removePromise = ref<Promise<any>>()
 
@@ -82,10 +118,10 @@ onMounted(getData)
       <template v-if="ads.length && !fetching">
         <DataTable :items="ads" :columns="columns">
           <template #name="{ item }">{{ item.name }}</template>
-          <template #status="{ item }">{{
-            item.preview ? 'Forhåndsvisning' : 'Publisert'
-          }}</template>
-          <template #published="{ item }">{{ '-' }}</template>
+          <template #status="{ item }">
+            <Badge v-bind="getStatus(item)" appearance="filled" />
+          </template>
+          <template #published="{ item }">{{ getPublishedAt(item) }}</template>
           <template #url="{ item }">
             <Dropdown label="Se annonser" v-if="item.units.some((v) => v.url)">
               <template #default>
@@ -121,6 +157,7 @@ onMounted(getData)
           ></template>
           <template #insight="{ item }">
             <Button
+              v-if="!item.preview"
               iconRight="fa-pro-light:arrow-up-right-from-square"
               label="Se innsikt"
               target="_blank"
@@ -190,6 +227,7 @@ onMounted(getData)
                 ></Button>
               </template>
             </Dialog>
+
             <Dropdown label="Endre" keepOpen :teleport="false">
               <template #default>
                 <Button
@@ -199,13 +237,22 @@ onMounted(getData)
                   variant="tertiary"
                 ></Button>
                 <Button
-                  iconRight="fa-pro-light:pen"
+                  v-if="item.publishedAt"
+                  iconRight="fa-pro-light:play-pause"
                   label="Avpubliser"
-                  @click="() => API.unpublish(item.id)"
+                  :promise="removePromise"
+                  @success="
+                    () => {
+                      getData()
+                    }
+                  "
+                  @click="() => (removePromise = API.unpublish(item.id))"
                   variant="tertiary"
                 ></Button>
                 <Button
-                  variant="tertiary"
+                  data-type="delete"
+                  class="ads__delete"
+                  variant="danger"
                   label="Slett"
                   iconRight="fa-pro-light:trash-xmark"
                   @click="() => removeDialog.open()"
@@ -245,7 +292,20 @@ onMounted(getData)
     }
   }
 
+  .ads__delete {
+    color: var(--k-button-danger-background, var(--k-ui-color-danger));
+    background-color: var(--k-button-danger-text, white);
+
+    &:focus,
+    &:active,
+    &:hover {
+      color: var(--k-button-danger-text, white);
+    }
+  }
+
   .remove-dialog {
+    --k-dialog-min-width: 400px;
+
     &__title {
       font-weight: bold;
       font-size: 1.25rem;
