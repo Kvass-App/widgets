@@ -17,6 +17,7 @@ const emit = defineEmits<{
 
 <template>
   <Card
+    v-if="!modelValue.id || modelValue.preview"
     class="publish"
     appearence="border"
     variant="default"
@@ -45,6 +46,43 @@ const emit = defineEmits<{
 
       <Button
         label="Publiser annonse"
+        variant="primary"
+        iconRight="fa-pro-light:arrow-right-long"
+        @click="() => emit('publish')"
+      />
+    </template>
+  </Card>
+
+  <Card
+    v-else
+    class="publish"
+    appearence="border"
+    variant="default"
+    title="Oppdater annonsen"
+    subtitle="Oppdater annonsen din med de nye endringene!"
+    thumbnail="https://assets.kvass.no/67aa2b433aee3cb55c8e7408"
+  >
+    <!-- <template #default>
+      <Alert
+        icon="fa-pro-regular:exclamation-triangle"
+        variant="info"
+        title="Ved publisering aktiveres en betalt tjeneste fra Finn."
+        content="Når du aktiverer annonsen vil du nå motta faktura og kostnader fra Finn. Bindingstiden varierer i henhold til din avtale med Finn"
+      >
+      </Alert>
+    </template> -->
+    <template #actions>
+      <!-- <Button
+        :disabled="!Boolean(modelValue.url)"
+        label="Forhåndsvis annonse"
+        iconRight="fa-pro-light:arrow-up-right-from-square"
+        target="_blank"
+        is="a"
+        :href="modelValue.url"
+      /> -->
+
+      <Button
+        label="Oppdater annonsen"
         variant="primary"
         iconRight="fa-pro-light:arrow-right-long"
         @click="() => $emit('publish')"

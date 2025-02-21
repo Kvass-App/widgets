@@ -187,6 +187,13 @@ const getData = () => {
     .finally(() => (fetching.value = false))
 }
 
+const getNextLabel = () => {
+  if (!modelValue.value.id || modelValue.value.preview)
+    return 'Generer forhåndsvisning'
+
+  return 'Neste'
+}
+
 onMounted(getData)
 </script>
 
@@ -1056,7 +1063,7 @@ onMounted(getData)
               .join('\n'),
             disabled: validator.passes.value,
           }"
-          label="Neste"
+          :label="getNextLabel()"
           variant="primary"
           icon-right="fa-pro-solid:arrow-right"
           @click="

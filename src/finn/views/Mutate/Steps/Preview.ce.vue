@@ -35,7 +35,7 @@ const modelValue = defineModel<Ad>({ default: {} })
 const error = ref(false)
 const message = ref('Vent litt...')
 
-const publish = () => {
+const preview = () => {
   API.publish(modelValue.value, { preview: true })
     .then((response) => {
       response.on('message', (data) => {
@@ -64,8 +64,8 @@ const publish = () => {
 }
 
 onMounted(() => {
-  if (webcomponentProps.id) return props.onNext()
-  publish()
+  if (!modelValue.value.id || modelValue.value.preview) return preview()
+  return props.onNext()
 })
 </script>
 

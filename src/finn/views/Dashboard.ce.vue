@@ -8,9 +8,10 @@ import {
   Card,
   Spinner,
   Dropdown,
-  Dialog,
   Badge,
 } from '@kvass/ui'
+
+import Options from '../components/Options.ce.vue'
 
 import { useAPI } from '../api'
 import { type Ad } from '../types/ad'
@@ -22,8 +23,6 @@ const API = useAPI(element)
 
 const ads = ref<Ad[]>([])
 const fetching = ref(false)
-
-const removeDialog = ref()
 
 const columns = computed(() => {
   return [
@@ -167,98 +166,7 @@ onMounted(getData)
             </Button>
           </template>
           <template #edit="{ item }">
-            <Dialog
-              :teleport="false"
-              :closeOnOutsideClick="true"
-              ref="removeDialog"
-              class="remove-dialog"
-            >
-              <template #trigger="{ triggerProps }">
-                <Button style="display: none" v-bind="triggerProps"></Button>
-              </template>
-              <template
-                #header="{ titleProps, descriptionProps, closeTriggerProps }"
-              >
-                <Flex
-                  class="remove-dialog__header"
-                  justify="center"
-                  align="center"
-                  direction="column"
-                  gap="0.25rem"
-                >
-                  <Icon
-                    icon="fa-pro-light:triangle-exclamation"
-                    class="remove-dialog__icon"
-                  ></Icon>
-
-                  <div
-                    v-bind="descriptionProps"
-                    class="remove-dialog__subtitle"
-                  >
-                    Du holder på å slette:
-                  </div>
-
-                  <div v-bind="titleProps" class="remove-dialog__title">
-                    Finn-annonsen {{ item.name }}
-                  </div>
-
-                  <Button
-                    class="k-dialog__close-trigger"
-                    variant="tertiary"
-                    icon="fa-pro-light:times"
-                    size="small"
-                    v-bind="closeTriggerProps"
-                  />
-                </Flex>
-              </template>
-              <template #actions="{ close }">
-                <Button label="Avbryt" @click="close"></Button>
-                <Button
-                  label="Bekreft"
-                  variant="primary"
-                  :promise="removePromise"
-                  @success="
-                    () => {
-                      close()
-                      getData()
-                    }
-                  "
-                  @click="() => (removePromise = API.remove(item.id))"
-                ></Button>
-              </template>
-            </Dialog>
-
-            <Dropdown label="Endre" keepOpen :teleport="false">
-              <template #default>
-                <Button
-                  iconRight="fa-pro-light:pen"
-                  label="Rediger"
-                  @click="() => API.navigateView('mutate', item.id)"
-                  variant="tertiary"
-                ></Button>
-                <Button
-                  v-if="item.publishedAt"
-                  iconRight="fa-pro-light:play-pause"
-                  label="Avpubliser"
-                  :promise="removePromise"
-                  @success="
-                    () => {
-                      getData()
-                    }
-                  "
-                  @click="() => (removePromise = API.unpublish(item.id))"
-                  variant="tertiary"
-                ></Button>
-                <Button
-                  data-type="delete"
-                  class="ads__delete"
-                  variant="danger"
-                  label="Slett"
-                  iconRight="fa-pro-light:trash-xmark"
-                  @click="() => removeDialog.open()"
-                ></Button>
-              </template>
-            </Dropdown>
+            <Options :item="item" @refetch="() => getData()" :key="item.id" />
           </template>
         </DataTable>
       </template>
@@ -289,40 +197,6 @@ onMounted(getData)
       opacity: var(--k-ui-opacity-faded);
 
       font-size: 5rem;
-    }
-  }
-
-  .ads__delete {
-    color: var(--k-button-danger-background, var(--k-ui-color-danger));
-    background-color: var(--k-button-danger-text, white);
-
-    &:focus,
-    &:active,
-    &:hover {
-      color: var(--k-button-danger-text, white);
-    }
-  }
-
-  .remove-dialog {
-    --k-dialog-min-width: 400px;
-
-    &__title {
-      font-weight: bold;
-      font-size: 1.25rem;
-    }
-    &__icon {
-      font-size: 2rem;
-    }
-
-    .k-dialog__card {
-      .k-card__header {
-        color: var(--k-ui-color-danger);
-        background-color: var(--k-ui-color-danger-lightest);
-
-        --k-button-tertiary-text: var(--k-ui-color-danger-darkest);
-        --k-button-tertiary-background-hover: var(--k-ui-color-danger-lightest);
-        --k-button-tertiary-background-active: var(--k-ui-color-danger-light);
-      }
     }
   }
 }

@@ -17,9 +17,9 @@ const modelValue = defineModel<Ad>({ default: {} })
     <template #thumbnail>
       <Icon icon="fa-pro-light:circle-exclamation"></Icon>
     </template>
-    <template #actions>
+    <!-- <template #actions>
       <Button label="Send feilmelding til support" variant="primary"></Button>
-    </template>
+    </template> -->
   </Card>
 </template>
 
