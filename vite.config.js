@@ -60,8 +60,17 @@ export default defineConfig({
         'residential-expenses': fileURLToPath(
           new URL('./src/residential-expenses/main.js', import.meta.url),
         ),
+        'loan-calculator': fileURLToPath(
+          new URL('./src/loan-calculator/main.js', import.meta.url),
+        ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
         finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
+        directories: fileURLToPath(
+          new URL('./src/directories/main.js', import.meta.url),
+        ),
+        nabolagsprofil: fileURLToPath(
+          new URL('./src/nabolagsprofil/main.js', import.meta.url),
+        ),
       },
     },
   },

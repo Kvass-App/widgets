@@ -1,7 +1,8 @@
 <script setup>
 import { Map as MapComponent } from '@kvass/map'
-import { LazyLoad } from '@kvass/ui'
-import { computed, reactive } from 'vue'
+import { LocationSelector as Selector } from '@kvass/location-selector'
+import { LazyLoad, Card, Button, Alert } from '@kvass/ui'
+import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
   theme: {
@@ -13,6 +14,13 @@ const props = defineProps({
   mapOptions: {
     type: String,
     default: '{}',
+  },
+  markerIcon: {
+    type: String,
+    default: '{}',
+  },
+  search: {
+    type: Boolean,
   },
   /**
    * The coordinates in the format of 'latitude,longitude'
@@ -31,11 +39,19 @@ const props = defineProps({
   center: {
     type: String,
   },
+  description: {
+    type: String,
+  },
+  resultMessage: {
+    type: String,
+    default: '{"error":"Ingen resultater, prøv igjen","success":"Resultater:"}',
+  },
 
-  /**
-   * Pop up content for additional map markers in the format of 'thumbnail,description,action,actionLabel'
-   */
-  popUpContent: {
+  language: {
+    type: String,
+  },
+
+  placeholder: {
     type: String,
   },
 
@@ -58,6 +74,23 @@ const props = defineProps({
   aspectRatio: String,
 })
 
+const selected = ref('')
+const match = ref([])
+
+watch(
+  () => selected.value,
+  (val) => {
+    const coordinates = (val?.location?.coordinates || []).map((c) =>
+      Math.round(c),
+    )
+    match.value = markersComp.value?.filter((i) => {
+      const current = i.coordinates
+      return current.every((c) => coordinates.includes(Math.round(c)))
+    })
+  },
+  { deep: true },
+)
+
 const coordinatesComp = computed(() =>
   props.coordinates ? props.coordinates.split(',') : null,
 )
@@ -66,26 +99,13 @@ const centerComp = computed(() =>
   props.center ? props.center.split(',') : null,
 )
 
+const resultMessageComp = computed(() => {
+  if (!props.resultMessage) return
+  return JSON.parse(props.resultMessage)
+})
 const markersComp = computed(() => {
-  const content = props.popUpContent?.split(';').map((m) => m.split(','))
-
-  return props.markers
-    ?.split(';')
-    .map((m) => m.split(','))
-    .map((i, index) => {
-      return {
-        coordinates: i.map((c) => parseFloat(c)),
-        content: content?.length
-          ? {
-              thumbnail: content?.[index]?.[0],
-              description: content?.[index]?.[1],
-              action: content?.[index]?.[2],
-              actionLabel: content?.[index]?.[3],
-              actionIcon: content?.[index]?.[4],
-            }
-          : null,
-      }
-    })
+  if (!props.markers) return
+  return JSON.parse(props.markers)
 })
 
 const mapOptions = reactive({
@@ -93,11 +113,72 @@ const mapOptions = reactive({
   accessToken: props.mapboxApiToken,
   ...(JSON.parse(props.mapOptions) || {}),
 })
+
+const markerIcon = reactive({
+  ...(JSON.parse(props.markerIcon) || {}),
+})
 </script>
 
 <template>
   <LazyLoad>
+    <div class="widgets-kvass-map__search" v-if="search">
+      <MapComponent
+        :coordinates="coordinatesComp"
+        :zoom="parseInt(props.zoom)"
+        :markers="markersComp"
+        :map-options="mapOptions"
+        :address="address"
+        :show-address="Boolean(address)"
+        :aspect-ratio="aspectRatio"
+        :center="centerComp"
+        :marker-icon="markerIcon"
+      />
+      <div class="widgets-kvass-map__search-content">
+        <div v-if="description" v-html="description"></div>
+        <Selector
+          v-model="selected"
+          :zoom="parseInt(props.zoom)"
+          :map-options="mapOptions"
+          :autocomplete="true"
+          :show-selected="false"
+          :show-warning="false"
+          :language="language"
+          :map-selector="false"
+          :placeholder="placeholder"
+        />
+
+        <template v-if="selected">
+          <Alert :variant="match?.length ? 'neutral' : 'danger'">
+            {{
+              match?.length
+                ? resultMessageComp.success
+                : resultMessageComp.error
+            }}
+
+            <div class="widgets-kvass-map__search-result">
+              <Card
+                v-for="item in match"
+                :thumbnail="item.content.thumbnail"
+                header-min-height="200px"
+                thumbnail-size="cover"
+              >
+                <div v-html="item.content?.description"></div>
+                <template #footer>
+                  <Button
+                    :label="item.content?.actionLabel"
+                    icon-right="fa-pro-light:angle-right"
+                    is="a"
+                    :href="item.content?.action"
+                  />
+                </template>
+              </Card>
+            </div>
+          </Alert>
+        </template>
+      </div>
+    </div>
     <MapComponent
+      v-else
       :coordinates="coordinatesComp"
       :zoom="parseInt(props.zoom)"
       :markers="markersComp"
@@ -106,12 +187,61 @@ const mapOptions = reactive({
       :show-address="Boolean(address)"
       :aspect-ratio="aspectRatio"
       :center="centerComp"
+      :marker-icon="markerIcon"
     />
   </LazyLoad>
 </template>
 
 <style lang="scss">
 @import url('@kvass/map/style.css');
+@import url('@kvass/location-selector/style.css');
+
+.widgets-kvass-map__search {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+
+  --kvass-location-selector-background: transparent;
+  --kvass-map-popup-gap: 0;
+  --kvass-map-popup-image-width: 50px;
+  --kvass-map-popup-image-aspect-ratio: 16/7;
+  --kvass-map-popup-padding: 10px 10px 15px;
+  --kvass-map-popup-width: 150px;
+  --kvass-map-popup-image-size: contain;
+
+  @media screen and (max-width: 680px) {
+    grid-template-columns: 1fr;
+  }
+  .k-card {
+    &__content {
+      color: var(--widgets-kvass-map-search-card-color, black);
+    }
+    &__header {
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      --k-card-header-background: #fbfbfb;
+      --k-header-min-height: 100px;
+    }
+    &__thumbnail {
+      height: 100px;
+      --k-image-size: contain !important;
+    }
+  }
+
+  &-content {
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+  &-result {
+    margin-top: 1rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
 
 .kvass-map {
   @media screen and (max-width: 680px) {

@@ -12,10 +12,10 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.18",
-    "@kvass/map": "^1.0.15",
     "@kvass/storage": "^1.1.0",
     "@kvass/ui": "1.6.41",
+    "@kvass/location-selector": "^1.0.25",
+    "@kvass/map": "^1.0.19",
     "@kvass/vue3-flatfinder": "^1.0.41",
     "@vueuse/core": "^10.9.0",
     "chart.js": "^4.4.2",
@@ -37,6 +37,7 @@
     "@types/webfontloader": "^1.6.38",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/compiler-sfc": "^3.5.13",
+    "cz-conventional-changelog": "^3.3.0",
     "sass": "^1.72.0",
     "typescript": "^5.7.3",
     "vite": "^5.1.6"
@@ -44,5 +45,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Kvass-App/widgets.git"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

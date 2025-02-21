@@ -185,6 +185,64 @@ function toCurrency(
     minimumFractionDigits: 0,
   })
 }
+const parse = (v) => {
+  if (typeof v !== 'string') return v
+  try {
+    return JSON.parse(v)
+  } catch (err) {
+    return {}
+  }
+}
+
+const getLabel =
+  (v = {}, d = {}) =>
+  (key) =>
+    parse(v)[key] || d[key] || key
+
+const format =
+  (type, options = {}) =>
+  (value) => {
+    switch (type) {
+      case 'currency':
+        const { locale, ...rest } = options
+        return new Intl.NumberFormat(locale, {
+          style: 'currency',
+          maximumFractionDigits: 0,
+          ...rest,
+        }).format(value)
+      case 'number':
+        return new Intl.NumberFormat(options.locale).format(value)
+      case 'year':
+      case 'years':
+        return [
+          value,
+          new Intl.RelativeTimeFormat(options.locale)
+            .formatToParts(value, 'year')
+            .at(-1).value,
+        ].join(' ')
+      case 'percent':
+        const { maximumFractionDigits = 0 } = options
+        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+      default:
+        return value
+    }
+  }
+
+const getCurrencyInputProps = (options = {}) => {
+  const { locale, currency } = options
+
+  const mapperRE = /(.{1})\d{3}(\D)\d$/
+  const formattedValue = format('number', { locale })(1000.1)
+
+  let [_, thousand, decimal] = mapperRE.exec(formattedValue)
+
+  const data = format('currency', { locale, currency })(1000.1)
+  const symbol = data.replace(/[\d\s\,\.]/g, '')
+  const mask = { mask: Number, thousandsSeparator: thousand }
+
+  if (data.match(/^\d/)) return { suffix: symbol, mask }
+  return { symbol, mask }
+}
 
 export {
   ExtractString,
@@ -199,4 +257,7 @@ export {
   uploadFunction,
   toCurrency,
   hasDiff,
+  getLabel,
+  format,
+  getCurrencyInputProps,
 }

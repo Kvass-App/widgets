@@ -63,7 +63,7 @@ const item = ref({
 
 if (props.value) {
   const content = JSON.parse(`${props.value}`)
-  if (content.location) item.value = content
+  if (content?.location) item.value = content
 }
 
 const element = useCurrentElement()
