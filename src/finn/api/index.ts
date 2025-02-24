@@ -29,7 +29,7 @@ export function useAPI(element?: CurrentElementType) {
   const getAds = <T extends string | undefined = undefined>(
     id?: T,
   ): Promise<T extends string ? Ad : Ad[]> => {
-    const url = getUrl('ads')
+    const url = getUrl('data')
 
     if (id) url.searchParams.append('id', id)
 
