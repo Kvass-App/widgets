@@ -3,7 +3,6 @@ import { ref, onMounted, useId, watch } from 'vue'
 import { Clone } from '../../utils'
 import { Button, Flex, Expandable } from '@kvass/ui'
 
-import 'floating-vue/dist/style.css'
 import { vTooltip } from 'floating-vue'
 
 const props = withDefaults(
@@ -91,14 +90,14 @@ onMounted(() => {
       <template v-for="(item, index) in internalValue" :key="getId(index)">
         <Flex justify="end" gap="4px" class="expandable-list__actions">
           <Button
-            v-tooltip="{ content: 'Fjern' }"
+            v-tooltip="{ content: 'Fjern', container: false }"
             size="small"
             icon="fa-pro-light:trash"
             @click="remove(index)"
             class="expandable-list__remove"
           />
           <Button
-            v-tooltip="{ content: 'Flytt opp' }"
+            v-tooltip="{ content: 'Flytt opp', container: false }"
             size="small"
             icon="fa-pro-light:arrow-up"
             :disabled="index === 0"
@@ -108,6 +107,7 @@ onMounted(() => {
           <Button
             v-tooltip="{
               content: 'Flytt ned',
+              container: false,
             }"
             size="small"
             icon="fa-pro-light:arrow-down"
@@ -127,6 +127,7 @@ onMounted(() => {
         v-tooltip="{
           content: 'Maks antall felter lagt til',
           disabled: !(limit && internalValue.length >= limit),
+          container: false,
         }"
         variant="tertiary"
         :disabled="limit && internalValue.length >= limit"

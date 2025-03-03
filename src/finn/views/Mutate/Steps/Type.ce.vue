@@ -14,6 +14,7 @@ import {
 } from '@kvass/ui'
 
 import vGodfather from '../../../directives/godfather'
+import { vTooltip } from 'floating-vue'
 
 import { toCurrency } from '../../../../utils'
 
@@ -190,7 +191,8 @@ const rules = computed(() => {
 
 const labels = computed(() => {
   return {
-    name: 'Navn',
+    name: 'Internt navn',
+    type: 'Annonse-kategori',
   }
 })
 
@@ -346,6 +348,14 @@ const { bind: validate } = validator
         icon-right="fa-pro-solid:arrow-right"
         :disabled="!validator.passes.value"
         @click="() => submit()"
+        v-tooltip="{
+          content: Object.entries(validator.errors.value.errors)
+            .map(([key, value]) => value)
+            .flat()
+            .join('\n'),
+          disabled: validator.passes.value,
+          container: false,
+        }"
       />
     </template>
   </Card>

@@ -42,6 +42,11 @@ const getComponent = computed(() => {
 @import url('@kvass/ui/style.css');
 
 .finn {
+  .v-popper__popper {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
   --synced-icon: #185089;
   --edited-icon: orange;
 
