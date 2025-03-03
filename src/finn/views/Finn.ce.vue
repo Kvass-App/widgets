@@ -123,7 +123,7 @@ const getComponent = computed(() => {
 
   .k-dialog__container,
   .k-dialog__backdrop {
-    z-index: 1009;
+    z-index: 1010;
   }
 
   .k-expandable__header {

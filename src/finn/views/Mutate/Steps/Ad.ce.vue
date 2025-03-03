@@ -1096,7 +1096,7 @@ const saveDraft = () => {
             <Expandable
               :expanded="true"
               title="Plantegninger"
-              subtitle="Disse hentes fra enhetssidene"
+              subtitle=""
               v-if="hasFields('FLOORPLAN_MEDIA')"
             >
               <template #actions>
@@ -1120,6 +1120,7 @@ const saveDraft = () => {
                   dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
                   :accept="['image/jpeg', 'image/png', 'image/jpg']"
                   :upload="uploadFunction"
+                  :uploadOptions="{}"
                   :multiple="true"
                   :sortable="true"
                   :labels="{
