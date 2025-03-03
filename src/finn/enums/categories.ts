@@ -1,44 +1,66 @@
 import type { Type } from '../types/ad'
 
-export type Category = { type: Type; label: string }
+export type Category = {
+  type: Type
+  label: string
+  sublabel: string
+  group: string
+}
 
 export default [
   {
     type: 'ESTATE_PLANNED',
-    label: 'Nye boliger, kommer for salg',
+    label: 'Kommer for salg',
+    sublabel: 'Nye boliger, kommer for salg',
+    group: 'Nybygg',
   },
   {
     type: 'ESTATE_PROJECT',
-    label: 'Nye boliger til salgs',
+    label: 'Boliger',
+    sublabel: 'Nye boliger til salgs',
+    group: 'Nybygg',
+
     // unitType: 'ESTATE_PROJECT_UNIT'
   },
   {
-    label: 'Nye boliger til salgs hytte',
+    type: 'ESTATE_PROJECT_SINGLE',
+    label: 'Enkelt enhet',
+    sublabel: 'Nye boliger til salgs enkelt enhet',
+    group: 'Nybygg',
+  },
+  {
     type: 'ESTATE_PROJECT_LEISURE',
+    label: 'Hytter',
+    sublabel: 'Nye boliger til salgs hytte',
+    group: 'Nybygg',
     // unitType: 'ESTATE_PROJECT_UNIT_LEISURE'
   },
   {
-    type: 'ESTATE_PROJECT_SINGLE',
-    label: 'Nye boliger til salgs enkel enhet',
-  },
-  {
     type: 'ESTATE_BUSINESS_SALE',
-    label: 'Næringseiendommer til salgs',
+    label: 'Til salgs',
+    sublabel: 'Næringseiendommer til salgs',
+    group: 'Næring',
   },
   {
-    label: 'Næringseiendommer til leie',
     type: 'ESTATE_BUSINESS_RENT',
+    label: 'Til leie',
+    sublabel: 'Næringseiendommer til leie',
+    group: 'Næring',
   },
   {
-    label: 'Boligtomt/Fritidstomt til salgs',
     type: 'PLOT_SALE',
+    label: 'Tomt/Hyttetomt',
+    sublabel: 'Boligtomt/Fritidstomt til salgs',
+    group: 'Tomter',
   },
   // {
   //   label: 'Fritidstomt til salgs ( TODO, type )',
   //   type: 'PLOT_SALE',
   // },
   {
-    label: 'Bolig til leie',
     type: 'ESTATE_RENT',
+    label: 'Bolig',
+    sublabel: 'Bolig til leie',
+    group: 'Leie',
   },
 ] as Category[]

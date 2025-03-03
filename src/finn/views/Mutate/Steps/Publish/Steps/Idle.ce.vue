@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Card, Alert, Button, Icon } from '@kvass/ui'
+import { Card, Alert, Button, Icon, Dialog } from '@kvass/ui'
 
 import { type Ad } from '../../../../../types/ad'
 
@@ -12,6 +12,7 @@ const modelValue = defineModel<Ad>({ default: {} })
 
 const emit = defineEmits<{
   (event: 'publish', payload: void): void
+  (event: 'goto', payload: string): void
 }>()
 </script>
 
@@ -36,6 +37,12 @@ const emit = defineEmits<{
     </template>
     <template #actions>
       <Button
+        label="Redigering"
+        iconLeft="fa-pro-light:chevron-left"
+        @click="() => emit('goto', 'ad')"
+      />
+
+      <Button
         :disabled="!Boolean(modelValue.url)"
         label="Forhåndsvis annonse"
         iconRight="fa-pro-light:arrow-up-right-from-square"
@@ -44,12 +51,44 @@ const emit = defineEmits<{
         :href="modelValue.url"
       />
 
-      <Button
-        label="Publiser annonse"
-        variant="primary"
-        iconRight="fa-pro-light:arrow-right-long"
-        @click="() => emit('publish')"
-      />
+      <Dialog
+        class="publish__dialog"
+        alignment="center"
+        variant="prompt"
+        :teleport="false"
+        title="Du er i ferd med å aktivere en Finn.no annonse"
+      >
+        <template #trigger="{ triggerProps }">
+          <Button
+            label="Publiser annonse"
+            variant="primary"
+            iconRight="fa-pro-light:arrow-right-long"
+            v-bind="triggerProps"
+          />
+        </template>
+        <template #default="{ descriptionProps }">
+          <!-- @vue-expect-error -->
+          <p v-bind="descriptionProps">
+            Når du publiserer annonsen, aktiveres en betalt tjeneste fra FINN.
+            Du vil da motta faktura og påløpende kostnader. Bindingstiden
+            avhenger av avtalen din i Finn.
+          </p>
+          <p>
+            <span> Du kan lese mer om Finn.no sine priser </span>
+            <a target="_blank" href="https://www.finn.no/eiendom/prisoversikt"
+              >her</a
+            >
+          </p>
+        </template>
+        <template #actions="{ close }">
+          <Button label="Nei, ta meg tilbake" @click="close" />
+          <Button
+            label="Ja, dette er ok"
+            variant="primary"
+            @click="() => emit('publish')"
+          />
+        </template>
+      </Dialog>
     </template>
   </Card>
 
@@ -95,5 +134,19 @@ const emit = defineEmits<{
 .publish {
   margin: 0 auto;
   min-width: 600px;
+
+  &__dialog {
+    // --k-dialog-min-width: 500px;
+    // --k-dialog-max-width: 500px;
+
+    .k-card__content {
+      & > p:first-of-type {
+        margin-top: 0;
+      }
+      & > p:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
 </style>

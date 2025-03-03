@@ -77,9 +77,9 @@ defineExpose({
           <Icon
             :icon="getIsInternalEditedIcon('MOREINFO')"
             :class="[
-              'ad__expandable-list-field',
+              'ad__expandable-list-field-icon',
               {
-                'ad__expandable-list-field--edited':
+                'ad__expandable-list-field-icon--edited':
                   isInternalEdited('MOREINFO'),
               },
             ]"

@@ -55,6 +55,13 @@ const columns = computed(() => {
 })
 
 const getStatus = (item: Ad) => {
+  if (!item.code) {
+    return {
+      label: 'Utkast',
+      variant: 'neutral' as const,
+    }
+  }
+
   if (!item.publishedAt) {
     return {
       label: 'Avpublisert',
@@ -64,7 +71,7 @@ const getStatus = (item: Ad) => {
 
   if (item.preview) {
     return {
-      label: 'Forhåndsvisning',
+      label: 'Utkast - Forhåndsvisning',
       variant: 'info' as const,
     }
   }
@@ -75,6 +82,7 @@ const getStatus = (item: Ad) => {
   }
 }
 const getPublishedAt = (item: Ad) => {
+  if (!item.code) return '-'
   if (!item.publishedAt) return '-'
   if (item.preview) return '-'
 
@@ -102,7 +110,9 @@ const getData = () => {
     })
 }
 
-onMounted(getData)
+onMounted(() => {
+  getData()
+})
 </script>
 
 <template>
@@ -122,41 +132,46 @@ onMounted(getData)
           </template>
           <template #published="{ item }">{{ getPublishedAt(item) }}</template>
           <template #url="{ item }">
-            <Dropdown label="Se annonser" v-if="item.units.some((v) => v.url)">
-              <template #default>
-                <Button
-                  variant="tertiary"
-                  iconRight="fa-pro-light:arrow-up-right-from-square"
-                  label="Prosjektannonse"
-                  target="_blank"
-                  is="a"
-                  :href="item.url"
-                />
-                <Button
-                  variant="tertiary"
-                  v-for="unit in item.units"
-                  :label="`${unit.name}`"
-                  target="_blank"
-                  is="a"
-                  :href="unit.url"
-                  iconRight="fa-pro-light:arrow-up-right-from-square"
-                />
-              </template>
-            </Dropdown>
+            <template v-if="item.url">
+              <Dropdown
+                label="Se annonser"
+                v-if="item.units.some((v) => v.url)"
+              >
+                <template #default>
+                  <Button
+                    variant="tertiary"
+                    iconRight="fa-pro-light:arrow-up-right-from-square"
+                    label="Prosjektannonse"
+                    target="_blank"
+                    is="a"
+                    :href="item.url"
+                  />
+                  <Button
+                    variant="tertiary"
+                    v-for="unit in item.units"
+                    :label="`${unit.name}`"
+                    target="_blank"
+                    is="a"
+                    :href="unit.url"
+                    iconRight="fa-pro-light:arrow-up-right-from-square"
+                  />
+                </template>
+              </Dropdown>
 
-            <Button
-              v-else
-              iconRight="fa-pro-light:arrow-up-right-from-square"
-              label="Se annonse"
-              target="_blank"
-              is="a"
-              :href="item.url"
-            >
-            </Button
-          ></template>
+              <Button
+                v-else
+                iconRight="fa-pro-light:arrow-up-right-from-square"
+                label="Se annonse"
+                target="_blank"
+                is="a"
+                :href="item.url"
+              >
+              </Button>
+            </template>
+          </template>
           <template #insight="{ item }">
             <Button
-              v-if="!item.preview"
+              v-if="!item.preview && item.statistics"
               iconRight="fa-pro-light:arrow-up-right-from-square"
               label="Se innsikt"
               target="_blank"

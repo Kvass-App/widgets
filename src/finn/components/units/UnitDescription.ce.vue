@@ -9,6 +9,7 @@ import {
   Expandable,
   Dialog,
   Media,
+  File,
 } from '@kvass/ui'
 
 import { type Fields } from '../../api'
@@ -138,9 +139,9 @@ defineExpose({
             <Icon
               :icon="getIsInternalEditedIcon('MEDIA')"
               :class="[
-                'ad__expandable-list-field',
+                'ad__expandable-list-field-icon',
                 {
-                  'ad__expandable-list-field--edited':
+                  'ad__expandable-list-field-icon--edited':
                     isInternalEdited('MEDIA'),
                 },
               ]"
@@ -179,6 +180,46 @@ defineExpose({
           </template>
         </Expandable>
 
+        <Expandable
+          :expanded="true"
+          title="Plantegninger"
+          subtitle="Disse hentes fra enhetssiden"
+          v-if="hasFields('FLOORPLAN_MEDIA')"
+        >
+          <template #actions>
+            <Icon
+              :icon="getIsInternalEditedIcon('FLOORPLAN_MEDIA')"
+              :class="[
+                'ad__expandable-list-field-icon',
+                {
+                  'ad__expandable-list-field-icon--edited':
+                    isInternalEdited('FLOORPLAN_MEDIA'),
+                },
+              ]"
+            ></Icon>
+          </template>
+          <template #default>
+            <File
+              :rename="false"
+              v-if="hasField('FLOORPLAN_MEDIA')"
+              v-model="item.FLOORPLAN_MEDIA"
+              label="Plantegninger i Finn-annonsen"
+              dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
+              :accept="['image/jpeg', 'image/png', 'image/jpg']"
+              :upload="uploadFunction"
+              :uploadOptions="{}"
+              :types="['Image']"
+              :multiple="true"
+              :sortable="true"
+              :labels="{
+                delete: 'Slett',
+                download: 'Last ned',
+              }"
+            >
+            </File>
+          </template>
+        </Expandable>
+
         <RichTextMultiple
           :expanded="true"
           title="Beskrivelse"
@@ -190,9 +231,9 @@ defineExpose({
             <Icon
               :icon="getIsInternalEditedIcon('GENERAL_DESCRIPTION')"
               :class="[
-                'ad__expandable-list-field',
+                'ad__expandable-list-field-icon',
                 {
-                  'ad__expandable-list-field--edited': isInternalEdited(
+                  'ad__expandable-list-field-icon--edited': isInternalEdited(
                     'GENERAL_DESCRIPTION',
                   ),
                 },

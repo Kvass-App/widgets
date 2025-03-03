@@ -55,7 +55,6 @@ const preview = () => {
 
         if (!error.value) {
           modelValue.value = await API.getAds(modelValue.value.id)
-
           props.onNext()
         }
       })
@@ -64,7 +63,12 @@ const preview = () => {
 }
 
 onMounted(() => {
-  if (!modelValue.value.id || modelValue.value.preview) return preview()
+  if (
+    !modelValue.value.id ||
+    modelValue.value.preview ||
+    !modelValue.value.code
+  )
+    return preview()
   return props.onNext()
 })
 </script>
