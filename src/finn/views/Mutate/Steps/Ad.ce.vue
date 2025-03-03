@@ -29,7 +29,6 @@ import {
   Image,
 } from '@kvass/ui'
 
-import 'floating-vue/dist/style.css'
 import { vTooltip } from 'floating-vue'
 
 import UnitTable from '../../../components/units/UnitTable.ce.vue'
@@ -270,7 +269,11 @@ const editDialogAccepted = ref(
 const editDialog = ref()
 
 function onFocus(e) {
-  if (e.target.classList.contains('k-expandable__header')) return
+  if (
+    e.target.classList.contains('k-expandable__header') ||
+    e.target.classList.contains('disable-focus-modal')
+  )
+    return
   editDialog.value.open()
 }
 
@@ -354,7 +357,7 @@ const saveDraft = () => {
           feltet, ikke lengre henter informasjon fra prosjektsiden.
         </p>
         <Image
-          src="https://assets.kvass.no/67aa2b433aee3cb55c8e7408"
+          src="https://assets.kvass.no/67c59b8a92504cdf70ab97d2"
           size="contain"
           width="100%"
           aspectRatio="16/9"
@@ -1210,6 +1213,7 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <FormControl
+                  class="facilities"
                   label="Tilgjengelige fasiliteter"
                   v-if="hasField('PROJECT_PREFERENCE')"
                 >
@@ -1399,6 +1403,7 @@ const saveDraft = () => {
                 .flat()
                 .join('\n'),
               disabled: validator.passes.value,
+              container: false,
             }"
             :label="getNextLabel()"
             variant="primary"
@@ -1432,6 +1437,14 @@ const saveDraft = () => {
   &__reset.k-button {
     font-weight: normal;
     font-size: 1rem;
+  }
+
+  .facilities {
+    .k-formcontrol__label {
+      grid-column: 1/-1;
+    }
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   &__alert {

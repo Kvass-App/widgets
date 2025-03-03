@@ -262,6 +262,7 @@ defineExpose({
             .flat()
             .join('\n'),
           disabled: validator.passes.value,
+          container: false,
         }"
         label="Bekreft"
         :disabled="!validator.passes.value"

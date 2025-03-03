@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed } from 'vue'
+import { ref, toRef, computed, inject } from 'vue'
 import { DataTable, Icon, Button, Scroller } from '@kvass/ui'
 
 import UnitSettings from './UnitSettings.ce.vue'
@@ -9,12 +9,18 @@ import { Diff, hasDiff } from '../../../utils/index.js'
 import { type Fields } from '../../api'
 import { type Ad } from '../../types/ad'
 
-import 'floating-vue/dist/style.css'
 import { vTooltip } from 'floating-vue'
 
 import vGodfather from '../../directives/godfather'
 
 import Validator from '../../composeable/Validator'
+
+import { type Webcomponent } from '../../types/webcomponent'
+import { PropsInjectionKey } from '../../keys'
+
+const webcomponentProps = inject<Webcomponent>(
+  PropsInjectionKey,
+) as Webcomponent
 
 const props = defineProps<{
   units: Fields['units']
@@ -72,6 +78,14 @@ const setIsHighlighted = (item, index) => {
   modelValue.value.units[index].fields['IS_HIGHLIGHTED'] =
     item['IS_HIGHLIGHTED']
 }
+
+const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
+  const url = new URL(
+    `${webcomponentProps.tenant}/residentials/${id}/edit/${step}`,
+  )
+
+  return url.toString()
+}
 </script>
 
 <template>
@@ -118,12 +132,25 @@ const setIsHighlighted = (item, index) => {
 
       <template #unit="{ item, rowIndex: index }">
         <span> {{ item.HOUSING_UNIT_REF }}</span>
-        <Icon
-          class="unit-table__error"
-          v-if="validatorComp[index].error"
-          icon="fa-pro-solid:exclamation-triangle"
-          v-tooltip="{ content: validatorComp[index].error }"
-        />
+        <template v-if="validatorComp[index].error">
+          <Icon
+            class="unit-table__error disable-focus-modal"
+            icon="fa-pro-solid:exclamation-triangle"
+            v-tooltip="{
+              content: validatorComp[index].error,
+              container: false,
+            }"
+          />
+          <Button
+            class="k-ml-lg disable-focus-modal"
+            is="a"
+            target="_blank"
+            label="Gå til enhet"
+            size="small"
+            :href="getProjectUnitStepUrl(item.USER_REFERENCE)"
+            iconRight="fa-pro-light:arrow-up-right-from-square"
+          ></Button>
+        </template>
       </template>
 
       <template #highlight="{ item, rowIndex: index }">
