@@ -138,9 +138,9 @@ defineExpose({
             <Icon
               :icon="getIsInternalEditedIcon('MEDIA')"
               :class="[
-                'ad__expandable-list-field',
+                'ad__expandable-list-field-icon',
                 {
-                  'ad__expandable-list-field--edited':
+                  'ad__expandable-list-field-icon--edited':
                     isInternalEdited('MEDIA'),
                 },
               ]"
@@ -190,9 +190,9 @@ defineExpose({
             <Icon
               :icon="getIsInternalEditedIcon('GENERAL_DESCRIPTION')"
               :class="[
-                'ad__expandable-list-field',
+                'ad__expandable-list-field-icon',
                 {
-                  'ad__expandable-list-field--edited': isInternalEdited(
+                  'ad__expandable-list-field-icon--edited': isInternalEdited(
                     'GENERAL_DESCRIPTION',
                   ),
                 },

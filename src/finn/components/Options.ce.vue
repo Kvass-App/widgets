@@ -5,10 +5,14 @@ import { useCurrentElement } from '@vueuse/core'
 const element = useCurrentElement()
 import { useAPI } from '../api'
 
+import { type Ad } from '../types/ad'
+
 const API = useAPI(element)
 
+type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>
+
 const props = defineProps<{
-  item: any
+  item: WithRequired<Ad, 'id'>
 }>()
 
 const emit = defineEmits<{
@@ -17,6 +21,16 @@ const emit = defineEmits<{
 
 const promise = ref<Promise<any>>()
 const removedialog = ref()
+
+const navigatePublish = (id: string) => {
+  sessionStorage.setItem('k-finn-step', 'publish')
+  API.navigateView('mutate', id)
+}
+
+const navigateEdit = (id: string) => {
+  sessionStorage.setItem('k-finn-step', 'ad')
+  API.navigateView('mutate', id)
+}
 </script>
 
 <template>
@@ -41,11 +55,11 @@ const removedialog = ref()
           icon="fa-pro-light:triangle-exclamation"
           class="remove-dialog__icon"
         ></Icon>
-
+        <!-- @vue-expect-error -->
         <div v-bind="descriptionProps" class="remove-dialog__subtitle">
           Du holder på å slette Finn-annonsen:
         </div>
-
+        <!-- @vue-expect-error -->
         <div v-bind="titleProps" class="remove-dialog__title">
           {{ item.name }}
         </div>
@@ -81,22 +95,32 @@ const removedialog = ref()
       <Button
         iconRight="fa-pro-light:pen"
         label="Rediger"
-        @click="() => API.navigateView('mutate', item.id)"
+        @click="() => navigateEdit(item.id)"
         variant="tertiary"
       ></Button>
-      <Button
-        v-if="item.publishedAt"
-        iconRight="fa-pro-light:play-pause"
-        label="Avpubliser"
-        :promise="promise"
-        @success="
-          () => {
-            emit('refetch')
-          }
-        "
-        @click="() => (promise = API.unpublish(item.id))"
-        variant="tertiary"
-      ></Button>
+
+      <template v-if="item.code">
+        <Button
+          v-if="!item.publishedAt || item.preview"
+          iconRight="fa-pro-light:arrow-right"
+          label="Publiser"
+          @click="() => navigatePublish(item.id)"
+          variant="tertiary"
+        ></Button>
+        <Button
+          v-if="item.publishedAt"
+          iconRight="fa-pro-light:play-pause"
+          label="Avpubliser"
+          :promise="promise"
+          @success="
+            () => {
+              emit('refetch')
+            }
+          "
+          @click="() => (promise = API.unpublish(item.id))"
+          variant="tertiary"
+        ></Button>
+      </template>
 
       <Button
         data-type="delete"

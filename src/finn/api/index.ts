@@ -77,6 +77,9 @@ export function useAPI(element?: CurrentElementType) {
       headers: {
         authorization: `Bearer ${props.token}`,
       },
+    }).catch((err) => {
+      console.error(err)
+      throw err
     })
   }
 
@@ -93,8 +96,11 @@ export function useAPI(element?: CurrentElementType) {
     })
   }
 
-  const publish = async (data, options: { preview?: boolean } = {}) => {
-    const { preview = false } = options
+  const publish = async (
+    data,
+    options: { preview?: boolean; publish?: boolean } = {},
+  ) => {
+    const { preview = false, publish = true } = options
 
     const url = getUrl('publish')
 
@@ -110,6 +116,7 @@ export function useAPI(element?: CurrentElementType) {
       body: JSON.stringify({
         data,
         preview,
+        publish,
       }),
     })
 

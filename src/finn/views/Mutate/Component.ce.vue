@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, inject } from 'vue'
-import { Stepper, type StepperStep } from '@kvass/ui'
+import {
+  computed,
+  ref,
+  onMounted,
+  inject,
+  onUnmounted,
+  onBeforeMount,
+} from 'vue'
+import { Stepper, type StepperStep, Flex, Spinner } from '@kvass/ui'
 
 import StepType from './Steps/Type.ce.vue'
 import StepAd from './Steps/Ad.ce.vue'
@@ -40,13 +47,8 @@ const template: Ad = {
 const modelValue = ref<Ad>(structuredClone(template))
 
 const units = ref<Unit[]>([])
-const fetching = ref(false)
-
-// const modelValue = useStorage(
-//   props.id ? `kvass-finn-ad-${props.id}` : 'kvass-finn-ad',
-//   structuredClone(template),
-//   localStorage,
-// )
+const fetching = ref(true)
+const stepper = ref()
 
 const steps = computed<StepperStep[]>(() => {
   return [
@@ -81,6 +83,7 @@ const steps = computed<StepperStep[]>(() => {
       id: 'publish',
       component: StepPublish,
       bind: {
+        onGoto: (v: string) => stepper.value.goto(v),
         modelValue: modelValue.value,
         units: units.value,
       },
@@ -113,13 +116,25 @@ const getData = async () => {
   }
 }
 
-onMounted(getData)
+onBeforeMount(() => {
+  const step = sessionStorage.getItem('k-finn-step') || ''
+  if (!props.id) sessionStorage.removeItem('k-finn-step')
+})
+
+onMounted(() => {
+  getData()
+})
 </script>
 
 <template>
+  <Flex direction="column" align="center" v-if="fetching">
+    <Spinner size="large" />
+  </Flex>
   <Stepper
+    v-else
     :steps="steps"
-    state-handler="none"
+    state-handler="sessionStorage"
+    stateKey="k-finn-step"
     class="finn-mutate"
     ref="stepper"
     :hidebreadcrumbs="true"

@@ -9,7 +9,11 @@ import {
   DataTable,
   Button,
   Badge,
+  Flex,
+  Scroller,
 } from '@kvass/ui'
+
+import vGodfather from '../../../directives/godfather'
 
 import { toCurrency } from '../../../../utils'
 
@@ -17,6 +21,7 @@ import { type Webcomponent } from '../../../types/webcomponent'
 import { type Ad, Unit } from '../../../types/ad'
 
 import Categories from '../../../enums/categories'
+import type { Category } from '../../../enums/categories'
 
 import Validator from '../../../composeable/Validator'
 
@@ -40,6 +45,28 @@ const props = defineProps<{
 
 const modelValue = defineModel<Ad>({ default: {} })
 
+const getCategoriesByGroup = computed(() => {
+  const groupedByCategory = Categories.reduce<Record<string, Category[]>>(
+    (acc, estate) => {
+      if (!acc[estate.group]) {
+        acc[estate.group] = []
+      }
+      acc[estate.group].push(estate)
+      return acc
+    },
+    {},
+  )
+
+  const groupedArray = Object.entries(groupedByCategory).map(
+    ([group, items]) => ({
+      group,
+      items,
+    }),
+  )
+
+  return groupedArray
+})
+
 const selectedCategory = computed(() =>
   Categories.find((v) => v.type === modelValue.value.type),
 )
@@ -49,18 +76,22 @@ const columns = computed(() => {
     {
       id: 'name',
       label: 'Navn',
+      sort: true,
     },
     {
       id: 'type',
       label: 'Enhetstype',
+      sort: true,
     },
     {
       id: 'status',
       label: 'Status',
+      sort: true,
     },
     {
       id: 'price',
       label: 'Pris',
+      sort: true,
     },
   ]
 })
@@ -80,17 +111,57 @@ const getStatusVariant = (status: string) => {
   }
 }
 
-const unitDisabled = (item) => {
+function unitDisabled(item) {
   return item.disabled
 }
 
 const submit = () => {
   props.onNext()
 }
+const sortBy = ref<Record<string, 1 | -1>>({ name: 1 })
+
+const items = computed(() => {
+  return props.units.sort((a, b) => {
+    let [sortByKey] = Object.keys(sortBy.value)
+    let [sortByValue] = Object.values(sortBy.value)
+
+    const getValue = (v) => {
+      if (sortByKey === 'status') return v[sortByKey]['label']
+      if (sortByKey === 'type') return v['propertyType']['label']
+      return v[sortByKey]
+    }
+
+    const valA = getValue(a)
+    const valB = getValue(b)
+
+    const sortDirection = sortByValue < 0
+
+    const isNumA = !isNaN(valA)
+    const isNumB = !isNaN(valB)
+
+    if (isNumA && isNumB) {
+      return sortDirection ? valB - valA : valA - valB
+    }
+
+    if (typeof valA === 'string' && typeof valB === 'string') {
+      return sortDirection
+        ? valB.localeCompare(valA, 'nb-NO', {
+            numeric: true,
+            sensitivity: 'base',
+          })
+        : valA.localeCompare(valB, 'nb-NO', {
+            numeric: true,
+            sensitivity: 'base',
+          })
+    }
+
+    return 0
+  })
+})
 
 const selected = computed({
   get() {
-    return props.units.filter((v) =>
+    return items.value.filter((v) =>
       modelValue.value.units.some((unit) => unit.id === v.id),
     )
   },
@@ -105,6 +176,10 @@ const selected = computed({
     })
   },
 })
+
+const sortableBy = computed(() =>
+  columns.value.filter((v) => v.sort).map((v) => v.id),
+)
 
 const rules = computed(() => {
   return {
@@ -134,59 +209,128 @@ const { bind: validate } = validator
     title="Grunnlag for Finn-annonsen"
     variant="prompt"
     appearance="shadow"
-    subtitle="Definer annonsen sitt interne navn, boligtypen annonsen skal ligge under på Finn og hvilke enheter du skal ha på din annonse."
+    subtitle="Definer annonsen sitt interne navn, annonse-kategorien definerer hvor den plasseres på Finn."
   >
     <template #default>
       <Grid columns="2" gap="4rem 2rem">
-        <FormControl
-          label="Internt navn på Finn annonse"
-          v-bind="validate('name')"
-        >
+        <FormControl v-bind="validate('name')">
+          <template #label>
+            <span
+              v-godfather="{
+                id: 'internal-name',
+                options: {
+                  content:
+                    'Det interne navnet gjør det lettere å finne annonsen i oversikten over Finn-annonsene på prosjektet, spesielt hvis du planlegger å ha flere annonser på samme prosjekt!',
+                  hint: true,
+                  attachTo: 'hint',
+                  scrollIntoView: false,
+                },
+              }"
+              >Internt navn på Finn-annonse
+            </span>
+          </template>
           <Input v-model="modelValue.name"></Input>
         </FormControl>
 
         <FormControl
           v-bind="validate('type')"
-          label="Velg annonse-kategori"
           help="Dette legger annonsen på riktig boligtype på Finn"
         >
+          <template #label>
+            <span
+              v-godfather="{
+                id: 'ad-category',
+                options: {
+                  content:
+                    'En annonse-kategori gjør det mulig å bestemme ønsket plass i Finn for din type annonse. Dersom du for eksempel skal leie ut en bolig kan du benytte bolig til leie. Annonsen vil deretter plasseres på bolig til leie på Finn.',
+                  hint: true,
+                  attachTo: 'hint',
+                  scrollIntoView: false,
+                },
+              }"
+            >
+              Velg annonse-kategori
+            </span>
+          </template>
           <Dropdown
             :disabled="Boolean(webcomponentProps.id)"
-            :items="
-              Categories.map((v) => {
-                return {
-                  ...v,
-                  action: () => (modelValue.type = v.type),
-                }
-              })
-            "
-            :label="selectedCategory?.label || 'Velg...'"
-          />
+            label="Velg..."
+            class="category"
+            :keepOpen="true"
+          >
+            <template #trigger v-if="selectedCategory">
+              <Flex class="category__label-wrapper">
+                <div class="category__label">
+                  {{ selectedCategory.label }}
+                </div>
+                <div class="category__sublabel">
+                  {{ selectedCategory.sublabel }}
+                </div>
+              </Flex>
+            </template>
+            <template #default="{ close }">
+              <template v-for="category in getCategoriesByGroup">
+                <div class="category__group">{{ category.group }}</div>
+
+                <Button
+                  v-for="item in category.items"
+                  variant="tertiary"
+                  @click="
+                    () => {
+                      modelValue.type = item.type
+                      close()
+                    }
+                  "
+                >
+                  <Flex class="category__label-wrapper">
+                    <div class="category__label">{{ item.label }}</div>
+                    <div class="category__sublabel">
+                      {{ item.sublabel }}
+                    </div>
+                  </Flex>
+                </Button>
+              </template>
+            </template>
+          </Dropdown>
         </FormControl>
 
         <FormControl
-          label="Velg enheter som skal være på Finn-annonsen"
+          label="Velg enheter som danner informasjonsgrunnlag for Finn-annonsen"
           class="k-grid-span-full"
         >
-          <DataTable
-            :columns="columns"
-            :items="units"
-            v-model:selected="selected"
-            :isDisabled="unitDisabled"
+          <Scroller
+            is="div"
+            appearance="indicator"
+            :treshhold="200"
+            class="table-scroller"
           >
-            <template #name="{ item }"> {{ item.name }}</template>
-            <template #type="{ item }"> {{ item.propertyType.label }}</template>
-            <template #status="{ item }">
-              <Badge
-                appearance="filled"
-                :variant="getStatusVariant(item.status.value)"
-                :rounded="true"
+            <DataTable
+              :sticky="true"
+              :sortableBy="sortableBy"
+              v-model:sortBy="sortBy"
+              :columns="columns"
+              :items="items"
+              v-model:selected="selected"
+              :isDisabled="unitDisabled"
+            >
+              <template #name="{ item }"> {{ item.name }}</template>
+              <template #type="{ item }">
+                {{ item.propertyType.label }}</template
               >
-                <template #default> {{ item.status.label }} </template>
-              </Badge>
-            </template>
-            <template #price="{ item }"> {{ toCurrency(item.price) }}</template>
-          </DataTable>
+              <template #status="{ item }">
+                <Badge
+                  appearance="filled"
+                  :variant="getStatusVariant(item.status.value)"
+                  :rounded="true"
+                >
+                  <template #default> {{ item.status.label }} </template>
+                </Badge>
+              </template>
+              <template #price="{ item }">
+                {{ toCurrency(item.price) }}</template
+              >
+            </DataTable>
+          </Scroller>
         </FormControl>
       </Grid>
     </template>
@@ -209,5 +353,37 @@ const { bind: validate } = validator
 
 <style lang="scss">
 .type {
+  .k-formcontrol__label.k-formcontrol__label-required {
+    .godfather-hint {
+      top: -5px;
+      right: -35px;
+    }
+  }
+
+  .table-scroller {
+    max-height: 650px;
+    position: relative;
+  }
+
+  .category {
+    &__group {
+      font-weight: bold;
+      padding-inline: var(--k-ui-spacing-sm);
+      padding-top: var(--k-ui-spacing-xs);
+    }
+
+    &__label-wrapper {
+      flex-direction: column;
+      gap: var(--k-ui-spacing-xxs);
+      align-items: start;
+    }
+
+    &__label {
+    }
+    &__sublabel {
+      font-size: var(--k-ui-font-size-sm);
+      opacity: var(--k-ui-opacity-faded);
+    }
+  }
 }
 </style>

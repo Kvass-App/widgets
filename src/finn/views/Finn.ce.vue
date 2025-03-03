@@ -25,17 +25,26 @@ const getComponent = computed(() => {
 </script>
 
 <template>
-  <component
-    :is="getComponent"
-    v-bind="{ ...$attrs, ...$props }"
-    class="finn"
-  />
+  <!-- 
+   Wrapped the component in a div to ensure the dropdown closes properly when clicking outside the shadow DOM. 
+   Clicking directly on the web component root element does not trigger the close event. 
+   -->
+  <div>
+    <component
+      :is="getComponent"
+      v-bind="{ ...$attrs, ...$props }"
+      class="finn"
+    />
+  </div>
 </template>
 
 <style lang="scss">
 @import url('@kvass/ui/style.css');
 
 .finn {
+  --synced-icon: #185089;
+  --edited-icon: orange;
+
   --k-ui-color-primary: var(--primary);
   --k-ui-color-primary-dark: var(--primary-dark);
   --k-ui-color-primary-darkest: var(--primary-darkest);
@@ -71,7 +80,7 @@ const getComponent = computed(() => {
   --k-badge-neutral-text: #272727;
 
   --k-datatable-cell-size: 1rem;
-  --k-datatable-odd-color: transparent;
+  --k-datatable-odd-color: white;
   --k-datatable-even-color: var(--k-ui-color-neutral-lightest);
 
   --k-alert-info-border: #d3e6f7;
@@ -87,8 +96,8 @@ const getComponent = computed(() => {
 
   // --k-ui-color-primary: var(--primary);
 
-  --k-dialog-max-width: 900px;
-  --k-dialog-min-width: 900px;
+  // --k-dialog-max-width: 900px;
+  // --k-dialog-min-width: 900px;
 
   color: var(--k-ui-color-neutral-darkest);
 
@@ -109,6 +118,8 @@ const getComponent = computed(() => {
       height: 320px;
     }
   }
+
+  --k-dropdown-z-index: 1009;
 
   .k-dialog__container,
   .k-dialog__backdrop {

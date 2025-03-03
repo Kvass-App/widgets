@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, toRef, computed } from 'vue'
-import { DataTable, Icon } from '@kvass/ui'
+import { DataTable, Icon, Button, Scroller } from '@kvass/ui'
 
 import UnitSettings from './UnitSettings.ce.vue'
 
@@ -11,6 +11,8 @@ import { type Ad } from '../../types/ad'
 
 import 'floating-vue/dist/style.css'
 import { vTooltip } from 'floating-vue'
+
+import vGodfather from '../../directives/godfather'
 
 import Validator from '../../composeable/Validator'
 
@@ -61,95 +63,142 @@ const isEdited = (index, field) => {
 }
 
 const getIsEditedIcon = (isEdited: boolean) => {
-  return isEdited ? 'fa-pro-regular:link-slash' : 'fa-pro-regular:link'
+  return isEdited ? 'fa-pro-regular:cloud-xmark' : 'fa-pro-regular:cloud-check'
+}
+
+const setIsHighlighted = (item, index) => {
+  item['IS_HIGHLIGHTED'] = item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
+
+  modelValue.value.units[index].fields['IS_HIGHLIGHTED'] =
+    item['IS_HIGHLIGHTED']
 }
 </script>
 
 <template>
-  <DataTable
-    class="unit-table"
-    :columns="[
-      { id: 'unit', label: 'Enhet', size: '1fr' },
-      {
-        id: 'highlight',
-        label: 'Fremhev enhet',
-        align: 'center',
-        size: '150px',
-      },
-      { id: 'settings', label: 'Instillinger', align: 'center', size: '150px' },
-    ]"
-    :items="items"
+  <Scroller
+    is="div"
+    appearance="indicator"
+    :treshhold="500"
+    class="unit-table-scroller"
   >
-    <template #unit="{ item, rowIndex: index }">
-      <span> {{ item.HOUSING_UNIT_REF }}</span>
-      <Icon
-        class="unit-table__error"
-        v-if="validatorComp[index].error"
-        icon="fa-pro-light:exclamation-triangle"
-        v-tooltip="{ content: validatorComp[index].error }"
-      />
-    </template>
+    <DataTable
+      :sticky="true"
+      class="unit-table"
+      :columns="[
+        { id: 'unit', label: 'Enhet', size: '1fr' },
+        {
+          id: 'highlight',
+          label: 'Fremhev enhet',
+          align: 'center',
+          size: '150px',
+        },
+        {
+          id: 'settings',
+          label: 'Innstillinger',
+          align: 'center',
+          size: '150px',
+        },
+      ]"
+      :items="items"
+    >
+      <template #highlight-label="{ item }">
+        <span
+          v-html="item.label"
+          v-godfather="{
+            id: 'unit-highlight',
+            options: {
+              content: `Finn gjør det mulig å fremheve enheter i en prosjektannonse. Det betyr at de enhetene som er fremhevet vil bli ekstra synlig med egne kort på Finn-annonsen. Dette kan være relevant om det er enkelte enheter du vil promotere mer enn andre.`,
+              hint: true,
+              attachTo: 'hint',
+              scrollIntoView: false,
+            },
+          }"
+        ></span>
+      </template>
 
-    <template #highlight="{ item, rowIndex: index }">
-      <Icon
-        :class="[
-          'unit-table__highlight',
-          {
-            'unit-table__highlight--selected': item.IS_HIGHLIGHTED === 'true',
-          },
-        ]"
-        icon="fa-pro-solid:star"
-        @click="
-          () => {
-            item['IS_HIGHLIGHTED'] =
-              item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
+      <template #unit="{ item, rowIndex: index }">
+        <span> {{ item.HOUSING_UNIT_REF }}</span>
+        <Icon
+          class="unit-table__error"
+          v-if="validatorComp[index].error"
+          icon="fa-pro-solid:exclamation-triangle"
+          v-tooltip="{ content: validatorComp[index].error }"
+        />
+      </template>
 
-            modelValue.units[index].fields['IS_HIGHLIGHTED'] =
-              item['IS_HIGHLIGHTED']
-          }
-        "
-      ></Icon>
-    </template>
-    <template #settings="{ item, rowIndex: index }">
-      <UnitSettings
-        :units="units"
-        :key="item.id"
-        :modelValue="item"
-        @update:modelValue="
-          (value) => {
-            Object.entries(Diff(item, value)).map(([k, v]) => {
-              item[k] = v
+      <template #highlight="{ item, rowIndex: index }">
+        <Icon
+          :class="[
+            'unit-table__highlight',
+            {
+              'unit-table__highlight--selected': item.IS_HIGHLIGHTED === 'true',
+            },
+          ]"
+          icon="fa-pro-solid:star"
+          tabindex="0"
+          @keydown.enter="
+            () => {
+              setIsHighlighted(item, index)
+            }
+          "
+          @click="
+            () => {
+              setIsHighlighted(item, index)
+            }
+          "
+        ></Icon>
+      </template>
+      <template #settings="{ item, rowIndex: index }">
+        <UnitSettings
+          :units="units"
+          :key="item.id"
+          :modelValue="item"
+          @update:modelValue="
+            (value) => {
+              Object.entries(Diff(item, value)).map(([k, v]) => {
+                item[k] = v
 
-              modelValue.units[index].fields[k] = v
+                modelValue.units[index].fields[k] = v
 
-              if (
-                !hasDiff({ value: v }, { value: initialUnitFields[index][k] })
-              ) {
-                delete modelValue.units[index].fields[k]
-              }
-            })
-          }
-        "
-        :hasFields="(...args: [any]) => hasFields(item, ...args)"
-        :hasField="(...args: [any]) => hasField(item, ...args)"
-        :getIsEditedIcon="(...args: [any]) => getIsEditedIcon(...args)"
-        :isEdited="(...args: [any]) => isEdited(index, ...args)"
-        :rules="units.map((v) => v.rules)[index]"
-        :labels="units.map((v) => v.labels)[index]"
-      />
-    </template>
-  </DataTable>
+                if (
+                  !hasDiff({ value: v }, { value: initialUnitFields[index][k] })
+                ) {
+                  delete modelValue.units[index].fields[k]
+                }
+              })
+            }
+          "
+          :hasFields="(...args: [any]) => hasFields(item, ...args)"
+          :hasField="(...args: [any]) => hasField(item, ...args)"
+          :getIsEditedIcon="(...args: [any]) => getIsEditedIcon(...args)"
+          :isEdited="(...args: [any]) => isEdited(index, ...args)"
+          :rules="units.map((v) => v.rules)[index]"
+          :labels="units.map((v) => v.labels)[index]"
+        />
+      </template>
+      <!-- <template #footer>
+      <Button label="Se flere enheter"></Button>
+    </template> -->
+    </DataTable>
+  </Scroller>
 </template>
 
 <style lang="scss">
 .unit-table {
+  &-scroller {
+    max-height: 1000px;
+  }
+
   box-sizing: border-box;
   padding: var(--k-ui-spacing);
   border-radius: var(--k-ui-rounding);
   background-color: white;
 
+  --k-dialog-max-width: 900px;
+  --k-dialog-min-width: 900px;
+
   --k-datatable-cell-size: 1rem;
-  --k-datatable-odd-color: transparent;
+  --k-datatable-odd-color: white;
   --k-datatable-even-color: var(--k-ui-color-neutral-lightest);
 
   &__actions {
@@ -157,16 +206,32 @@ const getIsEditedIcon = (isEdited: boolean) => {
   }
 
   &__error {
-    padding-left: 0.5rem;
+    margin-left: 0.5rem;
     color: var(--k-ui-color-danger-dark);
     // background: var(--k-ui-color-danger-lightest);
+
+    &:focus {
+      outline: var(--k-ui-outline-width) solid var(--k-ui-outline-color);
+      outline-offset: var(--k-ui-outline-offset);
+    }
 
     &[data-popper-shown] {
       /* element is hovered */
     }
   }
 
+  [data-col-id='highlight'] {
+    .godfather-hint {
+      right: -25px;
+    }
+  }
+
   &__highlight {
+    &:focus {
+      outline: var(--k-ui-outline-width) solid var(--k-ui-outline-color);
+      outline-offset: var(--k-ui-outline-offset);
+    }
+
     &:hover {
       cursor: pointer;
 

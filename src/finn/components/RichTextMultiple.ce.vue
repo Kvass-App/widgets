@@ -21,6 +21,22 @@ function extractH3Sections(htmlString: string) {
   const sections: Section[] = []
   const h3Elements = doc.querySelectorAll('h3')
 
+  let prevElement = doc.body.firstElementChild
+  let preH3Content = ''
+
+  // Capture content before the first <h3>
+  while (prevElement && prevElement !== h3Elements[0]) {
+    preH3Content += prevElement.outerHTML
+    prevElement = prevElement.nextElementSibling
+    if (!prevElement || !doc.body.contains(prevElement)) {
+      break
+    }
+  }
+
+  if (preH3Content.trim()) {
+    sections.push({ title: '', content: preH3Content })
+  }
+
   h3Elements.forEach((h3, index) => {
     const title = h3.textContent || ''
     let content = ''
@@ -98,6 +114,7 @@ const setRichTextValue = (
           :actions="['bold', 'italic', 'orderedList', 'bulletList']"
           :modelValue="data.content"
           @update:modelValue="(v) => setRichTextValue(v, index, 'content')"
+          placeholder="Skriv her..."
         >
         </RichText>
       </FormControl>

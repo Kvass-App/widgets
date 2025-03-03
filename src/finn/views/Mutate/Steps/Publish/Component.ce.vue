@@ -22,12 +22,17 @@ const message = ref('')
 
 const stepper = ref()
 
+const emit = defineEmits<{
+  (event: 'goto', payload: string): void
+}>()
+
 const steps = computed<StepperStep[]>(() => {
   return [
     {
       id: 'idle',
       component: StepIdle,
       bind: {
+        onGoto: (v) => emit('goto', v),
         onPublish: () => publish(),
         modelValue: modelValue.value,
       },
@@ -95,5 +100,7 @@ const publish = () => {
 
 <style lang="scss">
 .publish {
+  margin: 0 auto;
+  max-width: 600px;
 }
 </style>
