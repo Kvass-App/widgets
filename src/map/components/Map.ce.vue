@@ -159,11 +159,12 @@ const markerIcon = reactive({
               <Card
                 v-for="item in match"
                 :thumbnail="item.content.thumbnail"
-                header-min-height="200px"
-                thumbnail-size="cover"
+                variant="default"
               >
-                <div v-html="item.content?.description"></div>
-                <template #footer>
+                <template #default>
+                  <div v-html="item.content?.description"></div>
+                </template>
+                <template #actions>
                   <Button
                     :label="item.content?.actionLabel"
                     icon-right="fa-pro-light:angle-right"
@@ -213,20 +214,23 @@ const markerIcon = reactive({
     grid-template-columns: 1fr;
   }
   .k-card {
+    --k-card-spacing: 1rem;
+    padding: var(--k-card-spacing);
+
+    --k-card-header-background: #fbfbfb;
+
     &__content {
+      padding: 0.5rem;
       color: var(--widgets-kvass-map-search-card-color, black);
+      text-align: center;
     }
-    &__header {
-      padding: 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      --k-card-header-background: #fbfbfb;
-      --k-header-min-height: 100px;
-    }
-    &__thumbnail {
-      height: 100px;
+
+    &__thumbnail figure {
+      height: 70px;
+
       --k-image-size: contain !important;
+    }
+    &__actions {
     }
   }
 
