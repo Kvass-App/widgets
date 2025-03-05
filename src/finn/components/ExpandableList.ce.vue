@@ -8,7 +8,7 @@ import { vTooltip } from 'floating-vue'
 const props = withDefaults(
   defineProps<{
     modelValue: any[]
-    title: string
+    title?: string
     subtitle?: string
     limit?: number
     template: any
@@ -78,6 +78,9 @@ onMounted(() => {
 
 <template>
   <Expandable class="expandable-list" :title="title" :subtitle="subtitle">
+    <template #title v-if="$slots.title">
+      <slot name="title"></slot>
+    </template>
     <template #actions>
       <slot name="actions">
         <span style="margin-left: auto">

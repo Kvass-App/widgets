@@ -143,7 +143,8 @@ const getComponent = computed(() => {
     font-size: var(--k-ui-font-size-lg);
 
     .godfather-hint {
-      top: 0;
+      transform: translateY(-50%);
+      top: 50%;
       right: -25px;
     }
   }

@@ -134,6 +134,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
               hint: true,
               attachTo: 'hint',
               scrollIntoView: false,
+              image: 'https://assets.kvass.no/67c80a5c92504cdf70aba74a',
             },
           }"
         ></span>
@@ -259,6 +260,8 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
 
   [data-col-id='highlight'] {
     .godfather-hint {
+      transform: translateY(-50%);
+      top: 50%;
       right: -25px;
     }
   }
