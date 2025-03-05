@@ -1,7 +1,7 @@
 import { inject } from 'vue'
 import { PropsInjectionKey } from '../keys'
 import { type Webcomponent } from '../types/webcomponent'
-import { type Ad, Unit } from '../types/ad'
+import { type Ad, Unit, Facility } from '../types/ad'
 import fetch from './fetch'
 import SSE from '../utils/sse'
 
@@ -9,6 +9,7 @@ import { useCurrentElement } from '@vueuse/core'
 type CurrentElementType = ReturnType<typeof useCurrentElement>
 
 export interface FieldsBase {
+  facilities: Facility[]
   fields: Record<string, any>
   rules: Record<string, string>
   labels: Record<string, string>

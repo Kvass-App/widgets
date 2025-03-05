@@ -5,6 +5,7 @@ export type Category = {
   label: string
   sublabel: string
   group: string
+  unitType?: Type
 }
 
 export default [
@@ -20,7 +21,7 @@ export default [
     sublabel: 'Nye boliger til salgs',
     group: 'Nybygg',
 
-    // unitType: 'ESTATE_PROJECT_UNIT'
+    unitType: 'ESTATE_PROJECT_UNIT',
   },
   {
     type: 'ESTATE_PROJECT_SINGLE',
@@ -33,7 +34,7 @@ export default [
     label: 'Hytter',
     sublabel: 'Nye boliger til salgs hytte',
     group: 'Nybygg',
-    // unitType: 'ESTATE_PROJECT_UNIT_LEISURE'
+    unitType: 'ESTATE_PROJECT_UNIT_LEISURE',
   },
   {
     type: 'ESTATE_BUSINESS_SALE',
@@ -59,7 +60,7 @@ export default [
   // },
   {
     type: 'ESTATE_RENT',
-    label: 'Bolig',
+    label: 'Bruktbolig',
     sublabel: 'Bolig til leie',
     group: 'Leie',
   },

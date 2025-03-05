@@ -9,18 +9,17 @@ import {
   Expandable,
 } from '@kvass/ui'
 
-import ProjectUnitFacilities from '../../enums/ProjectUnitFacilities.js'
-
 import { Clone, hasDiff } from '../../../utils/index.js'
 
-import { type Ad } from '../../types/ad'
+import { type Ad, Facility } from '../../types/ad'
 
 const props = defineProps<{
   modelValue: Ad['fields']
   hasFields: (...args) => boolean
   hasField: (...args) => boolean
-  getIsEditedIcon: (...args) => string
+  getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
+  facilities: Facility[]
 }>()
 
 const emit = defineEmits<{
@@ -37,8 +36,8 @@ const isInternalEdited = (field) => {
   )
 }
 
-const getIsInternalEditedIcon = (...args: [any]) => {
-  return props.getIsEditedIcon(isInternalEdited(...args))
+const getIsInternalEditedBind = (...args: [any]) => {
+  return props.getIsEditedBind(isInternalEdited(...args))
 }
 
 const reset = () => {
@@ -80,7 +79,6 @@ defineExpose({
       >
         <template #actions>
           <Icon
-            :icon="getIsInternalEditedIcon('ESTATE_PREFERENCE')"
             :class="[
               'ad__expandable-list-field-icon',
               {
@@ -88,6 +86,11 @@ defineExpose({
                   isInternalEdited('ESTATE_PREFERENCE'),
               },
             ]"
+            :icon="getIsInternalEditedBind('ESTATE_PREFERENCE').icon"
+            v-tooltip="{
+              content: getIsInternalEditedBind('ESTATE_PREFERENCE').label,
+              container: false,
+            }"
           ></Icon>
         </template>
         <template #default>
@@ -97,7 +100,7 @@ defineExpose({
             v-if="hasField('ESTATE_PREFERENCE')"
           >
             <Checkbox
-              v-for="facility in ProjectUnitFacilities"
+              v-for="facility in facilities"
               v-model="item.ESTATE_PREFERENCE"
               :value="facility.value"
               :label="facility.label"

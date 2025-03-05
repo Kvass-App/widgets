@@ -132,7 +132,24 @@ const getComponent = computed(() => {
   }
 
   .k-expandable__header {
-    font-size: 1.25rem;
+    & > .k-button__content {
+      & > .k-button__icon {
+        font-size: var(--k-ui-font-size-lg);
+      }
+    }
+  }
+
+  .k-expandable__title {
+    font-size: var(--k-ui-font-size-lg);
+
+    .godfather-hint {
+      top: 0;
+      right: -25px;
+    }
+  }
+
+  .k-expandable__subtitle {
+    font-size: var(--k-ui-font-size);
   }
 
   .k-formcontrol__label {

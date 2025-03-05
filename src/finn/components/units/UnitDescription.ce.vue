@@ -26,7 +26,7 @@ const props = defineProps<{
   modelValue: Ad['fields']
   hasFields: (...args) => boolean
   hasField: (...args) => boolean
-  getIsEditedIcon: (...args) => string
+  getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
   rules: Record<string, string>
   labels: Record<string, string>
@@ -72,8 +72,8 @@ const isInternalEdited = (field) => {
   )
 }
 
-const getIsInternalEditedIcon = (...args: [any]) => {
-  return props.getIsEditedIcon(isInternalEdited(...args))
+const getIsInternalEditedBind = (...args: [any]) => {
+  return props.getIsEditedBind(isInternalEdited(...args))
 }
 
 const reset = () => {
@@ -123,7 +123,13 @@ defineExpose({
             >
               <Input v-model="item.HEADING">
                 <template #suffix>
-                  <Icon :icon="getIsInternalEditedIcon('HEADING')"></Icon>
+                  <Icon
+                    :icon="getIsInternalEditedBind('HEADING').icon"
+                    v-tooltip="{
+                      content: getIsInternalEditedBind('HEADING').label,
+                      container: false,
+                    }"
+                  ></Icon>
                 </template>
               </Input>
             </FormControl>
@@ -137,7 +143,6 @@ defineExpose({
         >
           <template #actions>
             <Icon
-              :icon="getIsInternalEditedIcon('MEDIA')"
               :class="[
                 'ad__expandable-list-field-icon',
                 {
@@ -145,6 +150,11 @@ defineExpose({
                     isInternalEdited('MEDIA'),
                 },
               ]"
+              :icon="getIsInternalEditedBind('MEDIA').icon"
+              v-tooltip="{
+                content: getIsInternalEditedBind('MEDIA').label,
+                container: false,
+              }"
             ></Icon>
           </template>
           <template #default>
@@ -188,7 +198,6 @@ defineExpose({
         >
           <template #actions>
             <Icon
-              :icon="getIsInternalEditedIcon('FLOORPLAN_MEDIA')"
               :class="[
                 'ad__expandable-list-field-icon',
                 {
@@ -196,6 +205,11 @@ defineExpose({
                     isInternalEdited('FLOORPLAN_MEDIA'),
                 },
               ]"
+              :icon="getIsInternalEditedBind('FLOORPLAN_MEDIA').icon"
+              v-tooltip="{
+                content: getIsInternalEditedBind('FLOORPLAN_MEDIA').label,
+                container: false,
+              }"
             ></Icon>
           </template>
           <template #default>
@@ -229,7 +243,6 @@ defineExpose({
         >
           <template #actions>
             <Icon
-              :icon="getIsInternalEditedIcon('GENERAL_DESCRIPTION')"
               :class="[
                 'ad__expandable-list-field-icon',
                 {
@@ -238,6 +251,11 @@ defineExpose({
                   ),
                 },
               ]"
+              :icon="getIsInternalEditedBind('GENERAL_DESCRIPTION').icon"
+              v-tooltip="{
+                content: getIsInternalEditedBind('GENERAL_DESCRIPTION').label,
+                container: false,
+              }"
             ></Icon>
           </template>
         </RichTextMultiple>

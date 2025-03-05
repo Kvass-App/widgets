@@ -7,7 +7,7 @@ import UnitSettings from './UnitSettings.ce.vue'
 import { Diff, hasDiff } from '../../../utils/index.js'
 
 import { type Fields } from '../../api'
-import { type Ad } from '../../types/ad'
+import { type Ad, Facility } from '../../types/ad'
 
 import { vTooltip } from 'floating-vue'
 
@@ -25,6 +25,7 @@ const webcomponentProps = inject<Webcomponent>(
 const props = defineProps<{
   units: Fields['units']
   initialUnitFields: Fields['fields'][]
+  facilities: Facility[]
 }>()
 
 const modelValue = defineModel<Ad>({ default: {} })
@@ -68,8 +69,16 @@ const isEdited = (index, field) => {
   return modelValue.value.units[index].fields.hasOwnProperty(field)
 }
 
-const getIsEditedIcon = (isEdited: boolean) => {
-  return isEdited ? 'fa-pro-regular:cloud-xmark' : 'fa-pro-regular:cloud-check'
+const getIsEditedBind = (isEdited: boolean) => {
+  return isEdited
+    ? {
+        icon: 'fa-pro-regular:cloud-xmark',
+        label: 'Ikke synkronisert',
+      }
+    : {
+        icon: 'fa-pro-regular:cloud-check',
+        label: 'Synkronisert',
+      }
 }
 
 const setIsHighlighted = (item, index) => {
@@ -197,10 +206,11 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
           "
           :hasFields="(...args: [any]) => hasFields(item, ...args)"
           :hasField="(...args: [any]) => hasField(item, ...args)"
-          :getIsEditedIcon="(...args: [any]) => getIsEditedIcon(...args)"
+          :getIsEditedBind="(...args: [any]) => getIsEditedBind(...args)"
           :isEdited="(...args: [any]) => isEdited(index, ...args)"
           :rules="units.map((v) => v.rules)[index]"
           :labels="units.map((v) => v.labels)[index]"
+          :facilities="facilities"
         />
       </template>
       <!-- <template #footer>

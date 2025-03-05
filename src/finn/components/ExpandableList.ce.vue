@@ -87,6 +87,7 @@ onMounted(() => {
       </slot>
     </template>
     <template #default>
+      <slot name="before-content"></slot>
       <template v-for="(item, index) in internalValue" :key="getId(index)">
         <Flex justify="end" gap="4px" class="expandable-list__actions">
           <Button

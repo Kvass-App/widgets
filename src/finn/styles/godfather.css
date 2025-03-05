@@ -1,22 +1,3 @@
-.godfather-entry .godfather-inner-container {
-  padding: var(--k-ui-spacing-lg) !important;
-  max-width: 55ch !important;
-  min-width: 30ch;
-}
-
-.godfather-entry .godfather-content-container {
-  display: grid;
-  gap: var(--k-ui-spacing);
-}
-
-.godfather-entry hr {
-  display: none;
-}
-
-.godfather-title {
-  font-size: var(--k-ui-font-size-lg);
-}
-
 .godfather-hint::after {
   display: none !important;
 }
