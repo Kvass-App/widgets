@@ -29,9 +29,7 @@ import {
   Image,
 } from '@kvass/ui'
 
-import vGodfather from '../../../directives/godfather'
-import 'godfather/dist/godfather.css'
-
+import Tooltip from '../../../components/Tooltip.ce.vue'
 import { vTooltip } from 'floating-vue'
 
 import Categories from '../../../enums/categories.ts'
@@ -253,7 +251,9 @@ const getData = () => {
       console.error(err)
       props.onPrev()
     })
-    .finally(() => (fetching.value = false))
+    .finally(() => {
+      fetching.value = false
+    })
 }
 
 const getNextLabel = () => {
@@ -356,18 +356,6 @@ const saveDraft = () => {
       })
     })
   })
-}
-
-const godFatherBind = () => {
-  return {
-    style: 'position: relative',
-    class: 'k-mr-lg',
-    onClick: (e) => {
-      if (e.target.classList.contains('godfather-hint')) {
-        e.stopPropagation()
-      }
-    },
-  }
 }
 </script>
 
@@ -512,27 +500,22 @@ const godFatherBind = () => {
               v-if="hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF', 'HEADING')"
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'project-title',
-                    options: {
-                      content: hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
-                        ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
-                        : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c7181792504cdf70aba68d',
-                    },
-                  }"
-                >
+                <span>
                   {{
                     hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
                       ? 'Hovedtittel og undertittel'
                       : 'Hovedtittel'
                   }}
                 </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  :content="
+                    hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
+                      ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
+                      : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen'
+                  "
+                  src="https://assets.kvass.no/67c7181792504cdf70aba68d"
+                />
               </template>
               <template #default>
                 <FormControl
@@ -632,21 +615,12 @@ const godFatherBind = () => {
 
             <Expandable :expanded="true">
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'key-info',
-                    options: {
-                      content: '',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c8077992504cdf70aba6f6',
-                    },
-                  }"
-                >
-                  Nøkkelinformasjon
-                </span>
+                <span> Nøkkelinformasjon</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Nøkkelinformasjon vises slik i Finn annonsen"
+                  src="https://assets.kvass.no/67c8077992504cdf70aba6f6"
+                />
               </template>
               <template #default>
                 <Grid columns="2">
@@ -1244,22 +1218,12 @@ const godFatherBind = () => {
               "
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'property-type',
-                    options: {
-                      content:
-                        'Enhetstypene som velges her vil bli synlig under enhetstyper på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c8203b92504cdf70aba768',
-                    },
-                  }"
-                >
-                  Enhetstyper for annonsen
-                </span>
+                <span>Enhetstyper for annonsen</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Enhetstypene som velges her vil bli synlig under enhetstyper på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten."
+                  src="https://assets.kvass.no/67c8203b92504cdf70aba768"
+                />
               </template>
 
               <template #actions>
@@ -1295,22 +1259,12 @@ const godFatherBind = () => {
 
             <Expandable :expanded="true" v-if="hasFields('MEDIA')">
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'media',
-                    options: {
-                      content:
-                        'Bildene hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c8088692504cdf70aba702',
-                    },
-                  }"
-                >
-                  Bilder
-                </span>
+                <span>Bilder</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Bildene hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen."
+                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                />
               </template>
               <template #actions>
                 <Icon
@@ -1363,22 +1317,12 @@ const godFatherBind = () => {
 
             <Expandable :expanded="true" v-if="hasFields('FLOORPLAN_MEDIA')">
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'floorplan',
-                    options: {
-                      content:
-                        'Plantegninger vil bli presentert sist i bildegalleriet, eller som egen knapp i galleri som heter plantegninger. Dette avhenger av hva annonsetypen støtter.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c8088692504cdf70aba702',
-                    },
-                  }"
-                >
-                  Plantegninger
-                </span>
+                <span>Plantegninger</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Plantegninger vil bli presentert sist i bildegalleriet, eller som egen knapp i galleri som heter plantegninger. Dette avhenger av hva annonsetypen støtter"
+                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                />
               </template>
               <template #actions>
                 <Icon
@@ -1423,22 +1367,12 @@ const godFatherBind = () => {
               v-model="data.GENERAL_DESCRIPTION"
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'general-description',
-                    options: {
-                      content:
-                        'Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5792504cdf70aba732',
-                    },
-                  }"
-                >
-                  Beskrivelse
-                </span>
+                <span>Beskrivelse</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5792504cdf70aba732"
+                />
               </template>
               <template #actions>
                 <Icon
@@ -1466,22 +1400,12 @@ const godFatherBind = () => {
               v-if="hasFields('GENERAL_TEXT_REALESTATE')"
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'general-description-2',
-                    options: {
-                      content:
-                        'Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5792504cdf70aba732',
-                    },
-                  }"
-                >
-                  Beskrivelse
-                </span>
+                <span>Beskrivelse</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5792504cdf70aba732"
+                />
               </template>
               <template #actions>
                 <Icon
@@ -1520,26 +1444,18 @@ const godFatherBind = () => {
               v-if="hasFields('ESTATE_PREFERENCE', 'PROJECT_PREFERENCE')"
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'facilities',
-                    options: {
-                      content:
-                        'Fasilitenene som velges her vil bli synlig under fasiliteter på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a4c92504cdf70aba70e',
-                    },
-                  }"
-                >
+                <span>
                   {{
                     hasField('PROJECT_PREFERENCE')
                       ? 'Fasiliteter for prosjektannonsen'
                       : 'Fasiliteter for annonsen'
                   }}
                 </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Fasilitenene som velges her vil bli synlig under fasiliteter på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten."
+                  src="https://assets.kvass.no/67c80a4c92504cdf70aba70e"
+                />
               </template>
               <template #actions>
                 <Icon
@@ -1601,22 +1517,12 @@ const godFatherBind = () => {
 
             <Expandable :expanded="true" v-if="units.length">
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'units',
-                    options: {
-                      content:
-                        'Valgte enheter presenteres slik på Finn-annonsen.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5a92504cdf70aba73e',
-                    },
-                  }"
-                >
-                  Valgte enheter til Finn-annonsen
-                </span>
+                <span> Valgte enheter til Finn-annonsen </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Valgte enheter presenteres slik på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5a92504cdf70aba73e"
+                />
               </template>
               <template #default>
                 <UnitTable
@@ -1670,22 +1576,12 @@ const godFatherBind = () => {
               "
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'project-status',
-                    options: {
-                      content:
-                        'Om du vil endre prosjektstatus må du tilpasse denne på presentasjon. Denne presenteres slik på Finn.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5492504cdf70aba726',
-                    },
-                  }"
-                >
-                  Prosjektstatus
-                </span>
+                <span>Prosjektstatus</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  src="https://assets.kvass.no/67c80a5492504cdf70aba726"
+                />
               </template>
               <template #actions>
                 <Button
@@ -1703,22 +1599,12 @@ const godFatherBind = () => {
 
             <Expandable :expandable="false" :expanded="false">
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'broker',
-                    options: {
-                      content:
-                        'Om du vil endre kundebehandler må du tilpasse denne på presentasjon. Denne presenteres slik på Finn.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5092504cdf70aba71a',
-                    },
-                  }"
-                >
-                  Kundebehandler
-                </span>
+                <span>Kundebehandler</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Om du vil endre kundebehandler må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  src="https://assets.kvass.no/67c80a5092504cdf70aba71a"
+                />
               </template>
               <template #actions>
                 <Button
@@ -1749,22 +1635,12 @@ const godFatherBind = () => {
               v-model="data.MOREINFO"
             >
               <template #title>
-                <span
-                  v-bind="godFatherBind()"
-                  v-godfather="{
-                    id: 'links',
-                    options: {
-                      content:
-                        'Nyttige lenker plasseres her på Finn. Enkelte felter er standard og låst fra Finn. Her kan du legge inn egne lenker i tillegg til andre nettsteder om du ønsker det.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c80a5e92504cdf70aba756',
-                    },
-                  }"
-                >
-                  Nyttige lenker i Finn-annonsen
-                </span>
+                <span>Nyttige lenker i Finn-annonsen</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Nyttige lenker plasseres her på Finn. Enkelte felter er standard og låst fra Finn. Her kan du legge inn egne lenker i tillegg til andre nettsteder om du ønsker det."
+                  src="https://assets.kvass.no/67c80a5e92504cdf70aba756"
+                />
               </template>
               <template #actions>
                 <Icon

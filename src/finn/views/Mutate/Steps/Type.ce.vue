@@ -13,7 +13,7 @@ import {
   Scroller,
 } from '@kvass/ui'
 
-import vGodfather from '../../../directives/godfather'
+import Tooltip from '../../../components/Tooltip.ce.vue'
 import { vTooltip } from 'floating-vue'
 
 import { toCurrency } from '../../../../utils'
@@ -217,20 +217,11 @@ const { bind: validate } = validator
       <Grid columns="2" gap="4rem 2rem">
         <FormControl v-bind="validate('name')">
           <template #label>
-            <span
-              style="position: relative"
-              v-godfather="{
-                id: 'internal-name',
-                options: {
-                  content:
-                    'Det interne navnet gjør det lettere å finne annonsen i oversikten over Finn-annonsene på prosjektet, spesielt hvis du planlegger å ha flere annonser på samme prosjekt!',
-                  hint: true,
-                  attachTo: 'hint',
-                  scrollIntoView: false,
-                },
-              }"
-              >Internt navn på Finn-annonse
-            </span>
+            <span>Internt navn på Finn-annonse </span>
+
+            <Tooltip
+              content="Det interne navnet gjør det lettere å finne annonsen i oversikten over Finn-annonsene på prosjektet, spesielt hvis du planlegger å ha flere annonser på samme prosjekt!"
+            />
           </template>
           <Input v-model="modelValue.name"></Input>
         </FormControl>
@@ -240,21 +231,10 @@ const { bind: validate } = validator
           help="Dette legger annonsen på riktig boligtype på Finn"
         >
           <template #label>
-            <span
-              style="position: relative"
-              v-godfather="{
-                id: 'ad-category',
-                options: {
-                  content:
-                    'En annonse-kategori gjør det mulig å bestemme ønsket plass i Finn for din type annonse. Dersom du for eksempel skal leie ut en bolig kan du benytte bolig til leie. Annonsen vil deretter plasseres på bolig til leie på Finn.',
-                  hint: true,
-                  attachTo: 'hint',
-                  scrollIntoView: false,
-                },
-              }"
-            >
-              Velg annonse-kategori
-            </span>
+            <span> Velg annonse-kategori </span>
+            <Tooltip
+              content="En annonse-kategori gjør det mulig å bestemme ønsket plass i Finn for din type annonse. Dersom du for eksempel skal leie ut en bolig kan du benytte bolig til leie. Annonsen vil deretter plasseres på bolig til leie på Finn."
+            />
           </template>
           <Dropdown
             :disabled="Boolean(webcomponentProps.id)"
@@ -365,13 +345,6 @@ const { bind: validate } = validator
 
 <style lang="scss">
 .type {
-  .k-formcontrol__label.k-formcontrol__label-required {
-    .godfather-hint {
-      top: -5px;
-      right: -35px;
-    }
-  }
-
   .table-scroller {
     max-height: 650px;
     position: relative;

@@ -42,9 +42,31 @@ const getComponent = computed(() => {
 @import url('@kvass/ui/style.css');
 
 .finn {
-  .v-popper__popper {
-    word-break: break-all;
-    white-space: pre-wrap;
+  .v-popper {
+    display: inline;
+    vertical-align: middle;
+
+    &__inner {
+      padding: var(--k-ui-spacing-sm);
+    }
+
+    &__popper {
+      font-size: 1rem;
+      font-weight: normal;
+      word-break: break-word;
+      white-space: pre-wrap;
+      max-width: 300px;
+    }
+
+    &__icon {
+      width: 1em;
+      height: 1em;
+      padding: 0.2rem;
+      border-radius: var(--k-ui-rounding-full);
+      font-size: var(--k-ui-font-size-sm);
+      color: white;
+      background: rgba(0, 0, 0, 0.8);
+    }
   }
 
   --synced-icon: #185089;
@@ -141,12 +163,6 @@ const getComponent = computed(() => {
 
   .k-expandable__title {
     font-size: var(--k-ui-font-size-lg);
-
-    .godfather-hint {
-      transform: translateY(-50%);
-      top: 50%;
-      right: -25px;
-    }
   }
 
   .k-expandable__subtitle {
