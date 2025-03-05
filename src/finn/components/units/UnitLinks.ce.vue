@@ -12,7 +12,7 @@ const props = defineProps<{
   modelValue: Ad['fields']
   hasFields: (...args) => boolean
   hasField: (...args) => boolean
-  getIsEditedIcon: (...args) => string
+  getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
 }>()
 
@@ -30,8 +30,8 @@ const isInternalEdited = (field) => {
   )
 }
 
-const getIsInternalEditedIcon = (...args: [any]) => {
-  return props.getIsEditedIcon(isInternalEdited(...args))
+const getIsInternalEditedBind = (...args: [any]) => {
+  return props.getIsEditedBind(isInternalEdited(...args))
 }
 
 const reset = () => {
@@ -75,7 +75,6 @@ defineExpose({
       >
         <template #actions>
           <Icon
-            :icon="getIsInternalEditedIcon('MOREINFO')"
             :class="[
               'ad__expandable-list-field-icon',
               {
@@ -83,8 +82,57 @@ defineExpose({
                   isInternalEdited('MOREINFO'),
               },
             ]"
+            :icon="getIsInternalEditedBind('MOREINFO').icon"
+            v-tooltip="{
+              content: getIsInternalEditedBind('MOREINFO').label,
+              container: false,
+            }"
           ></Icon>
         </template>
+
+        <!-- <template
+                #before-content
+                v-if="
+                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_UR')
+                "
+              >
+                <Grid columns="2">
+                  <template v-if="hasField('ESTATE_EXTERNAL_URL')">
+                    <FormControl label="URL til nyttig lenke">
+                      <Input
+                        v-model="data.ESTATE_EXTERNAL_URL"
+                        suffix="URL"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                    <FormControl
+                      label="Visningsnavn på lenken på Finn-annonsen"
+                    >
+                      <Input
+                        modelValue="Se prosjektets hjemmeside"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                  </template>
+                  <template v-if="hasField('ESTATE_EXTERNAL_ORDER_URL')">
+                    <FormControl label="URL til nyttig lenke">
+                      <Input
+                        v-model="data.ESTATE_EXTERNAL_ORDER_URL"
+                        suffix="URL"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                    <FormControl
+                      label="Visningsnavn på lenken på Finn-annonsen"
+                    >
+                      <Input modelValue="Bestill salgsoppgave" disabled></Input>
+                    </FormControl>
+                  </template>
+                </Grid>
+
+                <div class="ad__expandable-list-divider"></div>
+              </template> -->
+
         <template #default="{ item: data }">
           <Grid columns="2">
             <FormControl label="URL til nyttig lenke">

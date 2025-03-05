@@ -218,6 +218,7 @@ const { bind: validate } = validator
         <FormControl v-bind="validate('name')">
           <template #label>
             <span
+              style="position: relative"
               v-godfather="{
                 id: 'internal-name',
                 options: {
@@ -240,6 +241,7 @@ const { bind: validate } = validator
         >
           <template #label>
             <span
+              style="position: relative"
               v-godfather="{
                 id: 'ad-category',
                 options: {

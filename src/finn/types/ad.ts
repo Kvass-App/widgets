@@ -45,3 +45,5 @@ export type Unit = {
   }
   disabled: boolean
 } & Partial<Base>
+
+export type Facility = { value: string; label: string; categories: Type[] }

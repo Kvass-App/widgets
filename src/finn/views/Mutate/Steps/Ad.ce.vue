@@ -29,8 +29,12 @@ import {
   Image,
 } from '@kvass/ui'
 
+import vGodfather from '../../../directives/godfather'
+import 'godfather/dist/godfather.css'
+
 import { vTooltip } from 'floating-vue'
 
+import Categories from '../../../enums/categories.ts'
 import UnitTable from '../../../components/units/UnitTable.ce.vue'
 import ExpandableList from '../../../components/ExpandableList.ce.vue'
 import RichTextMultiple from '../../../components/RichTextMultiple.ce.vue'
@@ -39,14 +43,12 @@ import { Clone, uploadFunction, hasDiff } from '../../../../utils/index.js'
 
 import Validator from '../../../composeable/Validator'
 
-import ProjectFacilities from '../../../enums/ProjectFacilities.ts'
-import Facilities from '../../../enums/Facilities.ts'
 import Properties from '../../../enums/PropertyType.ts'
 import OwnershipTypes from '../../../enums/OwnershipTypes.ts'
 import LeisureSituation from '../../../enums/LeisureSituation.ts'
 import { energyLabel, energyLabelColor } from '../../../enums/EnergyLabels.ts'
 
-import { type Ad } from '../../../types/ad'
+import { type Ad, Facility } from '../../../types/ad'
 import { type Webcomponent } from '../../../types/webcomponent'
 
 import { PropsInjectionKey } from '../../../keys'
@@ -88,6 +90,16 @@ const initialFields = ref<Ad['fields']>({})
 
 const units = ref<Fields['units']>([])
 const initialUnitFields = ref<Fields['fields'][]>([])
+
+const facilities = ref<Facility[]>([])
+const unitFacilities = computed(() => {
+  return facilities.value.filter((v) =>
+    v.categories.includes(
+      //@ts-ignore
+      Categories.find((v) => v.type === modelValue.value.type)?.unitType,
+    ),
+  )
+})
 
 const fetching = ref(true)
 const watcherCleanups = ref<WatchHandle[]>([])
@@ -148,10 +160,16 @@ const hasFields = (...args) => args.some(hasField)
 
 const isEdited = (field) => modelValue.value.fields.hasOwnProperty(field)
 
-const getIsEditedIcon = (field) => {
+const getIsEditedBind = (field) => {
   return isEdited(field)
-    ? 'fa-pro-regular:cloud-xmark'
-    : 'fa-pro-regular:cloud-check'
+    ? {
+        icon: 'fa-pro-regular:cloud-xmark',
+        label: 'Ikke synkronisert',
+      }
+    : {
+        icon: 'fa-pro-regular:cloud-check',
+        label: 'Synkronisert',
+      }
 }
 
 const getData = () => {
@@ -159,6 +177,8 @@ const getData = () => {
 
   return API.fields(modelValue.value)
     .then((value) => {
+      facilities.value = value.facilities
+
       initialFields.value = Clone(value.fields)
 
       // TODO, Partial update ?
@@ -428,12 +448,41 @@ const saveDraft = () => {
               @click="onPrev"
             />
 
-            <Button
-              class="ad__reset"
-              label="Tilbakestill innhold"
-              variant="secondary"
-              @click="reset"
-            ></Button>
+            <Dialog
+              alignment="center"
+              :teleport="false"
+              title="Tilbakestill endringer"
+              subtitle="Tilbakestill alle endringer du har gjort, slik at at alle feltene blir synkronisert igjen"
+            >
+              <template #trigger="{ triggerProps }">
+                <Button
+                  class="ad__reset"
+                  label="Tilbakestill innhold"
+                  variant="secondary"
+                  v-bind="triggerProps"
+                />
+              </template>
+              <template #actions="{ close }">
+                <Button
+                  class="ad__reset"
+                  label="Nei, gå tilbake"
+                  variant="secondary"
+                  @click="close"
+                />
+
+                <Button
+                  class="ad__reset"
+                  label="Ja, tilbakestill innhold"
+                  variant="primary"
+                  @click="
+                    () => {
+                      reset()
+                      close()
+                    }
+                  "
+                />
+              </template>
+            </Dialog>
           </div>
           <div class="k-card__subtitle">
             <div>
@@ -448,11 +497,6 @@ const saveDraft = () => {
           <Flex direction="column" gap="2rem">
             <Expandable
               :expanded="true"
-              :title="
-                hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
-                  ? 'Hovedtittel og undertittel'
-                  : 'Hovedtittel'
-              "
               :subtitle="
                 hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
                   ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
@@ -460,6 +504,37 @@ const saveDraft = () => {
               "
               v-if="hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF', 'HEADING')"
             >
+              <template #title>
+                <span
+                  style="position: relative"
+                  class="k-mr-lg"
+                  @click="
+                    (e) => {
+                      //@ts-ignore
+                      if (e.target.classList.contains('godfather-hint')) {
+                        e.stopPropagation()
+                      }
+                    }
+                  "
+                  v-godfather="{
+                    id: 'project-title',
+                    options: {
+                      content:
+                        'Teksten som formuleres her vil bli synlig som hovedtittel. Dersom din annonsetype støtter undertittel, vil den også bli synlig her.',
+                      hint: true,
+                      attachTo: 'hint',
+                      scrollIntoView: false,
+                      image: 'https://assets.kvass.no/67c7181792504cdf70aba68d',
+                    },
+                  }"
+                >
+                  {{
+                    hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
+                      ? 'Hovedtittel og undertittel'
+                      : 'Hovedtittel'
+                  }}
+                </span>
+              </template>
               <template #default>
                 <FormControl
                   v-if="hasField('HOUSING_UNIT_REF')"
@@ -472,7 +547,13 @@ const saveDraft = () => {
                 >
                   <Input v-model="data.HOUSING_UNIT_REF">
                     <template #suffix>
-                      <Icon :icon="getIsEditedIcon('HOUSING_UNIT_REF')"></Icon>
+                      <Icon
+                        :icon="getIsEditedBind('HOUSING_UNIT_REF').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('HOUSING_UNIT_REF').label,
+                          container: false,
+                        }"
+                      ></Icon>
                     </template>
                   </Input>
                 </FormControl>
@@ -488,11 +569,18 @@ const saveDraft = () => {
                 >
                   <Input v-model="data.PROJECT_NAME">
                     <template #suffix>
-                      <Icon :icon="getIsEditedIcon('PROJECT_NAME')"></Icon>
+                      <Icon
+                        :icon="getIsEditedBind('PROJECT_NAME').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('PROJECT_NAME').label,
+                          container: false,
+                        }"
+                      ></Icon>
                     </template>
                   </Input>
                 </FormControl>
                 <!-- 
+                BOLIGNUMMER does not show up on the finn ads
               <FormControl
                 v-if="hasField('BOLIGNUMMER')"
                 v-bind="validate('BOLIGNUMMER')"
@@ -504,7 +592,13 @@ const saveDraft = () => {
               >
                 <Input v-model="data.BOLIGNUMMER">
                   <template #suffix>
-                    <Icon :icon="getIsEditedIcon('BOLIGNUMMER')"></Icon>
+                      <Icon
+                          :icon="getIsEditedBind('BOLIGNUMMER').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('BOLIGNUMMER').label,
+                            container: false,
+                          }"
+                        ></Icon>
                   </template>
                 </Input>
               </FormControl> -->
@@ -524,7 +618,13 @@ const saveDraft = () => {
                 >
                   <Input v-model="data.HEADING">
                     <template #suffix>
-                      <Icon :icon="getIsEditedIcon('HEADING')"></Icon>
+                      <Icon
+                        :icon="getIsEditedBind('HEADING').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('HEADING').label,
+                          container: false,
+                        }"
+                      ></Icon>
                     </template>
                   </Input>
                 </FormControl>
@@ -570,7 +670,13 @@ const saveDraft = () => {
                           icon="fa-pro-regular:angle-down"
                           class="k-mr-sm"
                         />
-                        <Icon :icon="getIsEditedIcon('PROPERTY_TYPE')" />
+                        <Icon
+                          :icon="getIsEditedBind('PROPERTY_TYPE').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('PROPERTY_TYPE').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Dropdown>
                   </FormControl>
@@ -602,7 +708,45 @@ const saveDraft = () => {
                     >
                       <template #suffix>
                         <Icon
-                          :icon="getIsEditedIcon('RENTAL_PRICE_PER_MONTH')"
+                          :icon="getIsEditedBind('RENTAL_PRICE_PER_MONTH').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('RENTAL_PRICE_PER_MONTH')
+                              .label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('NO_OF_BEDROOMS')"
+                    v-bind="validate('NO_OF_BEDROOMS')"
+                    label="Soverom"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('NO_OF_BEDROOMS') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.NO_OF_BEDROOMS"
+                      @update:modelValue="
+                        (v) =>
+                          (data.NO_OF_BEDROOMS = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('NO_OF_BEDROOMS').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('NO_OF_BEDROOMS').label,
+                            container: false,
+                          }"
                         ></Icon>
                       </template>
                     </Input>
@@ -629,7 +773,13 @@ const saveDraft = () => {
                       }"
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('AREA_FROM')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('AREA_FROM').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('AREA_FROM').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -657,7 +807,13 @@ const saveDraft = () => {
                       }"
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('AREA_TO')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('AREA_TO').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('AREA_TO').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -689,7 +845,12 @@ const saveDraft = () => {
                     >
                       <template #suffix>
                         <Icon
-                          :icon="getIsEditedIcon('NO_OF_PARKING_SPOTS')"
+                          :icon="getIsEditedBind('NO_OF_PARKING_SPOTS').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('NO_OF_PARKING_SPOTS')
+                              .label,
+                            container: false,
+                          }"
                         ></Icon>
                       </template>
                     </Input>
@@ -718,7 +879,13 @@ const saveDraft = () => {
                       }"
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('FLOOR')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('FLOOR').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('FLOOR').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -747,7 +914,11 @@ const saveDraft = () => {
                     >
                       <template #suffix>
                         <Icon
-                          :icon="getIsEditedIcon('CONSTRUCTION_YEAR')"
+                          :icon="getIsEditedBind('CONSTRUCTION_YEAR').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('CONSTRUCTION_YEAR').label,
+                            container: false,
+                          }"
                         ></Icon>
                       </template>
                     </Input>
@@ -776,7 +947,13 @@ const saveDraft = () => {
                       }"
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('RENOVATED_YEAR')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('RENOVATED_YEAR').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('RENOVATED_YEAR').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -812,7 +989,13 @@ const saveDraft = () => {
                           icon="fa-pro-regular:angle-down"
                           class="k-mr-sm"
                         />
-                        <Icon :icon="getIsEditedIcon('ENERGY_LABEL')" />
+                        <Icon
+                          :icon="getIsEditedBind('ENERGY_LABEL').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('ENERGY_LABEL').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Dropdown>
                   </FormControl>
@@ -851,10 +1034,16 @@ const saveDraft = () => {
                           icon="fa-pro-regular:angle-down"
                           class="k-mr-xs"
                         />
-
                         <Icon
-                          :icon="getIsEditedIcon('ENERGY_LABEL_COLOR_CODE')"
-                        />
+                          :icon="
+                            getIsEditedBind('ENERGY_LABEL_COLOR_CODE').icon
+                          "
+                          v-tooltip="{
+                            content: getIsEditedBind('ENERGY_LABEL_COLOR_CODE')
+                              .label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Dropdown>
                   </FormControl>
@@ -893,7 +1082,13 @@ const saveDraft = () => {
                           class="k-mr-sm"
                         ></Icon>
 
-                        <Icon :icon="getIsEditedIcon('OWNERSHIP_TYPE')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('OWNERSHIP_TYPE').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('OWNERSHIP_TYPE').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Dropdown>
                   </FormControl>
@@ -921,7 +1116,13 @@ const saveDraft = () => {
                       "
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('BEDROOMS_FROM')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('BEDROOMS_FROM').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('BEDROOMS_FROM').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -949,7 +1150,13 @@ const saveDraft = () => {
                       "
                     >
                       <template #suffix>
-                        <Icon :icon="getIsEditedIcon('BEDROOMS_TO')"></Icon>
+                        <Icon
+                          :icon="getIsEditedBind('BEDROOMS_TO').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('BEDROOMS_TO').label,
+                            container: false,
+                          }"
+                        ></Icon>
                       </template>
                     </Input>
                   </FormControl>
@@ -1001,7 +1208,11 @@ const saveDraft = () => {
                         ></Icon>
 
                         <Icon
-                          :icon="getIsEditedIcon('LEISURE_SITUATION')"
+                          :icon="getIsEditedBind('LEISURE_SITUATION').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('LEISURE_SITUATION').label,
+                            container: false,
+                          }"
                         ></Icon>
                       </template>
                     </Dropdown>
@@ -1020,7 +1231,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('PROPERTY_TYPE')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1028,6 +1238,11 @@ const saveDraft = () => {
                         isEdited('PROPERTY_TYPE'),
                     },
                   ]"
+                  :icon="getIsEditedBind('PROPERTY_TYPE').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('PROPERTY_TYPE').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
               <template #default>
@@ -1053,7 +1268,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('MEDIA')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1061,6 +1275,11 @@ const saveDraft = () => {
                         isEdited('MEDIA'),
                     },
                   ]"
+                  :icon="getIsEditedBind('MEDIA').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('MEDIA').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
               <template #default>
@@ -1104,7 +1323,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('FLOORPLAN_MEDIA')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1112,6 +1330,11 @@ const saveDraft = () => {
                         isEdited('FLOORPLAN_MEDIA'),
                     },
                   ]"
+                  :icon="getIsEditedBind('FLOORPLAN_MEDIA').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('FLOORPLAN_MEDIA').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
               <template #default>
@@ -1144,7 +1367,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('GENERAL_DESCRIPTION')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1153,6 +1375,11 @@ const saveDraft = () => {
                       ),
                     },
                   ]"
+                  :icon="getIsEditedBind('GENERAL_DESCRIPTION').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('GENERAL_DESCRIPTION').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
             </RichTextMultiple>
@@ -1167,7 +1394,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('GENERAL_TEXT_REALESTATE')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1176,6 +1402,11 @@ const saveDraft = () => {
                       ),
                     },
                   ]"
+                  :icon="getIsEditedBind('GENERAL_TEXT_REALESTATE').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('GENERAL_TEXT_REALESTATE').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
 
@@ -1195,20 +1426,41 @@ const saveDraft = () => {
 
             <Expandable
               :expanded="true"
-              title="Fasiliteter for prosjektannonsen"
-              subtitle="Velg fasiliteter for prosjektannonsen"
-              v-if="hasFields('PROJECT_PREFERENCE')"
+              :title="
+                hasField('PROJECT_PREFERENCE')
+                  ? 'Fasiliteter for prosjektannonsen'
+                  : 'Fasiliteter for annonsen'
+              "
+              :subtitle="
+                hasField('PROJECT_PREFERENCE')
+                  ? 'Velg fasiliteter for prosjektannonsen'
+                  : 'Velg fasiliteter for annonsen'
+              "
+              v-if="hasFields('ESTATE_PREFERENCE', 'PROJECT_PREFERENCE')"
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('PROJECT_PREFERENCE')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
-                      'ad__expandable-list-field-icon--edited':
-                        isEdited('PROJECT_PREFERENCE'),
+                      'ad__expandable-list-field-icon--edited': hasField(
+                        'PROJECT_PREFERENCE',
+                      )
+                        ? isEdited('PROJECT_PREFERENCE')
+                        : isEdited('ESTATE_PREFERENCE'),
                     },
                   ]"
+                  :icon="
+                    hasField('PROJECT_PREFERENCE')
+                      ? getIsEditedBind('PROJECT_PREFERENCE').icon
+                      : getIsEditedBind('ESTATE_PREFERENCE').icon
+                  "
+                  v-tooltip="{
+                    content: hasField('PROJECT_PREFERENCE')
+                      ? getIsEditedBind('PROJECT_PREFERENCE').label
+                      : getIsEditedBind('ESTATE_PREFERENCE').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
               <template #default>
@@ -1218,40 +1470,24 @@ const saveDraft = () => {
                   v-if="hasField('PROJECT_PREFERENCE')"
                 >
                   <Checkbox
-                    v-for="item in ProjectFacilities"
+                    v-for="item in facilities.filter((v) =>
+                      v.categories.includes(modelValue.type),
+                    )"
                     v-model="data.PROJECT_PREFERENCE"
                     :value="item.value"
                     :label="item.label"
                   ></Checkbox>
                 </FormControl>
-              </template>
-            </Expandable>
 
-            <Expandable
-              :expanded="true"
-              title="Fasiliteter for annonsen"
-              subtitle="Velg fasiliteter for annonsen"
-              v-if="hasFields('ESTATE_PREFERENCE')"
-            >
-              <template #actions>
-                <Icon
-                  :icon="getIsEditedIcon('ESTATE_PREFERENCE')"
-                  :class="[
-                    'ad__expandable-list-field-icon',
-                    {
-                      'ad__expandable-list-field-icon--edited':
-                        isEdited('ESTATE_PREFERENCE'),
-                    },
-                  ]"
-                ></Icon>
-              </template>
-              <template #default>
                 <FormControl
+                  class="facilities"
                   label="Tilgjengelige fasiliteter"
                   v-if="hasField('ESTATE_PREFERENCE')"
                 >
                   <Checkbox
-                    v-for="item in Facilities"
+                    v-for="item in facilities.filter((v) =>
+                      v.categories.includes(modelValue.type),
+                    )"
                     v-model="data.ESTATE_PREFERENCE"
                     :value="item.value"
                     :label="item.label"
@@ -1268,10 +1504,10 @@ const saveDraft = () => {
             >
               <template #default>
                 <UnitTable
-                  ref="unitTable"
                   :initialUnitFields="initialUnitFields"
                   :units="units"
                   v-model="modelValue"
+                  :facilities="unitFacilities"
                 ></UnitTable>
               </template>
             </Expandable>
@@ -1279,7 +1515,7 @@ const saveDraft = () => {
             <template v-if="addressError">
               <Expandable
                 title="Adresse"
-                subtitle="Adresse påvirker hele prosjektet. Derfor er det ikke mulig å tilpasse denne her."
+                subtitle="Om du vil endre adresse må du tilpasse denne på grunnlag."
                 :expandable="false"
                 :expanded="false"
               >
@@ -1306,7 +1542,7 @@ const saveDraft = () => {
 
             <Expandable
               title="Prosjektstatus"
-              subtitle="Prosjektstatus påvirker hele prosjektet. Derfor er det ikke mulig å tilpasse denne her."
+              subtitle="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon."
               :expandable="false"
               :expanded="false"
             >
@@ -1325,8 +1561,8 @@ const saveDraft = () => {
             </Expandable>
 
             <Expandable
-              title="Kontaktperson"
-              subtitle="Kontaktperson påvirker hele prosjektet. Derfor er det ikke mulig å tilpasse denne her."
+              title="Kundebehandler"
+              subtitle="Om du vil endre kundebehandler må du tilpasse denne på roller."
               :expandable="false"
               :expanded="false"
             >
@@ -1361,7 +1597,6 @@ const saveDraft = () => {
             >
               <template #actions>
                 <Icon
-                  :icon="getIsEditedIcon('MOREINFO')"
                   :class="[
                     'ad__expandable-list-field-icon',
                     {
@@ -1369,8 +1604,57 @@ const saveDraft = () => {
                         isEdited('MOREINFO'),
                     },
                   ]"
+                  :icon="getIsEditedBind('MOREINFO').icon"
+                  v-tooltip="{
+                    content: getIsEditedBind('MOREINFO').label,
+                    container: false,
+                  }"
                 ></Icon>
               </template>
+
+              <template
+                #before-content
+                v-if="
+                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_UR')
+                "
+              >
+                <Grid columns="2">
+                  <template v-if="hasField('ESTATE_EXTERNAL_URL')">
+                    <FormControl label="URL til nyttig lenke">
+                      <Input
+                        v-model="data.ESTATE_EXTERNAL_URL"
+                        suffix="URL"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                    <FormControl
+                      label="Visningsnavn på lenken på Finn-annonsen"
+                    >
+                      <Input
+                        modelValue="Se prosjektets hjemmeside"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                  </template>
+                  <template v-if="hasField('ESTATE_EXTERNAL_ORDER_URL')">
+                    <FormControl label="URL til nyttig lenke">
+                      <Input
+                        v-model="data.ESTATE_EXTERNAL_ORDER_URL"
+                        suffix="URL"
+                        disabled
+                      ></Input>
+                    </FormControl>
+                    <FormControl
+                      label="Visningsnavn på lenken på Finn-annonsen"
+                    >
+                      <Input modelValue="Bestill salgsoppgave" disabled></Input>
+                    </FormControl>
+                  </template>
+                </Grid>
+
+                <div class="ad__expandable-list-divider"></div>
+              </template>
+
               <template #default="{ item: data }">
                 <Grid columns="2">
                   <FormControl label="URL til nyttig lenke">
@@ -1503,12 +1787,33 @@ const saveDraft = () => {
     }
   }
 
+  &__expandable-list-divider {
+    margin-block: 1rem;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: -1rem; /* Extend left */
+      width: calc(100% + 2rem); /* Extend width by 2rem (1rem on each side) */
+      height: var(--k-expandable-border-width, 1px);
+      background-color: var(
+        --k-expandable-border-color,
+        var(--k-ui-color-neutral)
+      );
+    }
+  }
+
   &__expandable-list-field-icon {
     background: white;
     border-radius: var(--k-ui-rounding-full);
     overflow: visible;
     padding: var(--k-ui-spacing-xs);
     line-height: 1;
+
+    // font-size: 0.75em;
 
     color: var(--synced-icon);
 
