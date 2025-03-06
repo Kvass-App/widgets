@@ -511,8 +511,8 @@ const saveDraft = () => {
                   class="k-ml-xxs"
                   :content="
                     hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
-                      ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
-                      : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen'
+                      ? 'Teksten du skriver her vises som hovedtittelen og undertittel i annonsen.'
+                      : 'Teksten du skriver her vises som hovedtittel i annonsen.'
                   "
                   src="https://assets.kvass.no/67c7181792504cdf70aba68d"
                 />
@@ -1642,7 +1642,7 @@ const saveDraft = () => {
                 <span>Bilder</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Bildene hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen."
+                  content="Bildene hentes fra prosjektsiden. Det første bildet blir forsidebildet i Finn-annonsen."
                   src="https://assets.kvass.no/67c8088692504cdf70aba702"
                 />
               </template>
@@ -1700,7 +1700,7 @@ const saveDraft = () => {
                 <span>Plantegninger</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Plantegninger vil bli presentert sist i bildegalleriet, eller som egen knapp i galleri som heter plantegninger. Dette avhenger av hva annonsetypen støtter"
+                  content="Plantegninger vises sist i bildegalleriet eller som en egen knapp i galleriet med navnet «Plantegninger». Dette avhenger av hva annonsetypen støtter."
                   src="https://assets.kvass.no/67c8088692504cdf70aba702"
                 />
               </template>
@@ -1750,7 +1750,7 @@ const saveDraft = () => {
                 <span>Beskrivelse</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  content="Teksten du skriver her vises under beskrivelsen i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5792504cdf70aba732"
                 />
               </template>
@@ -1783,7 +1783,7 @@ const saveDraft = () => {
                 <span>Beskrivelse</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  content="Teksten du skriver her vises under beskrivelsen i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5792504cdf70aba732"
                 />
               </template>
@@ -1900,7 +1900,7 @@ const saveDraft = () => {
                 <span> Valgte enheter til Finn-annonsen </span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Valgte enheter presenteres slik på Finn-annonsen."
+                  content="Slik vises de valgte enhetene i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5a92504cdf70aba73e"
                 />
               </template>
@@ -1959,7 +1959,7 @@ const saveDraft = () => {
                 <span>Prosjektstatus</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  content="For å endre prosjektstatus må du tilpasse den i presentasjonen. Slik vises prosjektstatus i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5492504cdf70aba726"
                 />
               </template>
@@ -1982,7 +1982,7 @@ const saveDraft = () => {
                 <span>Kundebehandler</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Om du vil endre kundebehandler må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  content="For å endre kontaktperson må du tilpasse hvem som er kundebehandler under «roller». Slik vises kundebehandler i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5092504cdf70aba71a"
                 />
               </template>
@@ -2018,7 +2018,7 @@ const saveDraft = () => {
                 <span>Nyttige lenker i Finn-annonsen</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Nyttige lenker plasseres her på Finn. Enkelte felter er standard og låst fra Finn. Her kan du legge inn egne lenker i tillegg til andre nettsteder om du ønsker det."
+                  content="Nyttige lenker vises her i Finn-annonsen. Noen felt er standard og låst av Finn, derfor vises lenken til prosjektsiden alltid automatisk. Du kan fritt legge til egne lenker og lenker til andre nettsteder."
                   src="https://assets.kvass.no/67c80a5e92504cdf70aba756"
                 />
               </template>

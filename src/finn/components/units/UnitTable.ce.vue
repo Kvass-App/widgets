@@ -127,7 +127,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
         <span v-html="item.label"></span>
         <Tooltip
           class="k-ml-xxs"
-          content="Finn gjør det mulig å fremheve enheter i en prosjektannonse. Det betyr at de enhetene som er fremhevet vil bli ekstra synlig med egne kort på Finn-annonsen. Dette kan være relevant om det er enkelte enheter du vil promotere mer enn andre."
+          content="Slik vises utvalgte enheter i Finn-annonsen."
           src="https://assets.kvass.no/67c80a5c92504cdf70aba74a"
         />
       </template>
