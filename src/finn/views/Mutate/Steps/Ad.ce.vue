@@ -511,8 +511,8 @@ const saveDraft = () => {
                   class="k-ml-xxs"
                   :content="
                     hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
-                      ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
-                      : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen'
+                      ? 'Teksten du skriver her vises som hovedtittelen og undertittel i annonsen.'
+                      : 'Teksten du skriver her vises som hovedtittel i annonsen.'
                   "
                   src="https://assets.kvass.no/67c7181792504cdf70aba68d"
                 />
@@ -624,6 +624,93 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <Grid columns="2">
+                  <FormControl label="Er hytte" v-if="hasField('IS_LEISURE')">
+                    <Dropdown
+                      :class="[
+                        'ad__dropdown',
+                        {
+                          'ad__dropdown--edited': isEdited('IS_LEISURE'),
+                        },
+                      ]"
+                      :label="data.IS_LEISURE ? 'Ja' : 'Nei'"
+                      :items="[
+                        {
+                          label: 'Nei',
+                          action: () => (data.IS_LEISURE = null),
+                        },
+                        { label: 'Ja', action: () => (data.IS_LEISURE = true) },
+                      ]"
+                    >
+                      <template #icon-right>
+                        <Icon
+                          icon="fa-pro-regular:angle-down"
+                          class="k-mr-sm"
+                        ></Icon>
+
+                        <Icon
+                          :icon="getIsEditedBind('IS_LEISURE').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('IS_LEISURE').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Dropdown>
+                  </FormControl>
+
+                  <div
+                    v-if="hasField('IS_LEISURE') ? !data.IS_LEISURE : false"
+                  ></div>
+
+                  <FormControl
+                    label="Beliggenhet"
+                    v-if="
+                      hasField('IS_LEISURE')
+                        ? data.IS_LEISURE
+                        : hasField('LEISURE_SITUATION')
+                    "
+                    v-bind="validate('LEISURE_SITUATION')"
+                  >
+                    <Dropdown
+                      :class="[
+                        'ad__dropdown',
+                        {
+                          'ad__dropdown--edited': isEdited('LEISURE_SITUATION'),
+                        },
+                      ]"
+                      :label="
+                        LeisureSituation.find(
+                          (v) => v.value === data.LEISURE_SITUATION,
+                        )?.label || 'Velg...'
+                      "
+                      :items="
+                        LeisureSituation.map((v) => {
+                          return {
+                            ...v,
+                            action: () => {
+                              data.LEISURE_SITUATION = v.value
+                            },
+                          }
+                        })
+                      "
+                    >
+                      <template #icon-right>
+                        <Icon
+                          icon="fa-pro-regular:angle-down"
+                          class="k-mr-sm"
+                        ></Icon>
+
+                        <Icon
+                          :icon="getIsEditedBind('LEISURE_SITUATION').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('LEISURE_SITUATION').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Dropdown>
+                  </FormControl>
+
                   <FormControl
                     v-if="
                       hasFields('PROPERTY_TYPE') &&
@@ -672,6 +759,82 @@ const saveDraft = () => {
                   </FormControl>
 
                   <FormControl
+                    v-if="hasField('PLOT_AREA')"
+                    v-bind="validate('PLOT_AREA')"
+                    label="Tomteareal"
+                    :class="[
+                      'ad__field',
+                      {
+                        'ad__field--edited': isEdited('PLOT_AREA'),
+                      },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.PLOT_AREA"
+                      @update:modelValue="
+                        (v) => (data.PLOT_AREA = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('PLOT_AREA').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('PLOT_AREA').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    label="Eiet tomt"
+                    v-if="hasField('PLOT_IS_OWNED')"
+                    v-bind="validate('PLOT_IS_OWNED')"
+                    BEDROOMS_FROM
+                  >
+                    <Dropdown
+                      :class="[
+                        'ad__dropdown',
+                        {
+                          'ad__dropdown--edited': isEdited('PLOT_IS_OWNED'),
+                        },
+                      ]"
+                      :label="data.PLOT_IS_OWNED === 'yes' ? 'Ja' : 'Nei'"
+                      :items="[
+                        {
+                          label: 'Nei',
+                          action: () => (data.PLOT_IS_OWNED = 'no'),
+                        },
+                        {
+                          label: 'Ja',
+                          action: () => (data.PLOT_IS_OWNED = 'yes'),
+                        },
+                      ]"
+                    >
+                      <template #icon-right>
+                        <Icon
+                          icon="fa-pro-regular:angle-down"
+                          class="k-mr-sm"
+                        ></Icon>
+
+                        <Icon
+                          :icon="getIsEditedBind('PLOT_IS_OWNED').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('PLOT_IS_OWNED').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Dropdown>
+                  </FormControl>
+
+                  <FormControl
                     v-if="hasField('RENTAL_PRICE_PER_MONTH')"
                     v-bind="validate('RENTAL_PRICE_PER_MONTH')"
                     label="Månedsleie"
@@ -702,6 +865,38 @@ const saveDraft = () => {
                           v-tooltip="{
                             content: getIsEditedBind('RENTAL_PRICE_PER_MONTH')
                               .label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('NO_OF_ROOMS')"
+                    v-bind="validate('NO_OF_ROOMS')"
+                    label="Antall rom"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('NO_OF_ROOMS') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.NO_OF_ROOMS"
+                      @update:modelValue="
+                        (v) => (data.NO_OF_ROOMS = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('NO_OF_ROOMS').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('NO_OF_ROOMS').label,
                             container: false,
                           }"
                         ></Icon>
@@ -809,6 +1004,214 @@ const saveDraft = () => {
                   </FormControl>
 
                   <FormControl
+                    v-if="hasField('PRIMARY_ROOM_AREA')"
+                    v-bind="validate('PRIMARY_ROOM_AREA')"
+                    label="Primærareal"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('PRIMARY_ROOM_AREA') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.PRIMARY_ROOM_AREA"
+                      @update:modelValue="
+                        (v) =>
+                          (data.PRIMARY_ROOM_AREA = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('PRIMARY_ROOM_AREA').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('PRIMARY_ROOM_AREA').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('USEABLE_AREA')"
+                    v-bind="validate('USEABLE_AREA')"
+                    label="Bruksareal (BRA)"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('USEABLE_AREA') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.USEABLE_AREA"
+                      @update:modelValue="
+                        (v) => (data.USEABLE_AREA = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('USEABLE_AREA').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('USEABLE_AREA').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('USEABLE_AREA_I')"
+                    v-bind="validate('USEABLE_AREA_I')"
+                    label="Internt bruksareal (BRA-i)"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('USEABLE_AREA_I') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.USEABLE_AREA_I"
+                      @update:modelValue="
+                        (v) =>
+                          (data.USEABLE_AREA_I = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('USEABLE_AREA_I').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('USEABLE_AREA_I').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('USEABLE_AREA_E')"
+                    v-bind="validate('USEABLE_AREA_E')"
+                    label="Eksternt bruksareal (BRA-e)"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('USEABLE_AREA_E') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.USEABLE_AREA_E"
+                      @update:modelValue="
+                        (v) =>
+                          (data.USEABLE_AREA_E = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('USEABLE_AREA_E').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('USEABLE_AREA_E').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('USEABLE_AREA_B')"
+                    v-bind="validate('USEABLE_AREA_B')"
+                    label="Innglasset balkong (BRA-b)"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('USEABLE_AREA_B') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.USEABLE_AREA_B"
+                      @update:modelValue="
+                        (v) =>
+                          (data.USEABLE_AREA_B = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('USEABLE_AREA_B').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('USEABLE_AREA_B').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('GROSS_AREA')"
+                    v-bind="validate('GROSS_AREA')"
+                    label="Bruttoareal (BTA)"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('GROSS_AREA') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.GROSS_AREA"
+                      @update:modelValue="
+                        (v) => (data.GROSS_AREA = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('GROSS_AREA').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('GROSS_AREA').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
                     v-if="hasField('NO_OF_PARKING_SPOTS')"
                     v-bind="validate('NO_OF_PARKING_SPOTS')"
                     label="Antall parkeringsplasser"
@@ -873,6 +1276,40 @@ const saveDraft = () => {
                           :icon="getIsEditedBind('FLOOR').icon"
                           v-tooltip="{
                             content: getIsEditedBind('FLOOR').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('NO_OF_FLOORS')"
+                    v-bind="validate('NO_OF_FLOORS')"
+                    label="Antall etasjer"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('NO_OF_FLOORS') },
+                    ]"
+                  >
+                    <Input
+                      :modelValue="data.NO_OF_FLOORS"
+                      @update:modelValue="
+                        (v) => (data.NO_OF_FLOORS = Number.isNaN(v) ? null : v)
+                      "
+                      :mask="{
+                        mask: Number,
+                        thousandsSeparator: ' ',
+                        unmask: true,
+                        min: 0,
+                        scale: 0,
+                      }"
+                    >
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('NO_OF_FLOORS').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('NO_OF_FLOORS').label,
                             container: false,
                           }"
                         ></Icon>
@@ -1150,63 +1587,6 @@ const saveDraft = () => {
                       </template>
                     </Input>
                   </FormControl>
-
-                  <FormControl
-                    label="Er hytte"
-                    v-if="hasField('IS_LEISURE')"
-                    :getRootNode="() => formContainer.getRootNode()"
-                  >
-                    <Switch v-model="data.IS_LEISURE"></Switch>
-                  </FormControl>
-
-                  <FormControl
-                    label="Beliggenhet"
-                    v-if="
-                      hasField('IS_LEISURE')
-                        ? data.IS_LEISURE
-                        : hasField('LEISURE_SITUATION')
-                    "
-                    v-bind="validate('LEISURE_SITUATION')"
-                  >
-                    <Dropdown
-                      :class="[
-                        'ad__dropdown',
-                        {
-                          'ad__dropdown--edited': isEdited('LEISURE_SITUATION'),
-                        },
-                      ]"
-                      :label="
-                        LeisureSituation.find(
-                          (v) => v.value === data.LEISURE_SITUATION,
-                        )?.label || 'Velg...'
-                      "
-                      :items="
-                        LeisureSituation.map((v) => {
-                          return {
-                            ...v,
-                            action: () => {
-                              data.LEISURE_SITUATION = v.value
-                            },
-                          }
-                        })
-                      "
-                    >
-                      <template #icon-right>
-                        <Icon
-                          icon="fa-pro-regular:angle-down"
-                          class="k-mr-sm"
-                        ></Icon>
-
-                        <Icon
-                          :icon="getIsEditedBind('LEISURE_SITUATION').icon"
-                          v-tooltip="{
-                            content: getIsEditedBind('LEISURE_SITUATION').label,
-                            container: false,
-                          }"
-                        ></Icon>
-                      </template>
-                    </Dropdown>
-                  </FormControl>
                 </Grid>
               </template>
             </Expandable>
@@ -1262,7 +1642,7 @@ const saveDraft = () => {
                 <span>Bilder</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Bildene hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen."
+                  content="Bildene hentes fra prosjektsiden. Det første bildet blir forsidebildet i Finn-annonsen."
                   src="https://assets.kvass.no/67c8088692504cdf70aba702"
                 />
               </template>
@@ -1320,7 +1700,7 @@ const saveDraft = () => {
                 <span>Plantegninger</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Plantegninger vil bli presentert sist i bildegalleriet, eller som egen knapp i galleri som heter plantegninger. Dette avhenger av hva annonsetypen støtter"
+                  content="Plantegninger vises sist i bildegalleriet eller som en egen knapp i galleriet med navnet «Plantegninger». Dette avhenger av hva annonsetypen støtter."
                   src="https://assets.kvass.no/67c8088692504cdf70aba702"
                 />
               </template>
@@ -1370,7 +1750,7 @@ const saveDraft = () => {
                 <span>Beskrivelse</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  content="Teksten du skriver her vises under beskrivelsen i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5792504cdf70aba732"
                 />
               </template>
@@ -1403,7 +1783,7 @@ const saveDraft = () => {
                 <span>Beskrivelse</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  content="Teksten du skriver her vises under beskrivelsen i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5792504cdf70aba732"
                 />
               </template>
@@ -1520,7 +1900,7 @@ const saveDraft = () => {
                 <span> Valgte enheter til Finn-annonsen </span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Valgte enheter presenteres slik på Finn-annonsen."
+                  content="Slik vises de valgte enhetene i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5a92504cdf70aba73e"
                 />
               </template>
@@ -1579,7 +1959,7 @@ const saveDraft = () => {
                 <span>Prosjektstatus</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  content="For å endre prosjektstatus må du tilpasse den i presentasjonen. Slik vises prosjektstatus i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5492504cdf70aba726"
                 />
               </template>
@@ -1602,7 +1982,7 @@ const saveDraft = () => {
                 <span>Kundebehandler</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Om du vil endre kundebehandler må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  content="For å endre kontaktperson må du tilpasse hvem som er kundebehandler under «roller». Slik vises kundebehandler i Finn-annonsen."
                   src="https://assets.kvass.no/67c80a5092504cdf70aba71a"
                 />
               </template>
@@ -1638,7 +2018,7 @@ const saveDraft = () => {
                 <span>Nyttige lenker i Finn-annonsen</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  content="Nyttige lenker plasseres her på Finn. Enkelte felter er standard og låst fra Finn. Her kan du legge inn egne lenker i tillegg til andre nettsteder om du ønsker det."
+                  content="Nyttige lenker vises her i Finn-annonsen. Noen felt er standard og låst av Finn, derfor vises lenken til prosjektsiden alltid automatisk. Du kan fritt legge til egne lenker og lenker til andre nettsteder."
                   src="https://assets.kvass.no/67c80a5e92504cdf70aba756"
                 />
               </template>

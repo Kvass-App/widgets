@@ -218,7 +218,7 @@ const labels = computed(() => {
 
 const customMessages = computed(() => {
   return {
-    size: `Du kan kun velge :size :attribute når "${selectedCategory.value?.label}" er valgt som annonse-kategori`,
+    size: `Du kan kun velge :size :attribute når "${Categories.find((v) => v.type === 'ESTATE_PROJECT_SINGLE')?.label}" er valgt som annonse-kategori`,
   }
 })
 
