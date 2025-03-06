@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, onMounted } from 'vue'
 import {
   Input,
   FormControl,
@@ -14,7 +14,7 @@ import {
 } from '@kvass/ui'
 
 import Tooltip from '../../../components/Tooltip.ce.vue'
-import { vTooltip } from 'floating-vue'
+import { vTooltip, createTooltip } from 'floating-vue'
 
 import { toCurrency } from '../../../../utils'
 
@@ -168,7 +168,15 @@ const selected = computed({
   },
   set(newValue) {
     modelValue.value.units = newValue.map((v) => {
-      const { price, propertyType, status, disabled, ...rest } = v
+      const {
+        price,
+        propertyType,
+        status,
+        disabled,
+        saleType,
+        disabledReason,
+        ...rest
+      } = v
 
       return {
         fields: {},
@@ -183,16 +191,34 @@ const sortableBy = computed(() =>
 )
 
 const rules = computed(() => {
-  return {
+  const base = {
     name: 'required',
     type: 'required',
   }
+
+  if (
+    selectedCategory.value?.type === 'ESTATE_PROJECT_SINGLE' &&
+    modelValue.value.units.length
+  )
+    return {
+      units: 'size:1',
+      ...base,
+    }
+
+  return base
 })
 
 const labels = computed(() => {
   return {
     name: 'Internt navn',
     type: 'Annonse-kategori',
+    units: 'enhet',
+  }
+})
+
+const customMessages = computed(() => {
+  return {
+    size: `Du kan kun velge :size :attribute når "${selectedCategory.value?.label}" er valgt som annonse-kategori`,
   }
 })
 
@@ -200,9 +226,38 @@ const validator = Validator({
   rules: rules,
   labels: labels,
   data: modelValue,
+  customMessages: customMessages,
 })
 
 const { bind: validate } = validator
+
+const unitTable = ref()
+
+onMounted(() => {
+  const parent = unitTable.value.$el
+
+  let elements = parent.querySelectorAll(
+    '[data-scope="checkbox"][data-part="root"][data-disabled]',
+  )
+
+  const disabledItems = items.value.filter((v) => v.disabled)
+
+  elements.forEach((el, index) => {
+    const content = disabledItems[index].disabledReason
+
+    const tooltip = createTooltip(
+      el,
+      {
+        container: false,
+        triggers: ['hover', 'focus'],
+        content: content,
+        placements: 'auto',
+        preventOverflow: true,
+      },
+      null,
+    )
+  })
+})
 </script>
 
 <template>
@@ -265,6 +320,12 @@ const { bind: validate } = validator
                       close()
                     }
                   "
+                  :disabled="item.disabled(units)"
+                  v-tooltip="{
+                    content: item.disabledText,
+                    disabled: !item.disabled(units),
+                    container: false,
+                  }"
                 >
                   <Flex class="category__label-wrapper">
                     <div class="category__label">{{ item.label }}</div>
@@ -289,6 +350,7 @@ const { bind: validate } = validator
             class="table-scroller"
           >
             <DataTable
+              ref="unitTable"
               :sticky="true"
               :sortableBy="sortableBy"
               v-model:sortBy="sortBy"
@@ -311,8 +373,8 @@ const { bind: validate } = validator
                 </Badge>
               </template>
               <template #price="{ item }">
-                {{ toCurrency(item.price) }}</template
-              >
+                {{ toCurrency(item.price) }}
+              </template>
             </DataTable>
           </Scroller>
         </FormControl>
