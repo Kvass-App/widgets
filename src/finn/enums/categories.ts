@@ -7,7 +7,7 @@ export type Category = {
   group: string
   unitType?: Type
   disabled: (unit: Unit[]) => boolean
-  disabledText: string
+  disabledReason: string
 }
 
 export default [
@@ -25,7 +25,7 @@ export default [
         return unit.saleType === 'sale' && types.includes(unit.status.value)
       })
     },
-    disabledText: 'Du må ha kommer til salgs enheter',
+    disabledReason: 'Du må ha kommer til salgs enheter',
   },
   {
     type: 'ESTATE_PROJECT',
@@ -44,7 +44,7 @@ export default [
         )
       })
     },
-    disabledText: 'Du må ha bolig enheter til salgs',
+    disabledReason: 'Du må ha bolig enheter til salgs',
   },
   {
     type: 'ESTATE_PROJECT_SINGLE',
@@ -62,7 +62,7 @@ export default [
         )
       })
     },
-    disabledText: 'Du må ha bolig/hytte enheter til salgs',
+    disabledReason: 'Du må ha bolig/hytte enheter til salgs',
   },
   {
     type: 'ESTATE_PROJECT_LEISURE',
@@ -81,7 +81,7 @@ export default [
         )
       })
     },
-    disabledText: 'Du må ha hytte enheter til salgs',
+    disabledReason: 'Du må ha hytte enheter til salgs',
   },
   {
     type: 'ESTATE_BUSINESS_SALE',
@@ -97,7 +97,7 @@ export default [
         return unit.saleType === 'sale'
       })
     },
-    disabledText: 'Du må ha enheter til salgs',
+    disabledReason: 'Du må ha enheter til salgs',
   },
   {
     type: 'ESTATE_BUSINESS_RENT',
@@ -113,7 +113,7 @@ export default [
         return unit.saleType === 'rent'
       })
     },
-    disabledText: 'Du må ha enheter til leie',
+    disabledReason: 'Du må ha enheter til leie',
   },
   {
     type: 'PLOT_SALE',
@@ -131,7 +131,7 @@ export default [
         )
       })
     },
-    disabledText: 'Du må ha tomt/fritidstomt enheter til salgs',
+    disabledReason: 'Du må ha tomt/fritidstomt enheter til salgs',
   },
   {
     type: 'ESTATE_RENT',
@@ -145,6 +145,6 @@ export default [
         return unit.saleType === 'rent'
       })
     },
-    disabledText: 'Du må ha enheter til leie',
+    disabledReason: 'Du må ha enheter til leie',
   },
 ] as Category[]

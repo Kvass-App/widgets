@@ -322,7 +322,7 @@ onMounted(() => {
                   "
                   :disabled="item.disabled(units)"
                   v-tooltip="{
-                    content: item.disabledText,
+                    content: item.disabledReason,
                     disabled: !item.disabled(units),
                     container: false,
                   }"
