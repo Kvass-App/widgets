@@ -35,6 +35,7 @@ export type Unit = {
   id: ID
   name: string
   price: number
+  saleType: string // enums
   propertyType: {
     value: string // enums
     label: string
@@ -44,6 +45,7 @@ export type Unit = {
     label: string
   }
   disabled: boolean
+  disabledReason: string
 } & Partial<Base>
 
 export type Facility = { value: string; label: string; categories: Type[] }

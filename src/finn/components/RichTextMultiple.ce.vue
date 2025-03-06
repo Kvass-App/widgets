@@ -6,8 +6,8 @@ import ExpandableList from './ExpandableList.ce.vue'
 
 const props = defineProps<{
   expanded: boolean
-  title: string
-  subtitle: string
+  title?: string
+  subtitle?: string
 }>()
 
 const modelValue = defineModel<string>({ default: '' })
@@ -97,7 +97,10 @@ const setRichTextValue = (
     :template="{ title: '', content: '' }"
     v-model="richText"
   >
-    <template #actions>
+    <template #title v-if="$slots.title">
+      <slot name="title"></slot>
+    </template>
+    <template #actions v-if="$slots.actions">
       <slot name="actions"></slot>
     </template>
     <template #default="{ item: data, index }">

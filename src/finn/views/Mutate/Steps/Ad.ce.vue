@@ -29,9 +29,7 @@ import {
   Image,
 } from '@kvass/ui'
 
-import vGodfather from '../../../directives/godfather'
-import 'godfather/dist/godfather.css'
-
+import Tooltip from '../../../components/Tooltip.ce.vue'
 import { vTooltip } from 'floating-vue'
 
 import Categories from '../../../enums/categories.ts'
@@ -253,7 +251,9 @@ const getData = () => {
       console.error(err)
       props.onPrev()
     })
-    .finally(() => (fetching.value = false))
+    .finally(() => {
+      fetching.value = false
+    })
 }
 
 const getNextLabel = () => {
@@ -497,43 +497,25 @@ const saveDraft = () => {
           <Flex direction="column" gap="2rem">
             <Expandable
               :expanded="true"
-              :subtitle="
-                hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
-                  ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
-                  : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen'
-              "
               v-if="hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF', 'HEADING')"
             >
               <template #title>
-                <span
-                  style="position: relative"
-                  class="k-mr-lg"
-                  @click="
-                    (e) => {
-                      //@ts-ignore
-                      if (e.target.classList.contains('godfather-hint')) {
-                        e.stopPropagation()
-                      }
-                    }
-                  "
-                  v-godfather="{
-                    id: 'project-title',
-                    options: {
-                      content:
-                        'Teksten som formuleres her vil bli synlig som hovedtittel. Dersom din annonsetype støtter undertittel, vil den også bli synlig her.',
-                      hint: true,
-                      attachTo: 'hint',
-                      scrollIntoView: false,
-                      image: 'https://assets.kvass.no/67c7181792504cdf70aba68d',
-                    },
-                  }"
-                >
+                <span>
                   {{
                     hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
                       ? 'Hovedtittel og undertittel'
                       : 'Hovedtittel'
                   }}
                 </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  :content="
+                    hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF')
+                      ? 'Teksten som formuleres her vil bli synlig som hovedtittel og undertittel på Finn-annonsen'
+                      : 'Teksten som formuleres her vil bli synlig som hovedtittel på Finn-annonsen'
+                  "
+                  src="https://assets.kvass.no/67c7181792504cdf70aba68d"
+                />
               </template>
               <template #default>
                 <FormControl
@@ -631,7 +613,15 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
-            <Expandable :expanded="true" title="Nøkkelinformasjon" subtitle="">
+            <Expandable :expanded="true">
+              <template #title>
+                <span> Nøkkelinformasjon</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Nøkkelinformasjon vises slik i Finn annonsen"
+                  src="https://assets.kvass.no/67c8077992504cdf70aba6f6"
+                />
+              </template>
               <template #default>
                 <Grid columns="2">
                   <FormControl
@@ -1223,12 +1213,19 @@ const saveDraft = () => {
 
             <Expandable
               :expanded="true"
-              title="Enhetstyper for annonsen"
-              subtitle="Velg enhetstyper for annonsen"
               v-if="
                 hasFields('PROPERTY_TYPE') && Array.isArray(data.PROPERTY_TYPE)
               "
             >
+              <template #title>
+                <span>Enhetstyper for annonsen</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Enhetstypene som velges her vil bli synlig under enhetstyper på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten."
+                  src="https://assets.kvass.no/67c8203b92504cdf70aba768"
+                />
+              </template>
+
               <template #actions>
                 <Icon
                   :class="[
@@ -1260,12 +1257,15 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
-            <Expandable
-              :expanded="true"
-              title="Bilder"
-              subtitle="Disse hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen."
-              v-if="hasFields('MEDIA')"
-            >
+            <Expandable :expanded="true" v-if="hasFields('MEDIA')">
+              <template #title>
+                <span>Bilder</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Bildene hentes fra prosjektsiden. Det første bilde vil være forsidebildet på Finn-annonsen."
+                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[
@@ -1315,12 +1315,15 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
-            <Expandable
-              :expanded="true"
-              title="Plantegninger"
-              subtitle=""
-              v-if="hasFields('FLOORPLAN_MEDIA')"
-            >
+            <Expandable :expanded="true" v-if="hasFields('FLOORPLAN_MEDIA')">
+              <template #title>
+                <span>Plantegninger</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Plantegninger vil bli presentert sist i bildegalleriet, eller som egen knapp i galleri som heter plantegninger. Dette avhenger av hva annonsetypen støtter"
+                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[
@@ -1360,11 +1363,17 @@ const saveDraft = () => {
 
             <RichTextMultiple
               :expanded="true"
-              title="Beskrivelse"
-              subtitle="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
               v-if="hasFields('GENERAL_DESCRIPTION')"
               v-model="data.GENERAL_DESCRIPTION"
             >
+              <template #title>
+                <span>Beskrivelse</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5792504cdf70aba732"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[
@@ -1386,12 +1395,18 @@ const saveDraft = () => {
 
             <ExpandableList
               :expanded="true"
-              title="Beskrivelse"
-              subtitle="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
               :template="{ GENERAL_HEADING: '', GENERAL_TEXT: '' }"
               v-model="data.GENERAL_TEXT_REALESTATE"
               v-if="hasFields('GENERAL_TEXT_REALESTATE')"
             >
+              <template #title>
+                <span>Beskrivelse</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Teksten som formuleres her vil bli synlig under beskrivelse på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5792504cdf70aba732"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[
@@ -1426,18 +1441,22 @@ const saveDraft = () => {
 
             <Expandable
               :expanded="true"
-              :title="
-                hasField('PROJECT_PREFERENCE')
-                  ? 'Fasiliteter for prosjektannonsen'
-                  : 'Fasiliteter for annonsen'
-              "
-              :subtitle="
-                hasField('PROJECT_PREFERENCE')
-                  ? 'Velg fasiliteter for prosjektannonsen'
-                  : 'Velg fasiliteter for annonsen'
-              "
               v-if="hasFields('ESTATE_PREFERENCE', 'PROJECT_PREFERENCE')"
             >
+              <template #title>
+                <span>
+                  {{
+                    hasField('PROJECT_PREFERENCE')
+                      ? 'Fasiliteter for prosjektannonsen'
+                      : 'Fasiliteter for annonsen'
+                  }}
+                </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Fasilitenene som velges her vil bli synlig under fasiliteter på Finn-annonsen. De vil også være tilgjengelige som filtre i søkelisten."
+                  src="https://assets.kvass.no/67c80a4c92504cdf70aba70e"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[
@@ -1496,12 +1515,15 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
-            <Expandable
-              :expanded="true"
-              title="Valgte enheter til Finn-annonsen"
-              subtitle="Fremhev enheten på prosjektannonsen, eller gjør andre tilpasninger."
-              v-if="units.length"
-            >
+            <Expandable :expanded="true" v-if="units.length">
+              <template #title>
+                <span> Valgte enheter til Finn-annonsen </span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Valgte enheter presenteres slik på Finn-annonsen."
+                  src="https://assets.kvass.no/67c80a5a92504cdf70aba73e"
+                />
+              </template>
               <template #default>
                 <UnitTable
                   :initialUnitFields="initialUnitFields"
@@ -1541,11 +1563,26 @@ const saveDraft = () => {
             </template>
 
             <Expandable
-              title="Prosjektstatus"
-              subtitle="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon."
               :expandable="false"
               :expanded="false"
+              v-if="
+                hasFields(
+                  'PHASE_PLANNING',
+                  'PHASE_SALE_START',
+                  'PHASE_DEVELOPMENT_START',
+                  'PHASE_MOVE_IN',
+                  'CURRENT_PHASE',
+                )
+              "
             >
+              <template #title>
+                <span>Prosjektstatus</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Om du vil endre prosjektstatus må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  src="https://assets.kvass.no/67c80a5492504cdf70aba726"
+                />
+              </template>
               <template #actions>
                 <Button
                   class="ad__navigate-button"
@@ -1560,12 +1597,15 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
-            <Expandable
-              title="Kundebehandler"
-              subtitle="Om du vil endre kundebehandler må du tilpasse denne på roller."
-              :expandable="false"
-              :expanded="false"
-            >
+            <Expandable :expandable="false" :expanded="false">
+              <template #title>
+                <span>Kundebehandler</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Om du vil endre kundebehandler må du tilpasse denne på presentasjon. Denne presenteres slik på Finn."
+                  src="https://assets.kvass.no/67c80a5092504cdf70aba71a"
+                />
+              </template>
               <template #actions>
                 <Button
                   class="ad__navigate-button"
@@ -1589,12 +1629,19 @@ const saveDraft = () => {
 
             <ExpandableList
               :expanded="true"
-              title="Nyttige lenker i Finn-annonsen"
               v-if="hasFields('MOREINFO')"
               :limit="4"
               :template="{ URL: '', URLTEXT: '' }"
               v-model="data.MOREINFO"
             >
+              <template #title>
+                <span>Nyttige lenker i Finn-annonsen</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Nyttige lenker plasseres her på Finn. Enkelte felter er standard og låst fra Finn. Her kan du legge inn egne lenker i tillegg til andre nettsteder om du ønsker det."
+                  src="https://assets.kvass.no/67c80a5e92504cdf70aba756"
+                />
+              </template>
               <template #actions>
                 <Icon
                   :class="[

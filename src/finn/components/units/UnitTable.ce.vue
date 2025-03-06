@@ -10,8 +10,7 @@ import { type Fields } from '../../api'
 import { type Ad, Facility } from '../../types/ad'
 
 import { vTooltip } from 'floating-vue'
-
-import vGodfather from '../../directives/godfather'
+import Tooltip from '../Tooltip.ce.vue'
 
 import Validator from '../../composeable/Validator'
 
@@ -125,18 +124,12 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
       :items="items"
     >
       <template #highlight-label="{ item }">
-        <span
-          v-html="item.label"
-          v-godfather="{
-            id: 'unit-highlight',
-            options: {
-              content: `Finn gjør det mulig å fremheve enheter i en prosjektannonse. Det betyr at de enhetene som er fremhevet vil bli ekstra synlig med egne kort på Finn-annonsen. Dette kan være relevant om det er enkelte enheter du vil promotere mer enn andre.`,
-              hint: true,
-              attachTo: 'hint',
-              scrollIntoView: false,
-            },
-          }"
-        ></span>
+        <span v-html="item.label"></span>
+        <Tooltip
+          class="k-ml-xxs"
+          content="Finn gjør det mulig å fremheve enheter i en prosjektannonse. Det betyr at de enhetene som er fremhevet vil bli ekstra synlig med egne kort på Finn-annonsen. Dette kan være relevant om det er enkelte enheter du vil promotere mer enn andre."
+          src="https://assets.kvass.no/67c80a5c92504cdf70aba74a"
+        />
       </template>
 
       <template #unit="{ item, rowIndex: index }">
@@ -226,6 +219,10 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
     max-height: 1000px;
   }
 
+  .k-datatable__cell-sort-icon {
+    display: none;
+  }
+
   box-sizing: border-box;
   padding: var(--k-ui-spacing);
   border-radius: var(--k-ui-rounding);
@@ -258,8 +255,11 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
   }
 
   [data-col-id='highlight'] {
-    .godfather-hint {
-      right: -25px;
+    z-index: 3 !important;
+
+    .v-popper__popper {
+      width: 400px;
+      font-size: 1rem;
     }
   }
 
