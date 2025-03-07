@@ -327,6 +327,8 @@ onMounted(getPosts)
 
     .k-card {
       max-width: 65ch;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
     }
 
     .k-card__content {
