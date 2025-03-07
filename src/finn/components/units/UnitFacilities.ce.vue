@@ -73,8 +73,8 @@ defineExpose({
     <template #default>
       <Expandable
         :expanded="true"
-        title="Fasiliteter for enhetsannonsen"
-        subtitle="Velg fasiliteter for enhetsannonsen"
+        title="Fasiliteter i enhetsannonsen"
+        subtitle="Velg fasiliteter i enhetsannonsen"
         v-if="hasFields('ESTATE_PREFERENCE')"
       >
         <template #actions>

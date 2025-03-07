@@ -56,6 +56,7 @@ const getComponent = computed(() => {
       word-break: break-word;
       white-space: pre-wrap;
       max-width: 300px;
+      line-height: 1.4;
     }
 
     &__icon {

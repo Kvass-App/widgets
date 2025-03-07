@@ -234,7 +234,8 @@ const { bind: validate } = validator
 const unitTable = ref()
 
 onMounted(() => {
-  const parent = unitTable.value.$el
+  const parent = unitTable.value?.$el
+  if (!parent) return
 
   let elements = parent.querySelectorAll(
     '[data-scope="checkbox"][data-part="root"][data-disabled]',
@@ -292,10 +293,10 @@ onMounted(() => {
             />
           </template>
           <Dropdown
+            :teleport="false"
             :disabled="Boolean(webcomponentProps.id)"
             label="Velg..."
             class="category"
-            :keepOpen="true"
           >
             <template #trigger v-if="selectedCategory">
               <Flex class="category__label-wrapper">
@@ -340,7 +341,8 @@ onMounted(() => {
         </FormControl>
 
         <FormControl
-          label="Velg enheter som danner informasjonsgrunnlag for Finn-annonsen"
+          v-if="items.length"
+          label="Velg hvilke enheter du vil publisere i Finn-annonse"
           class="k-grid-span-full"
         >
           <Scroller
