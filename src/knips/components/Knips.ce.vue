@@ -46,6 +46,7 @@ const mapItem = (item) => {
     id: item.id,
     title: getTitle(item),
     date: FormatDate(item.publishDate),
+    project: item?.project,
     author: item?.author?.name,
     thumbnail: item.featuredImage.src,
     claps: item.clapCount,
@@ -152,6 +153,10 @@ onMounted(getPosts)
             <Flex align="center" gap="xxs">
               <Icon icon="fa-pro-light:calendar" />
               {{ item.date }}
+            </Flex>
+            <Flex v-if="item.project" align="center" gap="xxs">
+              <Icon icon="fa-pro-light:location-dot" />
+              {{ item.project }}
             </Flex>
             <Flex v-if="author && item.author" align="center" gap="xxs">
               <Icon icon="fa-pro-light:user-circle" />
