@@ -216,8 +216,11 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
 <style lang="scss">
 .unit-table {
   &-scroller {
+    min-height: 300px;
     max-height: 1000px;
   }
+
+  overflow: visible;
 
   .k-datatable__cell-sort-icon {
     display: none;
@@ -258,7 +261,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
     z-index: 3 !important;
 
     .v-popper__popper {
-      width: 400px;
+      width: 300px;
       font-size: 1rem;
     }
   }

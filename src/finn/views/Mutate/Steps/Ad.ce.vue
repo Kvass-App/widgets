@@ -483,6 +483,16 @@ const saveDraft = () => {
                 />
               </template>
             </Dialog>
+
+            <Button
+              v-if="!modelValue.code"
+              class="ad__reset"
+              :label="'Lagre utkast'"
+              variant="secondary"
+              @click="saveDraft"
+              :promise="savingDraftPromise"
+            >
+            </Button>
           </div>
           <div class="k-card__subtitle">
             <div>
@@ -519,7 +529,9 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <FormControl
-                  v-if="hasField('HOUSING_UNIT_REF')"
+                  v-if="
+                    hasField('HOUSING_UNIT_REF') && !hasField('PROJECT_NAME')
+                  "
                   v-bind="validate('HOUSING_UNIT_REF')"
                   label="Hovedtittel for annonsen"
                   :class="[
@@ -624,7 +636,11 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <Grid columns="2">
-                  <FormControl label="Er hytte" v-if="hasField('IS_LEISURE')">
+                  <FormControl
+                    label="Er hytte"
+                    v-if="hasField('IS_LEISURE')"
+                    v-bind="validate('IS_LEISURE')"
+                  >
                     <Dropdown
                       :class="[
                         'ad__dropdown',
@@ -636,9 +652,30 @@ const saveDraft = () => {
                       :items="[
                         {
                           label: 'Nei',
-                          action: () => (data.IS_LEISURE = null),
+                          action: () => {
+                            data.IS_LEISURE = null
+
+                            if (!Array.isArray(data.PROPERTY_TYPE)) return
+
+                            data.PROPERTY_TYPE = data.PROPERTY_TYPE.filter(
+                              (v) =>
+                                displayProperties.some((p) => p.value === v),
+                            )
+                          },
                         },
-                        { label: 'Ja', action: () => (data.IS_LEISURE = true) },
+                        {
+                          label: 'Ja',
+                          action: () => {
+                            data.IS_LEISURE = true
+
+                            if (!Array.isArray(data.PROPERTY_TYPE)) return
+
+                            data.PROPERTY_TYPE = data.PROPERTY_TYPE.filter(
+                              (v) =>
+                                displayProperties.some((p) => p.value === v),
+                            )
+                          },
+                        },
                       ]"
                     >
                       <template #icon-right>
@@ -796,7 +833,6 @@ const saveDraft = () => {
                     label="Eiet tomt"
                     v-if="hasField('PLOT_IS_OWNED')"
                     v-bind="validate('PLOT_IS_OWNED')"
-                    BEDROOMS_FROM
                   >
                     <Dropdown
                       :class="[
@@ -1388,6 +1424,7 @@ const saveDraft = () => {
                   <FormControl
                     label="Energimerking"
                     v-if="hasField('ENERGY_LABEL')"
+                    v-bind="validate('ENERGY_LABEL')"
                   >
                     <Dropdown
                       :class="[
@@ -1430,6 +1467,7 @@ const saveDraft = () => {
                   <FormControl
                     label="Energimerking (farge)"
                     v-if="hasField('ENERGY_LABEL_COLOR_CODE')"
+                    v-bind="validate('ENERGY_LABEL_COLOR_CODE')"
                   >
                     <Dropdown
                       :class="[
@@ -1478,14 +1516,13 @@ const saveDraft = () => {
                   <FormControl
                     label="Eiertype"
                     v-if="hasField('OWNERSHIP_TYPE')"
+                    v-bind="validate('OWNERSHIP_TYPE')"
                   >
                     <Dropdown
                       :class="[
                         'ad__dropdown',
                         { 'ad__dropdown--edited': isEdited('OWNERSHIP_TYPE') },
                       ]"
-                      :suffix="'test'"
-                      :prefix="'test'"
                       :keepOpen="true"
                       :label="
                         OwnershipTypes.find(
@@ -1624,6 +1661,7 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <FormControl
+                  v-bind="validate('PROPERTY_TYPE')"
                   label="Tilgjengelige lokaler"
                   v-if="hasField('PROPERTY_TYPE')"
                 >
@@ -1811,6 +1849,7 @@ const saveDraft = () => {
                 </FormControl>
                 <FormControl label="Tekst">
                   <RichText
+                    placeholder="Skriv her..."
                     :actions="['bold', 'italic', 'orderedList', 'bulletList']"
                     v-model="item.GENERAL_TEXT"
                   >
@@ -1827,8 +1866,8 @@ const saveDraft = () => {
                 <span>
                   {{
                     hasField('PROJECT_PREFERENCE')
-                      ? 'Fasiliteter for prosjektannonsen'
-                      : 'Fasiliteter for annonsen'
+                      ? 'Fasiliteter i prosjektannonsen'
+                      : 'Fasiliteter i annonsen'
                   }}
                 </span>
                 <Tooltip
@@ -2096,10 +2135,16 @@ const saveDraft = () => {
           </Flex>
         </template>
         <template #actions>
-          <Button label="Tilbake" variant="secondary" @click="onPrev" />
+          <Button
+            icon="fa-pro-light:chevron-left"
+            label="Gå tilbake"
+            variant="secondary"
+            @click="onPrev"
+          />
 
           <Button
-            label="Lagre utkast"
+            v-if="!modelValue.code"
+            :label="'Lagre utkast'"
             variant="secondary"
             @click="saveDraft"
             :promise="savingDraftPromise"
