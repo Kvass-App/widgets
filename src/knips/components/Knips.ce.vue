@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { Card, Grid, Button, Dialog, Image, Icon, Flex } from '@kvass/ui'
+import { Card, Grid, Button, Image, Icon, Flex } from '@kvass/ui'
 
 const Shorten = (e, l) => (e.length > l ? e.substring(e, l - 3) + '...' : e)
 const Replace = (s, d) => s.replace(/{(\w+)}/g, (m, k) => d[k] || m)
@@ -131,7 +131,11 @@ const getPosts = () => {
 
 const onDialog = (e) => {
   item.value = e
-  if (e) dialog.value.open()
+}
+
+const onModalClick = (event) => {
+  if (event.target.closest('.k-card')) return
+  item.value = null
 }
 
 onMounted(getPosts)
@@ -176,68 +180,62 @@ onMounted(getPosts)
           </Flex>
           <div v-if="item.title" data-field="title">{{ item.title }}</div>
           <div data-field="content">{{ item.shortContent }}</div>
-        </template>
-        <template #actions>
           <Button
             label="Les mer"
             size="small"
             variant="secondary"
+            data-field="readmore"
             icon-right="fa-pro-light:circle-plus"
             @click="() => onDialog(item)"
           ></Button>
         </template>
       </Card>
     </Grid>
-    <Dialog
-      ref="dialog"
-      :teleport="false"
-      dialog-id="knips"
-      @close="() => onDialog()"
-    >
-      <template #header v-if="item">
-        <Image :src="item.thumbnail" aspect-ratio="16/9" />
-      </template>
-      <template v-if="item">
-        <Flex data-field="metadata" align="center" gap="sm">
-          <Flex align="center" gap="xxs">
-            <Icon icon="fa-pro-light:calendar" />
-            {{ item.date }}
+    <div v-if="item" class="knips-feed__modal" @click="onModalClick">
+      <Card>
+        <template #header v-if="item">
+          <Image :src="item.thumbnail" aspect-ratio="16/9" />
+        </template>
+        <template v-if="item">
+          <Flex data-field="metadata" align="center" gap="sm">
+            <Flex align="center" gap="xxs">
+              <Icon icon="fa-pro-light:calendar" />
+              {{ item.date }}
+            </Flex>
+            <Flex v-if="author && item.author" align="center" gap="xxs">
+              <Icon icon="fa-pro-light:user-circle" />
+              {{ item.author }}
+            </Flex>
+            <Flex
+              v-if="item.claps"
+              align="center"
+              gap="xxs"
+              data-field="clap"
+              @click="() => clap(item)"
+            >
+              <Icon icon="fa-pro-light:hands-clapping" data-state="default" />
+              <Icon icon="fa-pro-solid:hands-clapping" data-state="hover" />
+              {{ item.claps }}
+            </Flex>
           </Flex>
-          <Flex v-if="author && item.author" align="center" gap="xxs">
-            <Icon icon="fa-pro-light:user-circle" />
-            {{ item.author }}
-          </Flex>
-          <Flex
-            v-if="item.claps"
-            align="center"
-            gap="xxs"
-            data-field="clap"
-            @click="() => clap(item)"
-          >
-            <Icon icon="fa-pro-light:hands-clapping" data-state="default" />
-            <Icon icon="fa-pro-solid:hands-clapping" data-state="hover" />
-            {{ item.claps }}
-          </Flex>
-        </Flex>
-        <div data-field="dialog-content">
-          <component
-            v-for="{ component, content, ...rest } in item.content"
-            :is="component"
-            v-bind="rest"
-          >
-            <span v-if="content" v-html="content"></span>
-          </component>
-        </div>
-      </template>
-      <template #actions="{ close }" v-if="item">
-        <Button
-          label="Lukk"
-          icon-right="fa-pro-light:times"
-          data-field="close"
-          @click="close"
-        />
-      </template>
-    </Dialog>
+          <div data-field="dialog-content">
+            <component
+              v-for="{ component, content, ...rest } in item.content"
+              :is="component"
+              v-bind="rest"
+            >
+              <span v-if="content" v-html="content"></span>
+            </component>
+          </div>
+          <Button
+            label="Lukk"
+            icon-right="fa-pro-light:times"
+            data-field="close"
+            @click="item = null"
+          />
+        </template>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -265,14 +263,20 @@ onMounted(getPosts)
     [data-field='metadata'] {
       margin-bottom: var(--k-ui-spacing-xs);
     }
+  }
 
-    .k-card {
-      background-color: var(--background);
-    }
+  .k-card {
+    background-color: var(--background, #fff);
+  }
 
-    .k-card__header {
-      padding: 0;
-    }
+  .k-card__header {
+    padding-inline: 0;
+    padding-top: 0;
+    aspect-ratio: 16/9;
+  }
+
+  .k-image {
+    flex-grow: 1;
   }
 
   [data-field='title'] {
@@ -283,6 +287,10 @@ onMounted(getPosts)
   .k-button--variant-tertiary {
     color: inherit;
     border-color: currentColor;
+  }
+
+  [data-field='readmore'] {
+    margin-top: 1rem;
   }
 
   [data-field='clap'] {
@@ -301,49 +309,30 @@ onMounted(getPosts)
     }
   }
 
-  .k-dialog[data-id='knips'] {
+  &__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgb(0 0 0 / 0.3);
     z-index: 10000;
-    position: relative;
+
+    padding: 2rem;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 
     .k-card {
       max-width: 65ch;
-      background-color: var(--background);
     }
 
     .k-card__content {
       border-top-left-radius: inherit;
       border-top-right-radius: inherit;
       overflow: clip;
-      padding: 0;
-    }
-
-    .k-card__footer {
-      position: sticky;
-      bottom: 0;
-      justify-content: center;
-      padding-top: var(--k-card-spacing, var(--k-ui-spacing-lg));
-
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        var(--background) 20%,
-        var(--background) 100%
-      );
-    }
-
-    [data-field='metadata'] {
-      padding: var(--k-card-spacing, var(--k-ui-spacing-lg));
-      padding-bottom: calc(var(--k-card-spacing, var(--k-ui-spacing-lg)) / 4);
-    }
-
-    [data-field='dialog-content'] {
-      padding-inline: var(--k-card-spacing, var(--k-ui-spacing-lg));
-
-      & > * {
-        &:first-child {
-          margin-top: 0;
-        }
-      }
     }
   }
 }

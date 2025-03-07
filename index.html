@@ -71,40 +71,10 @@
   </head>
 
   <body>
-    <!-- <kvass-finn></kvass-finn>
-    <script type="module" src="/src/finn/main.js"></script> -->
-    <!-- <kvass-map
-      search="true"
-      aspect-ratio="16/9"
-      mapbox-api-token="pk.eyJ1IjoicHVsc2Vjb20xMjMiLCJhIjoiY2wxZzI0ZDczMTZ2cjNwcDNwY2VrMXAxdyJ9.z4kYMx9Xp_EtfgH5tsSE5Q"
-      theme="mapbox://styles/pulsecom123/cls8v6bft007e01qz2vf6few6"
-      pop-up-content="undefined,<h2>Forhandler 3</h2>,https://nordic-builders-group.local.kvass.test/prosjekter/forhandler-3?,Se prosjekt;https://assets.kvass.no/67add57fd866f8d7198d2156,<h2>Tester</h2>,https://nordic-builders-group.local.kvass.test/prosjekter/tester?,Se prosjekt;https://assets.kvass.no/67add761d866f8d7198d2a22,<h2>Tester 2</h2>,https://nordic-builders-group.local.kvass.test/prosjekter/tester-2?,Se prosjekt"
-    ></kvass-map>
-    <script type="module" src="/src/map/main.js"></script> -->
-
-    <!-- <script>
-      // const tableBuilder = document.getElementById('table')
-
-      // tableBuilder.addEventListener('webcomponent:update', (event) => {
-      //   console.log(event.detail)
-      // })
-
-      const data = [
-        {
-          coordinates: [7.228484164061086, 58.08145076457532],
-          content: {
-            action: 'noe her/forhandler-1',
-            actionLabel: 'Les mer',
-            thumbnail: 'https://assets.kvass.no/67adb79ad7e24080f1eed81b',
-            description: '<h3> Forhandler 1 </h3>',
-          },
-        },
-      ]
-
-      // Set the attribute with stringified data
-      document
-        .querySelector('kvass-map')
-        .setAttribute('markers', JSON.stringify(data))
-    </script> -->
+    <h1>test</h1>
+    <knips-feed
+      feed="https://weenbo.kvass.no/api/integration/67c9c5c30d746ce436b858d7/callbacks/getPosts"
+    ></knips-feed>
+    <script type="module" src="/src/knips/main.js"></script>
   </body>
 </html>
