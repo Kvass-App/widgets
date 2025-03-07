@@ -312,7 +312,7 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
         </Transition>
       </template>
 
-      <template #footer="{ close }">
+      <template #actions="{ close }">
         <Flex
           align="center"
           justify="end"

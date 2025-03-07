@@ -13,6 +13,9 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    extensions: ['.js', '.ts', '.json', '.vue'],
+  },
   build: {
     target: 'esnext',
     rollupOptions: {
@@ -61,6 +64,7 @@ export default defineConfig({
           new URL('./src/loan-calculator/main.js', import.meta.url),
         ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
+        finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
         directories: fileURLToPath(
           new URL('./src/directories/main.js', import.meta.url),
         ),

@@ -10,14 +10,20 @@
     "i18n:build": "curl -s0 https://localize.kvass.no/v2/projects/export?filterTag=widgets --header 'x-api-key: tgpak_gfptcodjnrrtcmbvmrygc4dnnvute3diga3dsmbzm42ts' -o i18n.zip && unzip -qo i18n.zip -d i18n && rm i18n.zip"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.2",
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.18",
-    "@kvass/map": "^1.0.17",
-    "@kvass/ui": "^1.6.30",
+    "@kvass/location-selector": "^1.0.25",
+    "@kvass/map": "^1.0.19",
+    "@kvass/storage": "^1.1.0",
+    "@kvass/ui": "1.6.45",
     "@kvass/vue3-flatfinder": "^1.0.41",
     "@vueuse/core": "^10.9.0",
     "chart.js": "^4.4.2",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "floating-vue": "^5.2.2",
+    "lottie-web-vue": "^2.0.7",
+    "object-hash": "^3.0.0",
+    "ramda": "^0.30.1",
     "vue": "^3.4.21",
     "vue-chartjs": "^5.3.1",
     "webfontloader": "^1.6.28"
@@ -29,9 +35,11 @@
   ],
   "devDependencies": {
     "@types/webfontloader": "^1.6.38",
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/compiler-sfc": "^3.5.13",
     "cz-conventional-changelog": "^3.3.0",
     "sass": "^1.72.0",
+    "typescript": "^5.7.3",
     "vite": "^5.1.6"
   },
   "repository": {
