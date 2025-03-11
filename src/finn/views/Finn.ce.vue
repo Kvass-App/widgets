@@ -43,6 +43,7 @@ const getComponent = computed(() => {
 
 .finn {
   .v-popper {
+    cursor: help;
     display: inline;
     vertical-align: middle;
 

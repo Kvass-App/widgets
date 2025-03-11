@@ -81,10 +81,11 @@ const getIsEditedBind = (isEdited: boolean) => {
 }
 
 const setIsHighlighted = (item, index) => {
-  item['IS_HIGHLIGHTED'] = item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
+  const value = item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
 
-  modelValue.value.units[index].fields['IS_HIGHLIGHTED'] =
-    item['IS_HIGHLIGHTED']
+  item['IS_HIGHLIGHTED'] = value
+
+  modelValue.value.units[index].fields['IS_HIGHLIGHTED'] = value
 }
 
 const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
@@ -185,6 +186,9 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
           @update:modelValue="
             (value) => {
               Object.entries(Diff(item, value)).map(([k, v]) => {
+                /* prevent overwrite of IS_HIGHLIGHTED */
+                if (k === 'IS_HIGHLIGHTED') return
+
                 item[k] = v
 
                 modelValue.units[index].fields[k] = v

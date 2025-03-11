@@ -529,11 +529,13 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <FormControl
-                  v-if="
-                    hasField('HOUSING_UNIT_REF') && !hasField('PROJECT_NAME')
-                  "
+                  v-if="hasField('HOUSING_UNIT_REF')"
                   v-bind="validate('HOUSING_UNIT_REF')"
-                  label="Hovedtittel for annonsen"
+                  :label="
+                    hasField('PROJECT_NAME')
+                      ? 'Leilighetsnr'
+                      : 'Hovedtittel for annonsen'
+                  "
                   :class="[
                     'ad__field',
                     { 'ad__field--edited': isEdited('HOUSING_UNIT_REF') },
@@ -616,6 +618,163 @@ const saveDraft = () => {
                         :icon="getIsEditedBind('HEADING').icon"
                         v-tooltip="{
                           content: getIsEditedBind('HEADING').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+              </template>
+            </Expandable>
+
+            <Expandable
+              :expanded="true"
+              v-if="
+                hasFields(
+                  'PRICE_SUGGESTION',
+                  'COLLECTIVE_DEBT',
+                  'SALES_COST_SUM',
+                  'TOTAL_PRICE',
+                )
+              "
+            >
+              <template #title>
+                <span>Prisantydning</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Prisantydning vises slik i Finn annonsen"
+                  src="https://assets.kvass.no/67d03cc19b29de28ddebeebf"
+                />
+              </template>
+              <template #default>
+                <FormControl
+                  v-if="hasField('PRICE_SUGGESTION')"
+                  v-bind="validate('PRICE_SUGGESTION')"
+                  label="Prisantydning"
+                  :class="[
+                    'ad__field',
+                    { 'ad__field--edited': isEdited('PRICE_SUGGESTION') },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.PRICE_SUGGESTION"
+                    @update:modelValue="
+                      (v) =>
+                        (data.PRICE_SUGGESTION = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('PRICE_SUGGESTION').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('PRICE_SUGGESTION').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('SALES_COST_SUM')"
+                  v-bind="validate('SALES_COST_SUM')"
+                  label="Omkostninger"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('SALES_COST_SUM'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.SALES_COST_SUM"
+                    @update:modelValue="
+                      (v) => (data.SALES_COST_SUM = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('SALES_COST_SUM').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('SALES_COST_SUM').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('COLLECTIVE_DEBT')"
+                  v-bind="validate('COLLECTIVE_DEBT')"
+                  label="Fellesgjeld"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('COLLECTIVE_DEBT'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.COLLECTIVE_DEBT"
+                    @update:modelValue="
+                      (v) => (data.COLLECTIVE_DEBT = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('COLLECTIVE_DEBT').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('COLLECTIVE_DEBT').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('TOTAL_PRICE')"
+                  v-bind="validate('TOTAL_PRICE')"
+                  label="Totalpris"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('TOTAL_PRICE'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.TOTAL_PRICE"
+                    @update:modelValue="
+                      (v) => (data.TOTAL_PRICE = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('TOTAL_PRICE').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('TOTAL_PRICE').label,
                           container: false,
                         }"
                       ></Icon>
@@ -754,7 +913,7 @@ const saveDraft = () => {
                       !Array.isArray(data.PROPERTY_TYPE)
                     "
                     v-bind="validate('PROPERTY_TYPE')"
-                    label="Boligtype"
+                    label="Enhetstype"
                     :class="[
                       'ad__dropdown',
                       {
@@ -2081,7 +2240,7 @@ const saveDraft = () => {
               <template
                 #before-content
                 v-if="
-                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_UR')
+                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_URL')
                 "
               >
                 <Grid columns="2">
