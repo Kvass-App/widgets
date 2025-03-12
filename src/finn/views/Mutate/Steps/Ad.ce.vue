@@ -1898,7 +1898,7 @@ const saveDraft = () => {
                 <Tooltip
                   class="k-ml-xxs"
                   content="Plantegninger vises sist i bildegalleriet eller som en egen knapp i galleriet med navnet «Plantegninger». Dette avhenger av hva annonsetypen støtter."
-                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                  src="https://assets.kvass.no/67d1501f9b29de28ddec33d9"
                 />
               </template>
               <template #actions>
@@ -1932,6 +1932,7 @@ const saveDraft = () => {
                   :labels="{
                     delete: 'Slett',
                     download: 'Last ned',
+                    copy: 'Kopier lenke',
                   }"
                 >
                 </File>

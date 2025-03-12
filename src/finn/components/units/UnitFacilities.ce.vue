@@ -10,6 +10,7 @@ import {
 } from '@kvass/ui'
 
 import { Clone, hasDiff } from '../../../utils/index.js'
+import Tooltip from '../Tooltip.ce.vue'
 
 import { type Ad, Facility } from '../../types/ad'
 
@@ -71,12 +72,15 @@ defineExpose({
       <Button style="display: none"></Button>
     </template>
     <template #default>
-      <Expandable
-        :expanded="true"
-        title="Fasiliteter i enhetsannonsen"
-        subtitle="Velg fasiliteter i enhetsannonsen"
-        v-if="hasFields('ESTATE_PREFERENCE')"
-      >
+      <Expandable :expanded="true" v-if="hasFields('ESTATE_PREFERENCE')">
+        <template #title>
+          <span> Fasiliteter i enhetsannonsen" </span>
+          <Tooltip
+            class="k-ml-xxs"
+            content="Fasilitenene som velges her vil bli synlig under fasiliteter på enhetsannonsen. De vil også være tilgjengelige som filtre i søkelisten."
+            src="https://assets.kvass.no/67c80a4c92504cdf70aba70e"
+          />
+        </template>
         <template #actions>
           <Icon
             :class="[

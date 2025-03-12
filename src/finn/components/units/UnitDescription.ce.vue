@@ -12,7 +12,8 @@ import {
   File,
 } from '@kvass/ui'
 
-import { type Fields } from '../../api'
+import Tooltip from '../Tooltip.ce.vue'
+
 import { vTooltip } from 'floating-vue'
 import Validator from '../../composeable/Validator'
 
@@ -108,14 +109,44 @@ defineExpose({
       <Flex direction="column" gap="2rem">
         <Expandable
           :expanded="true"
-          title="Hovedtittel"
-          subtitle="Teksten som formuleres her vil bli synlig som hovedtittel på enhetsannonsen"
-          v-if="hasFields('HEADING')"
+          title="Hovedtittel og undertittel"
+          v-if="hasFields('HEADING', 'HOUSING_UNIT_REF')"
         >
+          <template #title>
+            <span>Hovedtittel og undertittel</span>
+            <Tooltip
+              class="k-ml-xxs"
+              content="Teksten du skriver her vises som hovedtittelen og undertittel i annonsen."
+              src="https://assets.kvass.no/67c7181792504cdf70aba68d"
+            />
+          </template>
           <template #default>
             <FormControl
-              v-bind="validate('HEADING')"
+              v-if="hasField('HOUSING_UNIT_REF')"
+              v-bind="validate('HOUSING_UNIT_REF')"
               label="Hovedtittel for enhetsannonsen"
+              :class="[
+                'ad__field',
+                { 'ad__field--edited': isInternalEdited('HOUSING_UNIT_REF') },
+              ]"
+            >
+              <Input v-model="item.HOUSING_UNIT_REF">
+                <template #suffix>
+                  <Icon
+                    :icon="getIsInternalEditedBind('HOUSING_UNIT_REF').icon"
+                    v-tooltip="{
+                      content:
+                        getIsInternalEditedBind('HOUSING_UNIT_REF').label,
+                      container: false,
+                    }"
+                  ></Icon>
+                </template>
+              </Input>
+            </FormControl>
+            <FormControl
+              v-if="hasField('HEADING')"
+              v-bind="validate('HEADING')"
+              label="Undertittel for enhetsannonsen"
               :class="[
                 'ad__field',
                 { 'ad__field--edited': isInternalEdited('HEADING') },
@@ -135,12 +166,15 @@ defineExpose({
             </FormControl>
           </template>
         </Expandable>
-        <Expandable
-          :expanded="true"
-          title="Media"
-          subtitle="Disse hentes fra enhetssiden. Det første bilde vil være forsidebildet på enhetsannonsen."
-          v-if="hasFields('MEDIA')"
-        >
+        <Expandable :expanded="true" v-if="hasFields('MEDIA')">
+          <template #title>
+            <span>Bilder</span>
+            <Tooltip
+              class="k-ml-xxs"
+              content="Bildene hentes fra enhetssiden. Det første bildet blir forsidebildet i enhetsannonsen."
+              src="https://assets.kvass.no/67c8088692504cdf70aba702"
+            />
+          </template>
           <template #actions>
             <Icon
               :class="[
@@ -161,7 +195,7 @@ defineExpose({
             <Media
               v-if="hasField('MEDIA')"
               v-model="item.MEDIA"
-              label="Bilder i Finn-annonsen"
+              label="Bilder i enhetsannonsen"
               dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
               :accept="['image/jpeg', 'image/png', 'image/jpg']"
               :upload="uploadFunction"
@@ -190,12 +224,15 @@ defineExpose({
           </template>
         </Expandable>
 
-        <Expandable
-          :expanded="true"
-          title="Plantegninger"
-          subtitle="Disse hentes fra enhetssiden"
-          v-if="hasFields('FLOORPLAN_MEDIA')"
-        >
+        <Expandable :expanded="true" v-if="hasFields('FLOORPLAN_MEDIA')">
+          <template #title>
+            <span>Plantegninger</span>
+            <Tooltip
+              class="k-ml-xxs"
+              content="Plantegninger vises sist i bildegalleriet eller som en egen knapp i galleriet med navnet «Plantegninger». Dette avhenger av hva annonsetypen støtter."
+              src="https://assets.kvass.no/67d1501f9b29de28ddec33d9"
+            />
+          </template>
           <template #actions>
             <Icon
               :class="[
@@ -217,7 +254,7 @@ defineExpose({
               :rename="false"
               v-if="hasField('FLOORPLAN_MEDIA')"
               v-model="item.FLOORPLAN_MEDIA"
-              label="Plantegninger i Finn-annonsen"
+              label="Plantegninger i enhetsannonsen"
               dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
               :accept="['image/jpeg', 'image/png', 'image/jpg']"
               :upload="uploadFunction"
@@ -228,6 +265,7 @@ defineExpose({
               :labels="{
                 delete: 'Slett',
                 download: 'Last ned',
+                copy: 'Kopier lenke',
               }"
             >
             </File>
@@ -236,11 +274,17 @@ defineExpose({
 
         <RichTextMultiple
           :expanded="true"
-          title="Beskrivelse"
-          subtitle="Teksten som formuleres her vil bli synlig under beskrivelse på enhetsannonsen."
           v-if="hasFields('GENERAL_DESCRIPTION')"
           v-model="item.GENERAL_DESCRIPTION"
         >
+          <template #title>
+            <span>Beskrivelse</span>
+            <Tooltip
+              class="k-ml-xxs"
+              content="Teksten du skriver her vises under beskrivelsen i enhetsannonsen."
+              src="https://assets.kvass.no/67c80a5792504cdf70aba732"
+            />
+          </template>
           <template #actions>
             <Icon
               :class="[
