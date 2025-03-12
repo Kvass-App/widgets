@@ -5,6 +5,7 @@ import { FormControl, Button, Icon, Input, Grid, Dialog } from '@kvass/ui'
 import ExpandableList from '../ExpandableList.ce.vue'
 
 import { Clone, hasDiff } from '../../../utils/index.js'
+import Tooltip from '../Tooltip.ce.vue'
 
 import { type Ad } from '../../types/ad'
 
@@ -67,12 +68,19 @@ defineExpose({
     <template #default>
       <ExpandableList
         v-if="hasFields('MOREINFO')"
-        title="Nyttige lenker i Finn-annonsen"
         :limit="4"
         :template="{ URL: '', URLTEXT: '' }"
         :expanded="true"
         v-model="item.MOREINFO"
       >
+        <template #title>
+          <span>Nyttige lenker i Finn-annonsen</span>
+          <Tooltip
+            class="k-ml-xxs"
+            content="Nyttige lenker vises her i enhetsannonsen. Noen felt er standard og låst av Finn, derfor vises lenken til prosjektsiden alltid automatisk. Du kan fritt legge til egne lenker og lenker til andre nettsteder."
+            src="https://assets.kvass.no/67c80a5e92504cdf70aba756"
+          />
+        </template>
         <template #actions>
           <Icon
             :class="[
@@ -90,48 +98,39 @@ defineExpose({
           ></Icon>
         </template>
 
-        <!-- <template
-                #before-content
-                v-if="
-                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_UR')
-                "
-              >
-                <Grid columns="2">
-                  <template v-if="hasField('ESTATE_EXTERNAL_URL')">
-                    <FormControl label="URL til nyttig lenke">
-                      <Input
-                        v-model="data.ESTATE_EXTERNAL_URL"
-                        suffix="URL"
-                        disabled
-                      ></Input>
-                    </FormControl>
-                    <FormControl
-                      label="Visningsnavn på lenken på Finn-annonsen"
-                    >
-                      <Input
-                        modelValue="Se prosjektets hjemmeside"
-                        disabled
-                      ></Input>
-                    </FormControl>
-                  </template>
-                  <template v-if="hasField('ESTATE_EXTERNAL_ORDER_URL')">
-                    <FormControl label="URL til nyttig lenke">
-                      <Input
-                        v-model="data.ESTATE_EXTERNAL_ORDER_URL"
-                        suffix="URL"
-                        disabled
-                      ></Input>
-                    </FormControl>
-                    <FormControl
-                      label="Visningsnavn på lenken på Finn-annonsen"
-                    >
-                      <Input modelValue="Bestill salgsoppgave" disabled></Input>
-                    </FormControl>
-                  </template>
-                </Grid>
+        <template
+          #before-content
+          v-if="hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_URL')"
+        >
+          <Grid columns="2">
+            <template v-if="hasField('ESTATE_EXTERNAL_URL')">
+              <FormControl label="URL til nyttig lenke">
+                <Input
+                  v-model="data.ESTATE_EXTERNAL_URL"
+                  suffix="URL"
+                  disabled
+                ></Input>
+              </FormControl>
+              <FormControl label="Visningsnavn på lenken på Finn-annonsen">
+                <Input modelValue="Se prosjektets hjemmeside" disabled></Input>
+              </FormControl>
+            </template>
+            <template v-if="hasField('ESTATE_EXTERNAL_ORDER_URL')">
+              <FormControl label="URL til nyttig lenke">
+                <Input
+                  v-model="data.ESTATE_EXTERNAL_ORDER_URL"
+                  suffix="URL"
+                  disabled
+                ></Input>
+              </FormControl>
+              <FormControl label="Visningsnavn på lenken på Finn-annonsen">
+                <Input modelValue="Bestill salgsoppgave" disabled></Input>
+              </FormControl>
+            </template>
+          </Grid>
 
-                <div class="ad__expandable-list-divider"></div>
-              </template> -->
+          <div class="ad__expandable-list-divider"></div>
+        </template>
 
         <template #default="{ item: data }">
           <Grid columns="2">
