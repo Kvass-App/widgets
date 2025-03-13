@@ -105,6 +105,8 @@ const watcherCleanups = ref<WatchHandle[]>([])
 const rules = ref<Record<string, string>>({})
 const labels = ref<Record<string, string>>({})
 
+const visitedLocalFields = ref<Record<string, boolean>>({})
+
 const validatorData = computed(() => {
   return {
     ...data.value,
@@ -236,11 +238,13 @@ const getData = () => {
         ) => {
           const unitName = `Enhet ${unitFields.HOUSING_UNIT_REF || index + 1}`
 
-          return Object.fromEntries(
-            Object.entries(unitLabels).map(([k, v]) => {
-              return [`units.${index}.${k}`, `${unitName} ${v}`]
-            }),
-          )
+          return {
+            ...Object.fromEntries(
+              Object.entries(unitLabels).map(([k, v]) => {
+                return [`units.${index}.${k}`, `${unitName} ${v}`]
+              }),
+            ),
+          }
         },
       )
 
@@ -1686,7 +1690,6 @@ const saveDraft = () => {
                         'ad__dropdown',
                         { 'ad__dropdown--edited': isEdited('OWNERSHIP_TYPE') },
                       ]"
-                      :keepOpen="true"
                       :label="
                         OwnershipTypes.find(
                           (v) => v.value === data.OWNERSHIP_TYPE,
@@ -2216,6 +2219,20 @@ const saveDraft = () => {
               :limit="4"
               :template="{ URL: '', URLTEXT: '' }"
               v-model="data.MOREINFO"
+              @remove="
+                (idx) => {
+                  const key = Object.keys(visitedLocalFields)
+                    .reverse()
+                    .find(
+                      (k) =>
+                        k.startsWith('MOREINFO.') &&
+                        k.endsWith('.URL') &&
+                        visitedLocalFields[k],
+                    )
+
+                  if (key) visitedLocalFields[key] = false
+                }
+              "
             >
               <template #title>
                 <span>Nyttige lenker i Finn-annonsen</span>
@@ -2285,9 +2302,25 @@ const saveDraft = () => {
                 <div class="ad__expandable-list-divider"></div>
               </template>
 
-              <template #default="{ item: data }">
+              <template #default="{ item: data, index }">
                 <Grid columns="2">
-                  <FormControl label="URL til nyttig lenke">
+                  <FormControl
+                    label="URL til nyttig lenke"
+                    :onBlur="
+                      () => (visitedLocalFields[`MOREINFO.${index}.URL`] = true)
+                    "
+                    :error="
+                      visitedLocalFields[`MOREINFO.${index}.URL`]
+                        ? Object.entries(validator.errors.value.errors)
+                            .filter(
+                              ([key, value]) => key === `MOREINFO.${index}.URL`,
+                            )
+                            .map(([key, value]) => value)
+                            .flat()
+                            .join('\n')
+                        : undefined
+                    "
+                  >
                     <Input v-model="data.URL" suffix="URL"></Input>
                   </FormControl>
                   <FormControl label="Visningsnavn på lenken på Finn-annonsen">
