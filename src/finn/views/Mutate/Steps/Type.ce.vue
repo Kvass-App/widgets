@@ -205,6 +205,17 @@ const rules = computed(() => {
       ...base,
     }
 
+  if (
+    ['ESTATE_PROJECT', 'ESTATE_PROJECT_LEISURE'].includes(
+      selectedCategory.value?.type || '',
+    )
+  ) {
+    return {
+      units: 'min:1',
+      ...base,
+    }
+  }
+
   return base
 })
 
@@ -218,6 +229,7 @@ const labels = computed(() => {
 
 const customMessages = computed(() => {
   return {
+    min: `Du må minimum velge :min :attribute når "${Categories.find((v) => v.type === 'ESTATE_PROJECT')?.label}" eller "${Categories.find((v) => v.type === 'ESTATE_PROJECT_LEISURE')?.label}" er valgt som annonse-kategori`,
     size: `Du kan kun velge :size :attribute når "${Categories.find((v) => v.type === 'ESTATE_PROJECT_SINGLE')?.label}" er valgt som annonse-kategori`,
   }
 })

@@ -34,7 +34,7 @@ export default [
     group: 'Nybygg',
     unitType: 'ESTATE_PROJECT_UNIT',
     disabled: (units: Unit[]) => {
-      if (!units.length) return false
+      if (!units.length) return true
 
       const types = ['detached', 'flat', 'semidetached', 'terraced']
 
@@ -71,7 +71,7 @@ export default [
     group: 'Nybygg',
     unitType: 'ESTATE_PROJECT_UNIT_LEISURE',
     disabled: (units: Unit[]) => {
-      if (!units.length) return false
+      if (!units.length) return true
 
       const types = ['leisure']
 

@@ -211,8 +211,9 @@ const getData = () => {
             ...v,
             fields: {
               ...v.fields,
-              // Todo, er index alltid riktig ? eller må man bruke find ? fallback ?
-              ...modelValue.value.units[index].fields,
+              ...(modelValue.value.units.find(
+                (u) => u.id === v.fields.USER_REFERENCE,
+              )?.fields || {}),
             },
           }
         }),
