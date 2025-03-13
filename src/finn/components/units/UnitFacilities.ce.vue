@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import {
   FormControl,
   Button,
@@ -29,6 +29,16 @@ const emit = defineEmits<{
 
 const item = ref(Clone(props.modelValue))
 const facilitesDialog = ref()
+
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: item.value })) {
+      item.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
 
 const isInternalEdited = (field) => {
   return (

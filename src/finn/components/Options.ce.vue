@@ -23,8 +23,8 @@ const promise = ref<Promise<any>>()
 const removedialog = ref()
 const unpublishdialog = ref()
 
-const navigatePublish = (id: string) => {
-  sessionStorage.setItem('k-finn-step', 'publish')
+const navigatePublish = (id: string, preview: boolean) => {
+  sessionStorage.setItem('k-finn-step', preview ? 'preview' : 'publish')
   API.navigateView('mutate', id)
 }
 
@@ -122,7 +122,7 @@ const navigateEdit = (id: string) => {
           v-if="!item.publishedAt || item.preview"
           iconRight="fa-pro-light:arrow-right"
           label="Publiser"
-          @click="() => navigatePublish(item.id)"
+          @click="() => navigatePublish(item.id, item.preview)"
           variant="tertiary"
         ></Button>
         <Button

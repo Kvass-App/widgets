@@ -21,6 +21,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: any): void
+  (event: 'remove', value: number): void
 }>()
 
 const internalValue = ref<any>(Clone(props.modelValue))
@@ -67,6 +68,7 @@ const remove = (index: number) => {
   newInternalValue.splice(index, 1)
   internalValue.value = newInternalValue
   emit('update:modelValue', [...newInternalValue])
+  emit('remove', index)
 }
 
 const move = (index: number, delta: number) => {

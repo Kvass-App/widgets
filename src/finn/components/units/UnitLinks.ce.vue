@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { FormControl, Button, Icon, Input, Grid, Dialog } from '@kvass/ui'
 
 import ExpandableList from '../ExpandableList.ce.vue'
+import Validator from '../../composeable/Validator'
 
 import { Clone, hasDiff } from '../../../utils/index.js'
 import Tooltip from '../Tooltip.ce.vue'
+import { vTooltip } from 'floating-vue'
 
 import { type Ad } from '../../types/ad'
 
@@ -15,6 +17,8 @@ const props = defineProps<{
   hasField: (...args) => boolean
   getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
+  rules: Record<string, string>
+  labels: Record<string, string>
 }>()
 
 const emit = defineEmits<{
@@ -22,6 +26,50 @@ const emit = defineEmits<{
 }>()
 
 const item = ref(Clone(props.modelValue))
+const visitedLocalFields = ref<Record<string, boolean>>({})
+
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: item.value })) {
+      item.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
+
+const validatorFilter = (obj: Record<string, string>) => {
+  const fields = [
+    'MOREINFO.*.URL',
+    'MOREINFO.0.URL',
+    'MOREINFO.1.URL',
+    'MOREINFO.2.URL',
+    'MOREINFO.3.URL',
+  ]
+
+  return Object.fromEntries(
+    Object.entries(obj).filter(([k, v]) => {
+      return fields.includes(k)
+    }),
+  )
+}
+
+const rules = computed(() => {
+  return validatorFilter(props.rules)
+})
+
+const labels = computed(() => {
+  return validatorFilter(props.labels)
+})
+
+const validator = Validator({
+  rules: rules,
+  labels: labels,
+  data: item,
+})
+
+const { bind: validate } = validator
+
 const linkDialog = ref()
 
 const isInternalEdited = (field) => {
@@ -72,6 +120,20 @@ defineExpose({
         :template="{ URL: '', URLTEXT: '' }"
         :expanded="true"
         v-model="item.MOREINFO"
+        @remove="
+          (idx) => {
+            const key = Object.keys(visitedLocalFields)
+              .reverse()
+              .find(
+                (k) =>
+                  k.startsWith('MOREINFO.') &&
+                  k.endsWith('.URL') &&
+                  visitedLocalFields[k],
+              )
+
+            if (key) visitedLocalFields[key] = false
+          }
+        "
       >
         <template #title>
           <span>Nyttige lenker i Finn-annonsen</span>
@@ -132,9 +194,23 @@ defineExpose({
           <div class="ad__expandable-list-divider"></div>
         </template>
 
-        <template #default="{ item: data }">
+        <template #default="{ item: data, index }">
           <Grid columns="2">
-            <FormControl label="URL til nyttig lenke">
+            <FormControl
+              label="URL til nyttig lenke"
+              :onBlur="
+                () => (visitedLocalFields[`MOREINFO.${index}.URL`] = true)
+              "
+              :error="
+                visitedLocalFields[`MOREINFO.${index}.URL`]
+                  ? Object.entries(validator.errors.value.errors)
+                      .filter(([key, value]) => key === `MOREINFO.${index}.URL`)
+                      .map(([key, value]) => value)
+                      .flat()
+                      .join('\n')
+                  : undefined
+              "
+            >
               <Input v-model="data.URL" suffix="URL"> </Input>
             </FormControl>
             <FormControl label="Visningsnavn på lenken på Finn-annonsen">
@@ -157,9 +233,20 @@ defineExpose({
       ></Button>
 
       <Button
+        v-tooltip="{
+          content: Object.entries(validator.errors.value.errors)
+            .map(([key, value]) => value)
+            .flat()
+            .join('\n'),
+          disabled: validator.passes.value,
+          container: false,
+        }"
+        :disabled="!validator.passes.value"
         label="Bekreft"
         @click="
           () => {
+            if (!validator.passes) return
+
             submit()
             close()
           }
