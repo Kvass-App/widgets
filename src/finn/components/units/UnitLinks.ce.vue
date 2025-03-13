@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { FormControl, Button, Icon, Input, Grid, Dialog } from '@kvass/ui'
 
 import ExpandableList from '../ExpandableList.ce.vue'
@@ -22,6 +22,17 @@ const emit = defineEmits<{
 }>()
 
 const item = ref(Clone(props.modelValue))
+
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: item.value })) {
+      item.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
+
 const linkDialog = ref()
 
 const isInternalEdited = (field) => {

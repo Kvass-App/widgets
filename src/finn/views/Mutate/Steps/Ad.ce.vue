@@ -285,7 +285,10 @@ function onTabChange() {
 const formContainer = ref()
 
 const editDialogAccepted = ref(
-  Object.keys(modelValue.value.fields).length ? true : false,
+  Object.keys(modelValue.value.fields).length ||
+    modelValue.value.units.some((v) => Object.keys(v.fields).length)
+    ? true
+    : false,
 )
 const editDialog = ref()
 

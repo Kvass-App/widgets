@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, toRef } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   FormControl,
   Button,
@@ -39,6 +39,16 @@ const emit = defineEmits<{
 
 const item = ref(Clone(props.modelValue))
 const descriptionDialog = ref()
+
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: item.value })) {
+      item.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
 
 const validatorFilter = (obj: Record<string, string>) => {
   const fields = ['HEADING']
