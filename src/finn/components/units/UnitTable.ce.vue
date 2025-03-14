@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed, inject } from 'vue'
+import { ref, toRef, computed, inject, watch } from 'vue'
 import { DataTable, Icon, Button, Scroller } from '@kvass/ui'
 
 import UnitSettings from './UnitSettings.ce.vue'
@@ -33,6 +33,15 @@ const items = ref(
   props.units.map((v, index) => {
     return v.fields
   }),
+)
+
+watch(
+  () => props.units,
+  (newValue) => {
+    items.value = newValue.map((v, index) => {
+      return v.fields
+    })
+  },
 )
 
 const validatorComp = computed(() => {
