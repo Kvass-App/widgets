@@ -380,9 +380,15 @@ const saveDraft = () => {
       </template>
       <template #default>
         <p>
-          Du er nå i ferd med å tilpasse annonsen. Når dette gjøres vil du se at
-          dette ikonet skifer til et annet, dette ikonet indikerer at dette
-          feltet, ikke lengre henter informasjon fra prosjektsiden.
+          Du er nå i ferd med å tilpasse annonsen. Når ikonet med sky er viser
+          en blå avhukning betyr dette at informasjonen fortsatt hentes fra
+          prosjektet.
+        </p>
+        <p>
+          Når du aksepterer her og gjør endringer i tekstfelt vil skyen skifte
+          farge til oransje og innholde et kryss. Da er ikke lenger feltet du
+          har justert synkronisert med prosjektsiden. På den måten kan du
+          tilpasse innhold til Finn uten å påvirke prosjektsiden.
         </p>
         <Image
           src="https://assets.kvass.no/67c59b8a92504cdf70ab97d2"
@@ -427,8 +433,7 @@ const saveDraft = () => {
           Om du ønsker å benytte den ferdigutfylte Finn-annonsen vi tilbyr
           trenger du ikke gjøre endringer på denne siden. Dersom du tidligere
           har gjort endringer og ønsker å tilbakestille til vår ferdig utfylte
-          annonse kan du gjøre dette under knappen "Handlinger" og "Tilbakestill
-          innhold"
+          annonse kan du gjøre dette under knappen "Tilbakestill innhold"
         </p>
       </template>
     </Alert>
