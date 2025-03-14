@@ -13,6 +13,10 @@ const props = defineProps<{
 const modelValue = defineModel<string>({ default: '' })
 
 function extractH3Sections(htmlString: string) {
+  if (!/<[a-z][\s\S]*>/i.test(htmlString)) {
+    htmlString = `<p>${htmlString}</p>`
+  }
+
   const parser = new DOMParser()
   const doc = parser.parseFromString(htmlString, 'text/html')
 
