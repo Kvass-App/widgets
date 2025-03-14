@@ -190,6 +190,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
       <template #settings="{ item, rowIndex: index }">
         <UnitSettings
           :units="units"
+          :initialUnitField="initialUnitFields[index]"
           :key="item.id"
           :modelValue="item"
           @update:modelValue="

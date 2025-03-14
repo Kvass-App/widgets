@@ -12,6 +12,8 @@ import {
 import { Clone, hasDiff } from '../../../utils/index.js'
 import Tooltip from '../Tooltip.ce.vue'
 
+import { type Fields } from '../../api'
+
 import { type Ad, Facility } from '../../types/ad'
 
 const props = defineProps<{
@@ -21,6 +23,7 @@ const props = defineProps<{
   getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
   facilities: Facility[]
+  initialUnitField: Fields['fields']
 }>()
 
 const emit = defineEmits<{
@@ -41,9 +44,9 @@ watch(
 )
 
 const isInternalEdited = (field) => {
-  return (
-    hasDiff({ value: item.value[field] }, { value: props.modelValue[field] }) ||
-    props.isEdited(field)
+  return hasDiff(
+    { value: item.value[field] },
+    { value: props.initialUnitField[field] },
   )
 }
 
