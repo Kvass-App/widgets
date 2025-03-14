@@ -57,8 +57,6 @@ const richText = computed({
   get: () => {
     const sections = extractH3Sections(modelValue.value)
 
-    if (!sections.length) sections.push({ title: '', content: '' })
-
     return sections
   },
   set: (val: any) => {
@@ -76,6 +74,8 @@ const setRichTextValue = (
   type: 'title' | 'content',
 ) => {
   const updatedSections = richText.value
+
+  if (!updatedSections.length) updatedSections.push({ title: '', content: '' })
 
   if (updatedSections[index]) {
     updatedSections[index] = {
