@@ -9,6 +9,8 @@ import { Clone, hasDiff } from '../../../utils/index.js'
 import Tooltip from '../Tooltip.ce.vue'
 import { vTooltip } from 'floating-vue'
 
+import { type Fields } from '../../api'
+
 import { type Ad } from '../../types/ad'
 
 const props = defineProps<{
@@ -19,6 +21,7 @@ const props = defineProps<{
   isEdited: (...args) => boolean
   rules: Record<string, string>
   labels: Record<string, string>
+  initialUnitField: Fields['fields']
 }>()
 
 const emit = defineEmits<{
@@ -73,9 +76,9 @@ const { bind: validate } = validator
 const linkDialog = ref()
 
 const isInternalEdited = (field) => {
-  return (
-    hasDiff({ value: item.value[field] }, { value: props.modelValue[field] }) ||
-    props.isEdited(field)
+  return hasDiff(
+    { value: item.value[field] },
+    { value: props.initialUnitField[field] },
   )
 }
 

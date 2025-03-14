@@ -55,10 +55,11 @@ function extractH3Sections(htmlString: string) {
 
 const richText = computed({
   get: () => {
-    return extractH3Sections(modelValue.value).map((v) => ({
-      title: v.title,
-      content: v.content,
-    }))
+    const sections = extractH3Sections(modelValue.value)
+
+    if (!sections.length) sections.push({ title: '', content: '' })
+
+    return sections
   },
   set: (val: any) => {
     modelValue.value = val
@@ -78,13 +79,15 @@ const setRichTextValue = (
 
   if (updatedSections[index]) {
     updatedSections[index] = {
-      ...updatedSections[index],
+      ...(updatedSections[index] || {}),
       [type]: value,
     }
   }
 
   modelValue.value = updatedSections
-    .map(({ title, content }) => `<h3>${title}</h3>${content}`)
+    .map(({ title, content }) => {
+      return `<h3>${title}</h3>${content}`
+    })
     .join('')
 }
 </script>
