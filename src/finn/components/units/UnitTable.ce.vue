@@ -90,9 +90,10 @@ const getIsEditedBind = (isEdited: boolean) => {
 }
 
 const setIsHighlighted = (item, index) => {
-  const value = item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
-
-  item['IS_HIGHLIGHTED'] = value
+  const value =
+    modelValue.value.units[index].fields['IS_HIGHLIGHTED'] === 'true'
+      ? 'false'
+      : 'true'
 
   modelValue.value.units[index].fields['IS_HIGHLIGHTED'] = value
 }
@@ -170,7 +171,8 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
           :class="[
             'unit-table__highlight',
             {
-              'unit-table__highlight--selected': item.IS_HIGHLIGHTED === 'true',
+              'unit-table__highlight--selected':
+                modelValue.units[index].fields['IS_HIGHLIGHTED'] === 'true',
             },
           ]"
           icon="fa-pro-solid:star"
