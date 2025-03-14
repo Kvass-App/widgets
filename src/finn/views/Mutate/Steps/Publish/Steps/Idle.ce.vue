@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Card, Alert, Button, Icon, Dialog } from '@kvass/ui'
+import { Card, Alert, Button, Icon, Dialog, Dropdown } from '@kvass/ui'
 
 import { type Ad } from '../../../../../types/ad'
 
@@ -42,7 +42,33 @@ const emit = defineEmits<{
         @click="() => emit('goto', 'ad')"
       />
 
+      <Dropdown
+        label="Forhåndsvis annonser"
+        v-if="modelValue.units.some((v) => v.url)"
+      >
+        <template #default>
+          <Button
+            variant="tertiary"
+            iconRight="fa-pro-light:arrow-up-right-from-square"
+            label="Prosjektannonse"
+            target="_blank"
+            is="a"
+            :href="modelValue.url"
+          />
+          <Button
+            variant="tertiary"
+            v-for="unit in modelValue.units"
+            :label="`${unit.name}`"
+            target="_blank"
+            is="a"
+            :href="unit.url"
+            iconRight="fa-pro-light:arrow-up-right-from-square"
+          />
+        </template>
+      </Dropdown>
+
       <Button
+        v-else
         :disabled="!Boolean(modelValue.url)"
         label="Forhåndsvis annonse"
         iconRight="fa-pro-light:arrow-up-right-from-square"
