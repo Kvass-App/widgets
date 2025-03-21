@@ -42,13 +42,33 @@ const dialog = ref(null)
 const items = ref([])
 const item = ref(null)
 const mapItem = (item) => {
+  const getThumbnail = () => {
+    if (item.featuredImage.type === 'video')
+      return {
+        component: 'video',
+        props: {
+          src: item.blog.find(
+            (b) => b.type === 'video' && b.imageUrl === item.featuredImage.src,
+          )?.videoStorageUrl,
+          autoplay: true,
+          type: 'video/mp4',
+        },
+      }
+
+    return {
+      component: Image,
+      props: { src: item.featuredImage.src, 'aspect-ratio': '16/9' },
+    }
+  }
+
   return {
     id: item.id,
     title: getTitle(item),
     date: FormatDate(item.publishDate),
     project: item?.project,
     author: item?.author?.name,
-    thumbnail: item.featuredImage.src,
+    thumbnailImage: item.featuredImage.src,
+    thumbnail: getThumbnail(),
     claps: item.clapCount,
     shortContent: Shorten(
       item.blog
@@ -100,6 +120,14 @@ const mapItem = (item) => {
                 s.styles.forEach((t) => (content = Wrap(t, content)))
                 return { component: 'p', content }
               })
+            case 'video':
+              if (item.featuredImage.src === b.imageUrl) return
+              return {
+                component: 'video',
+                type: 'video/mp4',
+                controls: true,
+                src: b.videoStorageUrl,
+              }
           }
         })
         .filter(Boolean),
@@ -147,13 +175,13 @@ onMounted(getPosts)
       <Card v-for="item in items" :key="item.id">
         <template #header>
           <Image
-            :src="item.thumbnail"
+            :src="item.thumbnailImage"
             aspect-ratio="16/9"
             class="k-card__thumbnail"
           />
         </template>
         <template #default>
-          <Flex data-field="metadata" align="center" gap="sm">
+          <Flex data-field="metadata" align="center" gap="xs">
             <Flex align="center" gap="xxs">
               <Icon icon="fa-pro-light:calendar" />
               {{ item.date }}
@@ -194,10 +222,13 @@ onMounted(getPosts)
     <div v-if="item" class="knips-feed__modal" @click="onModalClick">
       <Card>
         <template #header v-if="item">
-          <Image :src="item.thumbnail" aspect-ratio="16/9" />
+          <component
+            :is="item.thumbnail.component"
+            v-bind="item.thumbnail.props"
+          ></component>
         </template>
         <template v-if="item">
-          <Flex data-field="metadata" align="center" gap="sm">
+          <Flex data-field="metadata" align="center" gap="xs">
             <Flex align="center" gap="xxs">
               <Icon icon="fa-pro-light:calendar" />
               {{ item.date }}
@@ -228,7 +259,6 @@ onMounted(getPosts)
             </component>
           </div>
           <Button
-            label="Lukk"
             icon-right="fa-pro-light:times"
             data-field="close"
             @click="item = null"
@@ -248,10 +278,6 @@ onMounted(getPosts)
   box-sizing: border-box;
 }
 
-[data-field='metadata'] {
-  font-size: 0.8em;
-}
-
 .knips-feed {
   --k-card-border-radius: var(--border-radius);
   --knips-feed-color: currentColor;
@@ -259,20 +285,30 @@ onMounted(getPosts)
   --k-card-border-color: rgba(0, 0, 0, 0.05);
   --k-dialog-backdrop-background: rgba(0, 0, 0, 0.8);
 
-  &__items {
-    [data-field='metadata'] {
-      margin-bottom: var(--k-ui-spacing-xs);
-    }
+  [data-field='close'] {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
   }
 
   .k-card {
     background-color: var(--background, #fff);
+    display: flex;
+    flex-direction: column;
   }
 
   .k-card__header {
-    padding-inline: 0;
-    padding-top: 0;
+    padding: 0;
     aspect-ratio: 16/9;
+  }
+
+  .k-card__content {
+    display: flex;
+    flex-direction: column;
+    padding: var(--k-ui-spacing);
+    gap: var(--k-ui-spacing-sm);
   }
 
   .k-image {
@@ -281,7 +317,19 @@ onMounted(getPosts)
 
   [data-field='title'] {
     font-weight: bold;
-    margin-bottom: 5px;
+  }
+
+  [data-field='metadata'] {
+    font-size: 0.8em;
+  }
+
+  h2:first-child {
+    margin: 0;
+  }
+
+  video {
+    aspect-ratio: 16/9;
+    width: 100%;
   }
 
   .k-button--variant-tertiary {
@@ -290,7 +338,7 @@ onMounted(getPosts)
   }
 
   [data-field='readmore'] {
-    margin-top: 1rem;
+    align-self: center;
   }
 
   [data-field='clap'] {
@@ -329,6 +377,7 @@ onMounted(getPosts)
       max-width: 65ch;
       max-height: calc(100vh - 4rem);
       overflow-y: auto;
+      position: relative;
     }
 
     .k-card__content {
