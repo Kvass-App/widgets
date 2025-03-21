@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, useId, watch } from 'vue'
-import { Clone } from '../../utils'
+import { Clone, hasDiff } from '../../utils'
 import { Button, Flex, Expandable } from '@kvass/ui'
 
 import { vTooltip } from 'floating-vue'
@@ -21,9 +21,20 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: any): void
+  (event: 'remove', value: number): void
 }>()
 
 const internalValue = ref<any>(Clone(props.modelValue))
+
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: internalValue.value })) {
+      internalValue.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
 
 watch(
   () => [...internalValue.value],
@@ -57,6 +68,7 @@ const remove = (index: number) => {
   newInternalValue.splice(index, 1)
   internalValue.value = newInternalValue
   emit('update:modelValue', [...newInternalValue])
+  emit('remove', index)
 }
 
 const move = (index: number, delta: number) => {

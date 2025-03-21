@@ -105,6 +105,8 @@ const watcherCleanups = ref<WatchHandle[]>([])
 const rules = ref<Record<string, string>>({})
 const labels = ref<Record<string, string>>({})
 
+const visitedLocalFields = ref<Record<string, boolean>>({})
+
 const validatorData = computed(() => {
   return {
     ...data.value,
@@ -211,8 +213,9 @@ const getData = () => {
             ...v,
             fields: {
               ...v.fields,
-              // Todo, er index alltid riktig ? eller må man bruke find ? fallback ?
-              ...modelValue.value.units[index].fields,
+              ...(modelValue.value.units.find(
+                (u) => u.id === v.fields.USER_REFERENCE,
+              )?.fields || {}),
             },
           }
         }),
@@ -235,11 +238,13 @@ const getData = () => {
         ) => {
           const unitName = `Enhet ${unitFields.HOUSING_UNIT_REF || index + 1}`
 
-          return Object.fromEntries(
-            Object.entries(unitLabels).map(([k, v]) => {
-              return [`units.${index}.${k}`, `${unitName} ${v}`]
-            }),
-          )
+          return {
+            ...Object.fromEntries(
+              Object.entries(unitLabels).map(([k, v]) => {
+                return [`units.${index}.${k}`, `${unitName} ${v}`]
+              }),
+            ),
+          }
         },
       )
 
@@ -284,7 +289,10 @@ function onTabChange() {
 const formContainer = ref()
 
 const editDialogAccepted = ref(
-  Object.keys(modelValue.value.fields).length ? true : false,
+  Object.keys(modelValue.value.fields).length ||
+    modelValue.value.units.some((v) => Object.keys(v.fields).length)
+    ? true
+    : false,
 )
 const editDialog = ref()
 
@@ -372,9 +380,15 @@ const saveDraft = () => {
       </template>
       <template #default>
         <p>
-          Du er nå i ferd med å tilpasse annonsen. Når dette gjøres vil du se at
-          dette ikonet skifer til et annet, dette ikonet indikerer at dette
-          feltet, ikke lengre henter informasjon fra prosjektsiden.
+          Du er nå i ferd med å tilpasse annonsen. Når ikonet med sky er viser
+          en blå avhukning betyr dette at informasjonen fortsatt hentes fra
+          prosjektet.
+        </p>
+        <p>
+          Når du aksepterer her og gjør endringer i tekstfelt vil skyen skifte
+          farge til oransje og innholde et kryss. Da er ikke lenger feltet du
+          har justert synkronisert med prosjektsiden. På den måten kan du
+          tilpasse innhold til Finn uten å påvirke prosjektsiden.
         </p>
         <Image
           src="https://assets.kvass.no/67c59b8a92504cdf70ab97d2"
@@ -419,8 +433,7 @@ const saveDraft = () => {
           Om du ønsker å benytte den ferdigutfylte Finn-annonsen vi tilbyr
           trenger du ikke gjøre endringer på denne siden. Dersom du tidligere
           har gjort endringer og ønsker å tilbakestille til vår ferdig utfylte
-          annonse kan du gjøre dette under knappen "Handlinger" og "Tilbakestill
-          innhold"
+          annonse kan du gjøre dette under knappen "Tilbakestill innhold"
         </p>
       </template>
     </Alert>
@@ -483,6 +496,16 @@ const saveDraft = () => {
                 />
               </template>
             </Dialog>
+
+            <Button
+              v-if="!modelValue.code"
+              class="ad__reset"
+              :label="'Lagre utkast'"
+              variant="secondary"
+              @click="saveDraft"
+              :promise="savingDraftPromise"
+            >
+            </Button>
           </div>
           <div class="k-card__subtitle">
             <div>
@@ -521,7 +544,11 @@ const saveDraft = () => {
                 <FormControl
                   v-if="hasField('HOUSING_UNIT_REF')"
                   v-bind="validate('HOUSING_UNIT_REF')"
-                  label="Hovedtittel for annonsen"
+                  :label="
+                    hasField('PROJECT_NAME')
+                      ? 'Leilighetsnr'
+                      : 'Hovedtittel for annonsen'
+                  "
                   :class="[
                     'ad__field',
                     { 'ad__field--edited': isEdited('HOUSING_UNIT_REF') },
@@ -613,6 +640,163 @@ const saveDraft = () => {
               </template>
             </Expandable>
 
+            <Expandable
+              :expanded="true"
+              v-if="
+                hasFields(
+                  'PRICE_SUGGESTION',
+                  'COLLECTIVE_DEBT',
+                  'SALES_COST_SUM',
+                  'TOTAL_PRICE',
+                )
+              "
+            >
+              <template #title>
+                <span>Prisantydning</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  content="Prisantydning vises slik i Finn annonsen"
+                  src="https://assets.kvass.no/67d03cc19b29de28ddebeebf"
+                />
+              </template>
+              <template #default>
+                <FormControl
+                  v-if="hasField('PRICE_SUGGESTION')"
+                  v-bind="validate('PRICE_SUGGESTION')"
+                  label="Prisantydning"
+                  :class="[
+                    'ad__field',
+                    { 'ad__field--edited': isEdited('PRICE_SUGGESTION') },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.PRICE_SUGGESTION"
+                    @update:modelValue="
+                      (v) =>
+                        (data.PRICE_SUGGESTION = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('PRICE_SUGGESTION').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('PRICE_SUGGESTION').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('SALES_COST_SUM')"
+                  v-bind="validate('SALES_COST_SUM')"
+                  label="Omkostninger"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('SALES_COST_SUM'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.SALES_COST_SUM"
+                    @update:modelValue="
+                      (v) => (data.SALES_COST_SUM = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('SALES_COST_SUM').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('SALES_COST_SUM').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('COLLECTIVE_DEBT')"
+                  v-bind="validate('COLLECTIVE_DEBT')"
+                  label="Fellesgjeld"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('COLLECTIVE_DEBT'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.COLLECTIVE_DEBT"
+                    @update:modelValue="
+                      (v) => (data.COLLECTIVE_DEBT = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('COLLECTIVE_DEBT').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('COLLECTIVE_DEBT').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+
+                <FormControl
+                  v-if="hasField('TOTAL_PRICE')"
+                  v-bind="validate('TOTAL_PRICE')"
+                  label="Totalpris"
+                  :class="[
+                    'ad__field',
+                    {
+                      'ad__field--edited': isEdited('TOTAL_PRICE'),
+                    },
+                  ]"
+                >
+                  <Input
+                    :modelValue="data.TOTAL_PRICE"
+                    @update:modelValue="
+                      (v) => (data.TOTAL_PRICE = Number.isNaN(v) ? null : v)
+                    "
+                    :mask="{
+                      mask: Number,
+                      min: 0,
+                      scale: 0,
+                    }"
+                  >
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('TOTAL_PRICE').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('TOTAL_PRICE').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
+              </template>
+            </Expandable>
+
             <Expandable :expanded="true">
               <template #title>
                 <span> Nøkkelinformasjon</span>
@@ -624,7 +808,11 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <Grid columns="2">
-                  <FormControl label="Er hytte" v-if="hasField('IS_LEISURE')">
+                  <FormControl
+                    label="Er hytte"
+                    v-if="hasField('IS_LEISURE')"
+                    v-bind="validate('IS_LEISURE')"
+                  >
                     <Dropdown
                       :class="[
                         'ad__dropdown',
@@ -636,9 +824,30 @@ const saveDraft = () => {
                       :items="[
                         {
                           label: 'Nei',
-                          action: () => (data.IS_LEISURE = null),
+                          action: () => {
+                            data.IS_LEISURE = null
+
+                            if (!Array.isArray(data.PROPERTY_TYPE)) return
+
+                            data.PROPERTY_TYPE = data.PROPERTY_TYPE.filter(
+                              (v) =>
+                                displayProperties.some((p) => p.value === v),
+                            )
+                          },
                         },
-                        { label: 'Ja', action: () => (data.IS_LEISURE = true) },
+                        {
+                          label: 'Ja',
+                          action: () => {
+                            data.IS_LEISURE = true
+
+                            if (!Array.isArray(data.PROPERTY_TYPE)) return
+
+                            data.PROPERTY_TYPE = data.PROPERTY_TYPE.filter(
+                              (v) =>
+                                displayProperties.some((p) => p.value === v),
+                            )
+                          },
+                        },
                       ]"
                     >
                       <template #icon-right>
@@ -717,7 +926,7 @@ const saveDraft = () => {
                       !Array.isArray(data.PROPERTY_TYPE)
                     "
                     v-bind="validate('PROPERTY_TYPE')"
-                    label="Boligtype"
+                    label="Enhetstype"
                     :class="[
                       'ad__dropdown',
                       {
@@ -796,7 +1005,6 @@ const saveDraft = () => {
                     label="Eiet tomt"
                     v-if="hasField('PLOT_IS_OWNED')"
                     v-bind="validate('PLOT_IS_OWNED')"
-                    BEDROOMS_FROM
                   >
                     <Dropdown
                       :class="[
@@ -1388,6 +1596,7 @@ const saveDraft = () => {
                   <FormControl
                     label="Energimerking"
                     v-if="hasField('ENERGY_LABEL')"
+                    v-bind="validate('ENERGY_LABEL')"
                   >
                     <Dropdown
                       :class="[
@@ -1430,6 +1639,7 @@ const saveDraft = () => {
                   <FormControl
                     label="Energimerking (farge)"
                     v-if="hasField('ENERGY_LABEL_COLOR_CODE')"
+                    v-bind="validate('ENERGY_LABEL_COLOR_CODE')"
                   >
                     <Dropdown
                       :class="[
@@ -1478,15 +1688,13 @@ const saveDraft = () => {
                   <FormControl
                     label="Eiertype"
                     v-if="hasField('OWNERSHIP_TYPE')"
+                    v-bind="validate('OWNERSHIP_TYPE')"
                   >
                     <Dropdown
                       :class="[
                         'ad__dropdown',
                         { 'ad__dropdown--edited': isEdited('OWNERSHIP_TYPE') },
                       ]"
-                      :suffix="'test'"
-                      :prefix="'test'"
-                      :keepOpen="true"
                       :label="
                         OwnershipTypes.find(
                           (v) => v.value === data.OWNERSHIP_TYPE,
@@ -1624,6 +1832,7 @@ const saveDraft = () => {
               </template>
               <template #default>
                 <FormControl
+                  v-bind="validate('PROPERTY_TYPE')"
                   label="Tilgjengelige lokaler"
                   v-if="hasField('PROPERTY_TYPE')"
                 >
@@ -1701,7 +1910,7 @@ const saveDraft = () => {
                 <Tooltip
                   class="k-ml-xxs"
                   content="Plantegninger vises sist i bildegalleriet eller som en egen knapp i galleriet med navnet «Plantegninger». Dette avhenger av hva annonsetypen støtter."
-                  src="https://assets.kvass.no/67c8088692504cdf70aba702"
+                  src="https://assets.kvass.no/67d1501f9b29de28ddec33d9"
                 />
               </template>
               <template #actions>
@@ -1735,6 +1944,7 @@ const saveDraft = () => {
                   :labels="{
                     delete: 'Slett',
                     download: 'Last ned',
+                    copy: 'Kopier lenke',
                   }"
                 >
                 </File>
@@ -1811,6 +2021,7 @@ const saveDraft = () => {
                 </FormControl>
                 <FormControl label="Tekst">
                   <RichText
+                    placeholder="Skriv her..."
                     :actions="['bold', 'italic', 'orderedList', 'bulletList']"
                     v-model="item.GENERAL_TEXT"
                   >
@@ -1827,8 +2038,8 @@ const saveDraft = () => {
                 <span>
                   {{
                     hasField('PROJECT_PREFERENCE')
-                      ? 'Fasiliteter for prosjektannonsen'
-                      : 'Fasiliteter for annonsen'
+                      ? 'Fasiliteter i prosjektannonsen'
+                      : 'Fasiliteter i annonsen'
                   }}
                 </span>
                 <Tooltip
@@ -2013,6 +2224,20 @@ const saveDraft = () => {
               :limit="4"
               :template="{ URL: '', URLTEXT: '' }"
               v-model="data.MOREINFO"
+              @remove="
+                (idx) => {
+                  const key = Object.keys(visitedLocalFields)
+                    .reverse()
+                    .find(
+                      (k) =>
+                        k.startsWith('MOREINFO.') &&
+                        k.endsWith('.URL') &&
+                        visitedLocalFields[k],
+                    )
+
+                  if (key) visitedLocalFields[key] = false
+                }
+              "
             >
               <template #title>
                 <span>Nyttige lenker i Finn-annonsen</span>
@@ -2042,7 +2267,7 @@ const saveDraft = () => {
               <template
                 #before-content
                 v-if="
-                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_UR')
+                  hasFields('ESTATE_EXTERNAL_URL', 'ESTATE_EXTERNAL_ORDER_URL')
                 "
               >
                 <Grid columns="2">
@@ -2082,9 +2307,25 @@ const saveDraft = () => {
                 <div class="ad__expandable-list-divider"></div>
               </template>
 
-              <template #default="{ item: data }">
+              <template #default="{ item: data, index }">
                 <Grid columns="2">
-                  <FormControl label="URL til nyttig lenke">
+                  <FormControl
+                    label="URL til nyttig lenke"
+                    :onBlur="
+                      () => (visitedLocalFields[`MOREINFO.${index}.URL`] = true)
+                    "
+                    :error="
+                      visitedLocalFields[`MOREINFO.${index}.URL`]
+                        ? Object.entries(validator.errors.value.errors)
+                            .filter(
+                              ([key, value]) => key === `MOREINFO.${index}.URL`,
+                            )
+                            .map(([key, value]) => value)
+                            .flat()
+                            .join('\n')
+                        : undefined
+                    "
+                  >
                     <Input v-model="data.URL" suffix="URL"></Input>
                   </FormControl>
                   <FormControl label="Visningsnavn på lenken på Finn-annonsen">
@@ -2096,10 +2337,16 @@ const saveDraft = () => {
           </Flex>
         </template>
         <template #actions>
-          <Button label="Tilbake" variant="secondary" @click="onPrev" />
+          <Button
+            icon="fa-pro-light:chevron-left"
+            label="Gå tilbake"
+            variant="secondary"
+            @click="onPrev"
+          />
 
           <Button
-            label="Lagre utkast"
+            v-if="!modelValue.code"
+            :label="'Lagre utkast'"
             variant="secondary"
             @click="saveDraft"
             :promise="savingDraftPromise"

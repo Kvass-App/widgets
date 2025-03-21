@@ -205,6 +205,10 @@ onMounted(() => {
 
 <style lang="scss">
 .ads {
+  .k-datatable {
+    position: initial;
+  }
+
   &__empty {
     font-size: 1rem;
     svg {

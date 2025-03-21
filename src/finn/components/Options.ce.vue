@@ -21,9 +21,10 @@ const emit = defineEmits<{
 
 const promise = ref<Promise<any>>()
 const removedialog = ref()
+const unpublishdialog = ref()
 
-const navigatePublish = (id: string) => {
-  sessionStorage.setItem('k-finn-step', 'publish')
+const navigatePublish = (id: string, preview: boolean) => {
+  sessionStorage.setItem('k-finn-step', preview ? 'preview' : 'publish')
   API.navigateView('mutate', id)
 }
 
@@ -37,46 +38,27 @@ const navigateEdit = (id: string) => {
   <Dialog
     :teleport="false"
     :closeOnOutsideClick="true"
+    variant="prompt"
     ref="removedialog"
     class="remove-dialog"
+    title="Du er i ferd med å slette annonsen"
   >
     <template #trigger="{ triggerProps }">
       <Button style="display: none" v-bind="triggerProps"></Button>
     </template>
-    <template #header="{ titleProps, descriptionProps, closeTriggerProps }">
-      <Flex
-        class="remove-dialog__header"
-        justify="center"
-        align="center"
-        direction="column"
-        gap="0.25rem"
-      >
-        <Icon
-          icon="fa-pro-light:triangle-exclamation"
-          class="remove-dialog__icon"
-        ></Icon>
-        <!-- @vue-expect-error -->
-        <div v-bind="descriptionProps" class="remove-dialog__subtitle">
-          Du holder på å slette Finn-annonsen:
-        </div>
-        <!-- @vue-expect-error -->
-        <div v-bind="titleProps" class="remove-dialog__title">
-          {{ item.name }}
-        </div>
 
-        <Button
-          class="k-dialog__close-trigger"
-          variant="tertiary"
-          icon="fa-pro-light:times"
-          size="small"
-          v-bind="closeTriggerProps"
-        />
-      </Flex>
+    <template #default="{ descriptionProps }">
+      <div v-bind="descriptionProps">
+        Du er i ferd med å slette din Finn-annonse. Vi gjør oppmerksom på at
+        annonsen avsluttes i sin helhet, du vil eventuelt miste resterende
+        betalt periode hos Finn. Er du sikker?
+      </div>
     </template>
+
     <template #actions="{ close }">
-      <Button label="Avbryt" @click="close"></Button>
+      <Button label="Nei, ta meg tilbake" @click="close"></Button>
       <Button
-        label="Bekreft"
+        label="Ja, jeg ønsker å slette"
         variant="primary"
         :promise="promise"
         @success="
@@ -86,6 +68,42 @@ const navigateEdit = (id: string) => {
           }
         "
         @click="() => (promise = API.remove(item.id))"
+      ></Button>
+    </template>
+  </Dialog>
+
+  <Dialog
+    :teleport="false"
+    :closeOnOutsideClick="true"
+    variant="prompt"
+    ref="unpublishdialog"
+    class="unpublish-dialog"
+    title="Du er i ferd med å avpublisere annonsen"
+  >
+    <template #trigger="{ triggerProps }">
+      <Button style="display: none" v-bind="triggerProps"></Button>
+    </template>
+
+    <template #default="{ descriptionProps }">
+      <div v-bind="descriptionProps">
+        Du er i ferd med å avpublisere din Finn-annonse. Vi gjør oppmerksom på
+        at perioden for annonsen vil fortsette å løpe til utløpsdato.
+      </div>
+    </template>
+
+    <template #actions="{ close }">
+      <Button label="Nei, ta meg tilbake" @click="close"></Button>
+      <Button
+        label="Ja, jeg ønsker å avpublisere"
+        variant="primary"
+        :promise="promise"
+        @success="
+          () => {
+            close()
+            emit('refetch')
+          }
+        "
+        @click="() => (promise = API.unpublish(item.id))"
       ></Button>
     </template>
   </Dialog>
@@ -104,20 +122,18 @@ const navigateEdit = (id: string) => {
           v-if="!item.publishedAt || item.preview"
           iconRight="fa-pro-light:arrow-right"
           label="Publiser"
-          @click="() => navigatePublish(item.id)"
+          @click="() => navigatePublish(item.id, item.preview)"
           variant="tertiary"
         ></Button>
         <Button
           v-if="item.publishedAt"
           iconRight="fa-pro-light:play-pause"
           label="Avpubliser"
-          :promise="promise"
-          @success="
+          @click="
             () => {
-              emit('refetch')
+              unpublishdialog.open()
             }
           "
-          @click="() => (promise = API.unpublish(item.id))"
           variant="tertiary"
         ></Button>
       </template>
@@ -150,26 +166,9 @@ const navigateEdit = (id: string) => {
   }
 }
 
+.unpublish-dialog,
 .remove-dialog {
   --k-dialog-min-width: 400px;
-
-  &__title {
-    font-weight: bold;
-    font-size: 1.25rem;
-  }
-  &__icon {
-    font-size: 2rem;
-  }
-
-  .k-dialog__card {
-    .k-card__header {
-      color: var(--k-ui-color-danger);
-      background-color: var(--k-ui-color-danger-lightest);
-
-      --k-button-tertiary-text: var(--k-ui-color-danger-darkest);
-      --k-button-tertiary-background-hover: var(--k-ui-color-danger-lightest);
-      --k-button-tertiary-background-active: var(--k-ui-color-danger-light);
-    }
-  }
+  --k-dialog-max-width: 600px;
 }
 </style>

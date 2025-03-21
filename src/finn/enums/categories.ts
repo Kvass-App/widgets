@@ -25,7 +25,7 @@ export default [
         return unit.saleType === 'sale' && types.includes(unit.status.value)
       })
     },
-    disabledReason: 'Du må ha kommer til salgs enheter',
+    disabledReason: 'Du må ha enheter merket som "kommer for salg".',
   },
   {
     type: 'ESTATE_PROJECT',
@@ -34,7 +34,7 @@ export default [
     group: 'Nybygg',
     unitType: 'ESTATE_PROJECT_UNIT',
     disabled: (units: Unit[]) => {
-      if (!units.length) return false
+      if (!units.length) return true
 
       const types = ['detached', 'flat', 'semidetached', 'terraced']
 
@@ -44,7 +44,7 @@ export default [
         )
       })
     },
-    disabledReason: 'Du må ha bolig enheter til salgs',
+    disabledReason: 'Du må ha boligtypeenheter til salgs',
   },
   {
     type: 'ESTATE_PROJECT_SINGLE',
@@ -62,7 +62,7 @@ export default [
         )
       })
     },
-    disabledReason: 'Du må ha bolig/hytte enheter til salgs',
+    disabledReason: 'Du må ha boligtypeenheter eller hytteenheter til salgs.',
   },
   {
     type: 'ESTATE_PROJECT_LEISURE',
@@ -71,7 +71,7 @@ export default [
     group: 'Nybygg',
     unitType: 'ESTATE_PROJECT_UNIT_LEISURE',
     disabled: (units: Unit[]) => {
-      if (!units.length) return false
+      if (!units.length) return true
 
       const types = ['leisure']
 
@@ -81,7 +81,7 @@ export default [
         )
       })
     },
-    disabledReason: 'Du må ha hytte enheter til salgs',
+    disabledReason: 'Du må ha hytteenheter til salgs',
   },
   {
     type: 'ESTATE_BUSINESS_SALE',
@@ -91,13 +91,18 @@ export default [
     disabled: (units: Unit[]) => {
       if (!units.length) return false
 
+      const types = ['detached', 'flat', 'semidetached', 'terraced', 'leisure']
+
       // we are missing rent properties in Kvass
 
       return !units.some((unit) => {
-        return unit.saleType === 'sale'
+        return (
+          unit.saleType === 'sale' && !types.includes(unit.propertyType.value)
+        )
       })
     },
-    disabledReason: 'Du må ha enheter til salgs',
+    disabledReason:
+      'Du må ha flere enheter til salgs enn bare boligtyper og hytter',
   },
   {
     type: 'ESTATE_BUSINESS_RENT',
@@ -117,7 +122,7 @@ export default [
   },
   {
     type: 'PLOT_SALE',
-    label: 'Tomt/Hyttetomt',
+    label: 'Tomt/Fritidstomt',
     sublabel: 'Boligtomt/Fritidstomt til salgs',
     group: 'Tomter',
     disabled: (units: Unit[]) => {
@@ -131,7 +136,7 @@ export default [
         )
       })
     },
-    disabledReason: 'Du må ha tomt/fritidstomt enheter til salgs',
+    disabledReason: 'Du må ha tomteenheter eller fritidstomter til salgs',
   },
   {
     type: 'ESTATE_RENT',

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed, inject } from 'vue'
+import { ref, toRef, computed, inject, watch } from 'vue'
 import { DataTable, Icon, Button, Scroller } from '@kvass/ui'
 
 import UnitSettings from './UnitSettings.ce.vue'
@@ -33,6 +33,15 @@ const items = ref(
   props.units.map((v, index) => {
     return v.fields
   }),
+)
+
+watch(
+  () => props.units,
+  (newValue) => {
+    items.value = newValue.map((v, index) => {
+      return v.fields
+    })
+  },
 )
 
 const validatorComp = computed(() => {
@@ -81,10 +90,12 @@ const getIsEditedBind = (isEdited: boolean) => {
 }
 
 const setIsHighlighted = (item, index) => {
-  item['IS_HIGHLIGHTED'] = item['IS_HIGHLIGHTED'] === 'true' ? 'false' : 'true'
+  const value =
+    modelValue.value.units[index].fields['IS_HIGHLIGHTED'] === 'true'
+      ? 'false'
+      : 'true'
 
-  modelValue.value.units[index].fields['IS_HIGHLIGHTED'] =
-    item['IS_HIGHLIGHTED']
+  modelValue.value.units[index].fields['IS_HIGHLIGHTED'] = value
 }
 
 const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
@@ -160,7 +171,8 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
           :class="[
             'unit-table__highlight',
             {
-              'unit-table__highlight--selected': item.IS_HIGHLIGHTED === 'true',
+              'unit-table__highlight--selected':
+                modelValue.units[index].fields['IS_HIGHLIGHTED'] === 'true',
             },
           ]"
           icon="fa-pro-solid:star"
@@ -180,11 +192,15 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
       <template #settings="{ item, rowIndex: index }">
         <UnitSettings
           :units="units"
+          :initialUnitField="initialUnitFields[index]"
           :key="item.id"
           :modelValue="item"
           @update:modelValue="
             (value) => {
               Object.entries(Diff(item, value)).map(([k, v]) => {
+                /* prevent overwrite of IS_HIGHLIGHTED */
+                if (k === 'IS_HIGHLIGHTED') return
+
                 item[k] = v
 
                 modelValue.units[index].fields[k] = v
@@ -216,8 +232,11 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
 <style lang="scss">
 .unit-table {
   &-scroller {
+    min-height: 300px;
     max-height: 1000px;
   }
+
+  overflow: visible;
 
   .k-datatable__cell-sort-icon {
     display: none;
@@ -258,7 +277,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
     z-index: 3 !important;
 
     .v-popper__popper {
-      width: 400px;
+      width: 300px;
       font-size: 1rem;
     }
   }

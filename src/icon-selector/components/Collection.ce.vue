@@ -21,7 +21,9 @@ const collectionName = computed(
 
 <template>
   <button class="kvass-icon-selector-collection">
-    <span>{{ collectionName }}</span>
+    <span class="kvass-icon-selector-collection__name">{{
+      collectionName
+    }}</span>
     <div class="kvass-icon-selector-collection__icons">
       <Icon
         v-for="icon in collection.samples"
@@ -47,6 +49,9 @@ const collectionName = computed(
     border-color: #c0c0c0;
   }
 
+  &__name {
+    text-align: left;
+  }
   &__icons {
     display: flex;
     gap: 0.5rem;

@@ -13,6 +13,10 @@ const props = defineProps<{
 const modelValue = defineModel<string>({ default: '' })
 
 function extractH3Sections(htmlString: string) {
+  if (!/<[a-z][\s\S]*>/i.test(htmlString)) {
+    htmlString = `<p>${htmlString}</p>`
+  }
+
   const parser = new DOMParser()
   const doc = parser.parseFromString(htmlString, 'text/html')
 
@@ -55,10 +59,9 @@ function extractH3Sections(htmlString: string) {
 
 const richText = computed({
   get: () => {
-    return extractH3Sections(modelValue.value).map((v) => ({
-      title: v.title,
-      content: v.content,
-    }))
+    const sections = extractH3Sections(modelValue.value)
+
+    return sections
   },
   set: (val: any) => {
     modelValue.value = val
@@ -76,15 +79,19 @@ const setRichTextValue = (
 ) => {
   const updatedSections = richText.value
 
+  if (!updatedSections.length) updatedSections.push({ title: '', content: '' })
+
   if (updatedSections[index]) {
     updatedSections[index] = {
-      ...updatedSections[index],
+      ...(updatedSections[index] || {}),
       [type]: value,
     }
   }
 
   modelValue.value = updatedSections
-    .map(({ title, content }) => `<h3>${title}</h3>${content}`)
+    .map(({ title, content }) => {
+      return `<h3>${title}</h3>${content}`
+    })
     .join('')
 }
 </script>

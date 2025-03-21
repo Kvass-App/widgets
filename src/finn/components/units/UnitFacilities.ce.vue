@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import {
   FormControl,
   Button,
@@ -10,6 +10,9 @@ import {
 } from '@kvass/ui'
 
 import { Clone, hasDiff } from '../../../utils/index.js'
+import Tooltip from '../Tooltip.ce.vue'
+
+import { type Fields } from '../../api'
 
 import { type Ad, Facility } from '../../types/ad'
 
@@ -20,6 +23,7 @@ const props = defineProps<{
   getIsEditedBind: (...args) => { label: string; icon: string }
   isEdited: (...args) => boolean
   facilities: Facility[]
+  initialUnitField: Fields['fields']
 }>()
 
 const emit = defineEmits<{
@@ -29,10 +33,20 @@ const emit = defineEmits<{
 const item = ref(Clone(props.modelValue))
 const facilitesDialog = ref()
 
+watch(
+  () => props.modelValue,
+  (newValue, oldValue) => {
+    if (hasDiff({ value: newValue }, { value: item.value })) {
+      item.value = Clone(newValue)
+    }
+  },
+  { deep: true },
+)
+
 const isInternalEdited = (field) => {
-  return (
-    hasDiff({ value: item.value[field] }, { value: props.modelValue[field] }) ||
-    props.isEdited(field)
+  return hasDiff(
+    { value: item.value[field] },
+    { value: props.initialUnitField[field] },
   )
 }
 
@@ -71,12 +85,15 @@ defineExpose({
       <Button style="display: none"></Button>
     </template>
     <template #default>
-      <Expandable
-        :expanded="true"
-        title="Fasiliteter for enhetsannonsen"
-        subtitle="Velg fasiliteter for enhetsannonsen"
-        v-if="hasFields('ESTATE_PREFERENCE')"
-      >
+      <Expandable :expanded="true" v-if="hasFields('ESTATE_PREFERENCE')">
+        <template #title>
+          <span> Fasiliteter i enhetsannonsen" </span>
+          <Tooltip
+            class="k-ml-xxs"
+            content="Fasilitenene som velges her vil bli synlig under fasiliteter på enhetsannonsen. De vil også være tilgjengelige som filtre i søkelisten."
+            src="https://assets.kvass.no/67c80a4c92504cdf70aba70e"
+          />
+        </template>
         <template #actions>
           <Icon
             :class="[

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Card, Alert, Button, Icon, Dialog } from '@kvass/ui'
+import { Card, Alert, Button, Icon, Dialog, Dropdown } from '@kvass/ui'
 
 import { type Ad } from '../../../../../types/ad'
 
@@ -42,7 +42,33 @@ const emit = defineEmits<{
         @click="() => emit('goto', 'ad')"
       />
 
+      <Dropdown
+        label="Forhåndsvis annonser"
+        v-if="modelValue.units.some((v) => v.url)"
+      >
+        <template #default>
+          <Button
+            variant="tertiary"
+            iconRight="fa-pro-light:arrow-up-right-from-square"
+            label="Prosjektannonse"
+            target="_blank"
+            is="a"
+            :href="modelValue.url"
+          />
+          <Button
+            variant="tertiary"
+            v-for="unit in modelValue.units"
+            :label="`${unit.name}`"
+            target="_blank"
+            is="a"
+            :href="unit.url"
+            iconRight="fa-pro-light:arrow-up-right-from-square"
+          />
+        </template>
+      </Dropdown>
+
       <Button
+        v-else
         :disabled="!Boolean(modelValue.url)"
         label="Forhåndsvis annonse"
         iconRight="fa-pro-light:arrow-up-right-from-square"
@@ -91,35 +117,18 @@ const emit = defineEmits<{
       </Dialog>
     </template>
   </Card>
-
   <Card
     v-else
-    class="publish"
+    class="publish publish--update"
     appearence="border"
     variant="default"
-    title="Oppdater annonsen"
-    subtitle="Oppdater annonsen din med de nye endringene!"
-    thumbnail="https://assets.kvass.no/67aa2b433aee3cb55c8e7408"
+    title="Oppdater annonsen med nye endringer"
+    subtitle="Send inn nye endringer til Finn!"
   >
-    <!-- <template #default>
-      <Alert
-        icon="fa-pro-regular:exclamation-triangle"
-        variant="info"
-        title="Ved publisering aktiveres en betalt tjeneste fra Finn."
-        content="Når du aktiverer annonsen vil du nå motta faktura og kostnader fra Finn. Bindingstiden varierer i henhold til din avtale med Finn"
-      >
-      </Alert>
-    </template> -->
+    <template #thumbnail>
+      <Icon icon="fa-pro-light:pen-paintbrush"></Icon>
+    </template>
     <template #actions>
-      <!-- <Button
-        :disabled="!Boolean(modelValue.url)"
-        label="Forhåndsvis annonse"
-        iconRight="fa-pro-light:arrow-up-right-from-square"
-        target="_blank"
-        is="a"
-        :href="modelValue.url"
-      /> -->
-
       <Button
         label="Oppdater annonsen"
         variant="primary"
@@ -134,6 +143,21 @@ const emit = defineEmits<{
 .publish {
   margin: 0 auto;
   min-width: 600px;
+
+  &--update {
+    .k-card__thumbnail {
+      display: flex;
+      justify-content: center;
+
+      background-color: #d3e6f7;
+      padding-block: 7rem;
+      font-size: 7rem;
+
+      svg {
+        color: #6ba3d6;
+      }
+    }
+  }
 
   &__dialog {
     // --k-dialog-min-width: 500px;

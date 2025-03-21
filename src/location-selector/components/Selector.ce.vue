@@ -2,6 +2,7 @@
 import { LocationSelector as Selector } from '@kvass/location-selector'
 import { reactive, watch, ref, onMounted } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
+import { transformBoolean } from '../../utils'
 
 const props = defineProps({
   theme: {
@@ -91,10 +92,10 @@ watch(
     :zoom="parseInt(props.zoom)"
     :map-options="mapOptions"
     :aspect-ratio="aspectRatio"
-    :autocomplete="props.autocomplete"
+    :autocomplete="transformBoolean(props.autocomplete)"
     :label="props.label"
-    :show-selected="props.showSelected"
-    :show-warning="props.showWarning"
+    :show-selected="transformBoolean(props.showSelected)"
+    :show-warning="transformBoolean(props.showWarning)"
     :language="language"
   />
 </template>
