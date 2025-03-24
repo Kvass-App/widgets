@@ -192,8 +192,12 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
       <template #settings="{ item, rowIndex: index }">
         <UnitSettings
           :units="units"
-          :initialUnitField="initialUnitFields[index]"
-          :key="item.id"
+          :initialUnitField="
+            initialUnitFields.find(
+              (v) => v.USER_REFERENCE === item.USER_REFERENCE,
+            )
+          "
+          :key="item.USER_REFERENCE"
           :modelValue="item"
           @update:modelValue="
             (value) => {
@@ -203,12 +207,23 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
 
                 item[k] = v
 
-                modelValue.units[index].fields[k] = v
+                const unit = modelValue.units.find(
+                  (u) => u.id === item.USER_REFERENCE,
+                )
+
+                unit.fields[k] = v
 
                 if (
-                  !hasDiff({ value: v }, { value: initialUnitFields[index][k] })
+                  !hasDiff(
+                    { value: v },
+                    {
+                      value: initialUnitFields.find(
+                        (v) => v.USER_REFERENCE === item.USER_REFERENCE,
+                      )[k],
+                    },
+                  )
                 ) {
-                  delete modelValue.units[index].fields[k]
+                  delete unit.fields[k]
                 }
               })
             }
@@ -231,16 +246,7 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
 
 <style lang="scss">
 .unit-table {
-  &-scroller {
-    min-height: 300px;
-    max-height: 1000px;
-  }
-
   overflow: visible;
-
-  .k-datatable__cell-sort-icon {
-    display: none;
-  }
 
   box-sizing: border-box;
   padding: var(--k-ui-spacing);
@@ -253,6 +259,15 @@ const getProjectUnitStepUrl = (id: string, step: string = 'basis') => {
   --k-datatable-cell-size: 1rem;
   --k-datatable-odd-color: white;
   --k-datatable-even-color: var(--k-ui-color-neutral-lightest);
+
+  &-scroller {
+    min-height: 300px;
+    max-height: 1000px;
+  }
+
+  .k-datatable__cell-sort-icon {
+    display: none;
+  }
 
   &__actions {
     --k-button-secondary-background: white;
