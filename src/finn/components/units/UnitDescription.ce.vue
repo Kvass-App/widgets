@@ -122,18 +122,25 @@ defineExpose({
         <Expandable
           :expanded="true"
           title="Hovedtittel og undertittel"
-          v-if="hasFields('HEADING', 'HOUSING_UNIT_REF')"
+          v-if="hasFields('HEADING')"
         >
           <template #title>
-            <span>Hovedtittel og undertittel</span>
+            <span>Undertittel</span>
+            <Tooltip
+              class="k-ml-xxs"
+              content="Teksten du skriver her vises som undertittel i annonsen."
+              src="https://assets.kvass.no/67c7181792504cdf70aba68d"
+            />
+
+            <!-- <span>Hovedtittel og undertittel</span>
             <Tooltip
               class="k-ml-xxs"
               content="Teksten du skriver her vises som hovedtittelen og undertittel i annonsen."
               src="https://assets.kvass.no/67c7181792504cdf70aba68d"
-            />
+            /> -->
           </template>
           <template #default>
-            <FormControl
+            <!-- <FormControl
               v-if="hasField('HOUSING_UNIT_REF')"
               v-bind="validate('HOUSING_UNIT_REF')"
               label="Hovedtittel for enhetsannonsen"
@@ -154,7 +161,7 @@ defineExpose({
                   ></Icon>
                 </template>
               </Input>
-            </FormControl>
+            </FormControl> -->
             <FormControl
               v-if="hasField('HEADING')"
               v-bind="validate('HEADING')"
