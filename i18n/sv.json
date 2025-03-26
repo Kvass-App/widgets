@@ -1,6 +1,7 @@
 {
   "cancel" : "Avbryt",
   "confirm" : "Bekräfta",
+  "email" : "E-post",
   "fa-pro-brands" : "Varumärkesikoner",
   "fa-pro-duotone" : "Tvåfärgade ikoner",
   "fa-pro-light" : "Tunna ikoner",
@@ -17,9 +18,14 @@
   "iconSelectWidgetHelpText" : "Sök på engelska efter ikonen du letar efter. T.ex. \"Helicopter\"",
   "iconsSelectWidgetIconsFound" : "träff",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Inga ikoner matchade din sökning.",
+  "leadMessage" : "Besked/Information",
   "loadAllElements" : "Ladda alla",
+  "name" : "Namn",
+  "phone" : "Telefon",
+  "phoneValidation" : "Du har inte angett ett giltigt telefonnummer",
   "primaryTitle" : "Huvudtitel",
   "secondaryTitle" : "Sekundär titel",
   "select" : "Välj",
-  "selectIcon" : "Välj ikon"
+  "selectIcon" : "Välj ikon",
+  "submit" : "Skicka in {x}"
 }

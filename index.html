@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nb">
   <head>
     <meta charset="UTF-8" />
@@ -18,17 +18,8 @@
       }
 
       body {
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          'Segoe UI',
-          Roboto,
-          Oxygen,
-          Ubuntu,
-          Cantarell,
-          'Open Sans',
-          'Helvetica Neue',
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
           sans-serif;
         max-width: 90%;
         font-size: 16px;
@@ -72,9 +63,147 @@
 
   <body>
     <h1>test</h1>
-    <knips-feed
-      feed="https://weenbo.kvass.no/api/integration/67c9c5c30d746ce436b858d7/callbacks/getPosts"
-    ></knips-feed>
-    <script type="module" src="/src/knips/main.js"></script>
+    <kvass-form id="form"></kvass-form>
+    <script type="module" src="/src/form/main.js"></script>
+
+    <script>
+      const form = document.getElementById('form')
+
+      // title: 'Kontaktskjema',
+      // id: '67e260f5cbd3f5b0403cdba8',
+      // reference: {
+      //     onModel: 'Project',
+      //     id: '67e17e18b2fec9e0f3b7a187',
+      //     name: 'Lysholmen',
+      //   },
+
+      form.setAttribute('title', 'Kontaktskjema')
+      form.setAttribute(
+        'fields',
+
+        JSON.stringify([
+          {
+            label: 'Velg hva du skal gjøre',
+            placeholder: null,
+            required: 'yes',
+            component: 'radio',
+            options: [
+              { option: 'Jeg skal registrere salgsdata' },
+              { option: 'Jeg skal regstrere igangsettingsdata' },
+              { option: 'Jeg skal regstrere overleveringsdata' },
+            ],
+            'lead-placeholder': null,
+            key: 'task',
+            'hide-label': true,
+          },
+          {
+            label: 'Selgers navn',
+            placeholder: 'Skriv her...',
+            required: 'yes',
+            component: 'short-text',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Byggleders navn',
+            placeholder: 'Skriv her ..',
+            required: 'yes',
+            component: 'short-text',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Selskap',
+            placeholder: null,
+            required: null,
+            component: 'dropdown',
+            options: [{ option: 'Silva bolig' }],
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Husnavn',
+            placeholder: 'Skriv her...',
+            required: null,
+            component: 'short-text',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Oppføring av bygg',
+            placeholder: null,
+            required: null,
+            component: 'dropdown',
+            options: [
+              { option: 'EAT' },
+              { option: 'FAT' },
+              { option: 'Egenregi' },
+            ],
+            'lead-placeholder': null,
+            size: 'half',
+          },
+          {
+            label: 'Hustype',
+            placeholder: null,
+            required: null,
+            component: 'dropdown',
+            options: [{ option: 'Enebolig' }, { option: 'Fritidsbolig' }],
+            'lead-placeholder': null,
+            size: 'half',
+          },
+          {
+            label: 'Antall enheter',
+            placeholder: null,
+            required: null,
+            component: 'number',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Kontraktsdato',
+            placeholder: null,
+            required: null,
+            component: 'date',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Utkjøringsdato',
+            placeholder: null,
+            required: null,
+            component: 'date',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Kontraktsverdi ink. mva',
+            placeholder: null,
+            required: null,
+            component: 'number',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Dekningsbidrag',
+            placeholder: 'Skriv her ..',
+            required: null,
+            component: 'short-text',
+            options: null,
+            'lead-placeholder': null,
+          },
+          {
+            label: 'Uten feil og mangler',
+            placeholder: null,
+            required: null,
+            component: 'radio',
+            options: [{ option: 'Ja' }, { option: 'Nei' }],
+            'lead-placeholder': null,
+            size: 'full',
+          },
+        ]),
+      )
+      form.addEventListener('webcomponent:update', (event) => {
+        console.log(event.detail)
+      })
+    </script>
   </body>
 </html>

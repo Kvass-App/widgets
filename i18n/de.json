@@ -1,6 +1,11 @@
 {
   "cancel" : "Abbrechen",
   "confirm" : "Bestätigen",
+  "email" : "E-Mail",
   "goBack" : "Zurückgehen",
+  "leadMessage" : "Kommentar",
+  "name" : "Name",
+  "phone" : "Telefon",
+  "phoneValidation" : "Sie haben keine gültige Telefonnummer eingegeben",
   "select" : "Auswählen"
 }

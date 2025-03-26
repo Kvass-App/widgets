@@ -1,6 +1,7 @@
 {
   "cancel" : "Afbryd",
   "confirm" : "Bekræft",
+  "email" : "E-mail",
   "fa-pro-brands" : "Mærkevareikoner",
   "fa-pro-duotone" : "Tofarvede ikoner",
   "fa-pro-light" : "Light ikoner",
@@ -17,9 +18,14 @@
   "iconSelectWidgetHelpText" : "Søg på engelsk efter det ikon, du leder efter. F.eks. 'Helicopter'.",
   "iconsSelectWidgetIconsFound" : "Resultat",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Der er ingen ikoner, der matcher din søgning",
+  "leadMessage" : "Besked",
   "loadAllElements" : "Tilfjøj alle",
+  "name" : "Navn",
+  "phone" : "Telefon",
+  "phoneValidation" : "Du har ikke indtastet et gyldigt telefonnummer",
   "primaryTitle" : "Hovedtitel",
   "secondaryTitle" : "Sekundærtitel",
   "select" : "Vælg",
-  "selectIcon" : "Vælg ikon"
+  "selectIcon" : "Vælg ikon",
+  "submit" : "Indsend {x}"
 }
