@@ -280,10 +280,12 @@ onMounted(getPosts)
 
 .knips-feed {
   --k-card-border-radius: var(--border-radius);
-  --knips-feed-color: currentColor;
+  --color: var(--knips-feed-color, var(--text-color));
   --background: var(--knips-feed-background, var(--background-color));
   --k-card-border-color: rgba(0, 0, 0, 0.05);
   --k-dialog-backdrop-background: rgba(0, 0, 0, 0.8);
+
+  color: var(--color);
 
   [data-field='close'] {
     position: absolute;
@@ -334,7 +336,7 @@ onMounted(getPosts)
 
   .k-button--variant-tertiary {
     color: inherit;
-    border-color: currentColor;
+    border-color: var(--color);
   }
 
   [data-field='readmore'] {
