@@ -161,6 +161,7 @@ const population = ref(null)
     }
 
     &-bar {
+      border-radius: useVar(population-bar-rounding);
       width: 100%;
       height: calc(var(--percentage) * useVar(population-bar-height) / 100);
       &--primary {

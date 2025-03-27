@@ -136,7 +136,7 @@ const getIcon = (id) => {
         </template>
 
         <template #name="{ item }">
-          <Flex gap="4px">
+          <Flex class="distance-item__name">
             <Icon :icon="getIcon(item.poitypeId)" />
             <span>{{ item.name }}</span>
           </Flex>
@@ -151,12 +151,10 @@ const getIcon = (id) => {
           {{ getDistance(item) }}
         </template>
         <template #duration="{ item }">
-          <template v-if="getDuration(item)">
-            <Flex gap="4px">
-              <Icon :icon="getIcon(item?.distances?.selected)" />
-              <span>{{ getDuration(item) }}</span>
-            </Flex>
-          </template>
+          <Flex v-if="getDuration(item)" class="distance-item__duration">
+            <Icon :icon="getIcon(item?.distances?.selected)" />
+            <span>{{ getDuration(item) }}</span>
+          </Flex>
         </template>
       </DataTable>
     </template>
@@ -167,7 +165,7 @@ const getIcon = (id) => {
 
         <Flex direction="column" gap="2rem">
           <div v-for="i in item.items">
-            <Flex gap="4px" class="k-datatable__cell">
+            <Flex class="k-datatable__cell distance-item__name">
               <Icon :icon="getIcon(i.poitypeId)" />
               <span>{{ i.name }}</span>
             </Flex>
@@ -182,12 +180,10 @@ const getIcon = (id) => {
                 {{ getDistance(item) }}
               </template>
               <template #duration="{ item }">
-                <template v-if="getDuration(item)">
-                  <Flex gap="4px">
-                    <Icon :icon="getIcon(item?.distances?.selected)" />
-                    <span>{{ getDuration(item) }}</span>
-                  </Flex>
-                </template>
+                <Flex class="distance-item__duration" v-if="getDuration(item)">
+                  <Icon :icon="getIcon(item?.distances?.selected)" />
+                  <span>{{ getDuration(item) }}</span>
+                </Flex>
               </template>
             </DataTable>
           </div>
@@ -221,6 +217,15 @@ const getIcon = (id) => {
           font-family: useVar(distance-header-font);
         }
       }
+    }
+  }
+
+  &-item {
+    &__name {
+      gap: useVar(distance-item-name-gap);
+    }
+    &__distance {
+      gap: useVar(distance-item-distance-gap);
     }
   }
 

@@ -195,6 +195,7 @@ onMounted(getProfile)
   @include setVar(population-bar-weight, 400);
   @include setVar(population-bar-font, inherit);
   @include setVar(population-bar-padding, 0rem);
+  @include setVar(population-bar-rounding, 0px);
 
   /* Distance */
   @include setVar(distance-cell-padding, 0.75rem);
@@ -203,6 +204,9 @@ onMounted(getProfile)
   @include setVar(distance-header-font, inherit);
   @include setVar(distance-header-size, 1rem);
   @include setVar(distance-header-spacing-y, 0rem 1rem);
+
+  @include setVar(distance-item-name-gap, 4px);
+  @include setVar(distance-item-distance-gap, 4px);
 
   @include setVar(
     distance-header-seperator,

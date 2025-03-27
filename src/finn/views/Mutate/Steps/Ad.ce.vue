@@ -380,11 +380,6 @@ const saveDraft = () => {
       </template>
       <template #default>
         <p>
-          Du er nå i ferd med å tilpasse annonsen. Når ikonet med sky er viser
-          en blå avhukning betyr dette at informasjonen fortsatt hentes fra
-          prosjektet.
-        </p>
-        <p>
           Når du aksepterer her og gjør endringer i tekstfelt vil skyen skifte
           farge til oransje og innholde et kryss. Da er ikke lenger feltet du
           har justert synkronisert med prosjektsiden. På den måten kan du
