@@ -34,7 +34,7 @@ const props = defineProps({
 })
 
 const getTitle = (item) =>
-  item.blog.find((b) => ['h1', 'h2'].includes(b.type))?.text
+  item.blocks.find((b) => ['h1', 'h2'].includes(b.type))?.text
 
 const el = ref(null)
 const dialog = ref(null)
@@ -47,7 +47,7 @@ const mapItem = (item) => {
       return {
         component: 'video',
         props: {
-          src: item.blog.find(
+          src: item.blocks.find(
             (b) => b.type === 'video' && b.imageUrl === item.featuredImage.src,
           )?.videoStorageUrl,
           autoplay: true,
@@ -71,14 +71,14 @@ const mapItem = (item) => {
     thumbnail: getThumbnail(),
     claps: item.clapCount,
     shortContent: Shorten(
-      item.blog
+      item.blocks
         .filter((b) => b.type === 'regular')
         .map((b) => b.text)
         .join('\n'),
       125,
     ),
     content: [
-      ...item.blog
+      ...item.blocks
         .flatMap((b) => {
           switch (b.type) {
             case 'image':
