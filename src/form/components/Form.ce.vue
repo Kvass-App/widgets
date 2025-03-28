@@ -1,6 +1,7 @@
 <script setup>
 import { Slugify, Translate } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
+import { createFormSubmit } from '../api'
 import useValidator from '../../composables/useValidator.js'
 import {
   Card,
@@ -19,6 +20,7 @@ import {
 } from '@kvass/ui'
 import Number from './Fields/Number'
 import Date from './Fields/Date'
+import { Query } from 'mingo'
 
 import Privacy from './Fields/Privacy'
 
@@ -40,6 +42,15 @@ const props = defineProps({
     type: String,
     default: 'Contact',
   },
+  formId: {
+    type: String,
+    required: true,
+  },
+  accountUrl: {
+    type: String,
+    required: true,
+  },
+
   actionLabel: {
     type: String,
     default: 'Send inn',
@@ -50,7 +61,6 @@ const props = defineProps({
   },
 })
 
-const formFields = ref([])
 const template = ref({})
 const data = ref({})
 const promise = ref(null)
@@ -62,24 +72,10 @@ const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   'nb',
 )
 
-watch(
-  () => data.value,
-  (newValue) => {
-    onChange(newValue, {
-      labels: formFields.value.labels,
-      rules: formFields.value.rules,
-      data: data.value,
-    })
-  },
-  {
-    immediate: true,
-    deep: true,
-  },
-)
-
 //computed
 const formIsValid = computed(() => {
-  return data.value?.privacyAccepted && validator.value.passes
+  // data.value?.privacyAccepted &&
+  return validator.value.passes
 })
 
 const privacyUrlComp = computed(() => {
@@ -88,7 +84,7 @@ const privacyUrlComp = computed(() => {
 })
 
 //functions
-const buildFields = () => {
+const formFields = computed(() => {
   const fields = JSON.parse(props.fields)
     .map((i) => {
       const key = i.key || Slugify(i.label)
@@ -148,10 +144,9 @@ const buildFields = () => {
             validation: i.required === 'yes' ? 'required' : '',
             props: {
               placeholder: i.placeholder,
-
               items: i.options?.length
                 ? i.options.map((o) => {
-                    const id = Slugify(o.option)
+                    const id = o.key || Slugify(o.option)
                     return {
                       id,
                       label: o.option,
@@ -168,22 +163,45 @@ const buildFields = () => {
     })
     .flat()
 
-  formFields.value = {
+  const filteredFields = fields.filter((i) => isFieldVisible(i))
+  return {
+    filteredFields,
     fields: fields,
-    labels: Object.fromEntries(fields.map((i) => [i.key, t(i.label)])),
+    labels: Object.fromEntries(filteredFields.map((i) => [i.key, t(i.label)])),
     rules: Object.fromEntries(
-      fields
+      filteredFields
         .filter((item) => item.options?.validation)
         .map((i) => [i.key, i.options?.validation ?? '']),
     ),
   }
+})
 
+watch(
+  () => data.value,
+  (newValue) => {
+    onChange(newValue, {
+      labels: formFields.value.labels,
+      rules: formFields.value.rules,
+      data: data.value,
+    })
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+)
+
+function resetForm() {
   template.value = Object.fromEntries(
-    fields.map((i) => {
-      return [i.key, null]
+    (formFields.value.fields || []).map((i) => {
+      const defaultValue = ['radio'].includes(i.component)
+        ? i?.options?.props?.items?.[0]?.id
+        : null
+      return [i.key, defaultValue]
     }),
   )
 
+  console.log(template.value)
   // set default data
   data.value = template.value
 }
@@ -191,46 +209,61 @@ const buildFields = () => {
 function submit() {
   if (!formIsValid.value) return
 
-  for (const property in data.value) {
-    updateValue(property, data.value[property])
-  }
+  console.log(data.value)
+  const dataToSubmit = data.value
 
-  // only submit fields defined in template
-  const dataToSubmit = convertData(template, Clone(data.value))
-
-  // set tags from prop
-  if (props.tags.length) dataToSubmit.tags = props.tags
-
-  promise.value = GqlCreateLead({
-    data: {
-      ...dataToSubmit,
-      reference: reference.value,
-      scopes: scopes.value,
-    },
-    sendBrochure: props.sendBrochure,
-  }).then((leadData) => {
-    if (kvassApi.value) {
-      kvassApi.value.emit('track', {
-        event: 'lead',
-        data: {
-          ...data.value,
-          ...dataToSubmit,
-          [typeLowerCase]: reference.value.ref,
-          reference: reference.value,
-          scopes: scopes.value,
-          id: leadData.LeadCreate.id,
-        },
-      })
-    }
-
+  createFormSubmit(props.accountUrl, props.formId, {
+    ...dataToSubmit,
+  }).then(() => {
     submitted.value = true
-    emit('onSubmit')
-
-    const { comment, ...rest } = data.value
-    sessionStorage.setItem('lead', JSON.stringify(rest))
-    reset()
+    resetForm()
+    // setTimeout(() => (submitted.value = false), props.submitTimeout)
   })
 }
+
+// function submit() {
+//   if (!formIsValid.value) return
+
+//   for (const property in data.value) {
+//     updateValue(property, data.value[property])
+//   }
+
+//   // only submit fields defined in template
+//   const dataToSubmit = convertData(template, Clone(data.value))
+
+//   // set tags from prop
+//   if (props.tags.length) dataToSubmit.tags = props.tags
+
+//   promise.value = GqlCreateLead({
+//     data: {
+//       ...dataToSubmit,
+//       reference: reference.value,
+//       scopes: scopes.value,
+//     },
+//     sendBrochure: props.sendBrochure,
+//   }).then((leadData) => {
+//     if (kvassApi.value) {
+//       kvassApi.value.emit('track', {
+//         event: 'lead',
+//         data: {
+//           ...data.value,
+//           ...dataToSubmit,
+//           [typeLowerCase]: reference.value.ref,
+//           reference: reference.value,
+//           scopes: scopes.value,
+//           id: leadData.LeadCreate.id,
+//         },
+//       })
+//     }
+
+//     submitted.value = true
+//     emit('onSubmit')
+
+//     const { comment, ...rest } = data.value
+//     sessionStorage.setItem('lead', JSON.stringify(rest))
+//     reset()
+//   })
+// }
 
 function updateValue(key, value) {
   const current = key.replace('contact.', '')
@@ -241,6 +274,12 @@ function updateValue(key, value) {
   //   })
   // }
   data.value[key] = value
+}
+function isFieldVisible(field) {
+  let condition = field.condition
+  if (!condition) return true
+
+  return new Query(JSON.parse(condition)).test(data.value)
 }
 
 function getLabel(key, component) {
@@ -259,41 +298,43 @@ function onBlur(key) {
   visited.value.push(key)
 }
 
-onMounted(buildFields)
+onMounted(resetForm)
 </script>
 
 <template>
   <div v-if="formFields.fields?.length" class="kvass-form">
     <h2>{{ props.title }}</h2>
+    {{ validator.errors }}
     <form class="kvass-form__form" @submit.prevent="submit">
       <Grid columns="2">
-        <FormControl
-          v-for="field in formFields.fields"
-          :class="[
-            'kvass-form__field',
-            { 'kvass-form__field--size-half': field.size === 'half' },
-            {
-              'kvass-form__field--required': (
-                field.options?.validation || ''
-              ).includes('required'),
-            },
-          ]"
-          :label="field.label"
-          :error="
-            !isFieldValid(field.key) && visited.includes(field.key)
-              ? getFieldError(field.key)
-              : ''
-          "
-        >
-          <component
-            :is="componentMap[field.component]"
-            v-bind="field.options?.props"
-            :model-value="data[field.key]"
-            @input="($ev) => updateValue(field.key, $ev.target.value)"
-            @blur="onBlur(field.key)"
-            :label="getLabel(field.key, field.component)"
-          ></component>
-        </FormControl>
+        <template v-for="field in formFields.filteredFields">
+          <FormControl
+            :class="[
+              'kvass-form__field',
+              { 'kvass-form__field--size-half': field.size === 'half' },
+              {
+                'kvass-form__field--required': (
+                  field.options?.validation || ''
+                ).includes('required'),
+              },
+            ]"
+            :label="field.label"
+            :error="
+              !isFieldValid(field.key) && visited.includes(field.key)
+                ? getFieldError(field.key)
+                : ''
+            "
+          >
+            <component
+              :is="componentMap[field.component]"
+              v-bind="field.options?.props"
+              :model-value="data[field.key]"
+              @input="($ev) => updateValue(field.key, $ev.target.value)"
+              @blur="onBlur(field.key)"
+              :label="getLabel(field.key, field.component)"
+            ></component>
+          </FormControl>
+        </template>
 
         <Button
           :label="props.actionLabel"
@@ -301,6 +342,7 @@ onMounted(buildFields)
           type="submit"
           icon-right="fa-pro-solid:arrow-right"
           :promise="promise"
+          :variant="'primary'"
           :disabled="!formIsValid"
         />
       </Grid>

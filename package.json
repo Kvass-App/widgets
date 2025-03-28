@@ -28,7 +28,8 @@
     "vue-chartjs": "^5.3.1",
     "webfontloader": "^1.6.28",
     "validator": "^13.12.0",
-    "validatorjs": "^3.22.1"
+    "validatorjs": "^3.22.1",
+    "mingo": "6.0.6"
   },
   "files": [
     "dist",

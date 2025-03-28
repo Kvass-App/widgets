@@ -77,6 +77,8 @@
       //     name: 'Lysholmen',
       //   },
 
+      form.setAttribute('form-id', '67e41a1c5621726e30ae691f')
+      form.setAttribute('account-url', 'https://local.kvass.test')
       form.setAttribute('title', 'Kontaktskjema')
       form.setAttribute(
         'fields',
@@ -88,13 +90,20 @@
             required: 'yes',
             component: 'radio',
             options: [
-              { option: 'Jeg skal registrere salgsdata' },
-              { option: 'Jeg skal regstrere igangsettingsdata' },
-              { option: 'Jeg skal regstrere overleveringsdata' },
+              { option: 'Jeg skal registrere salgsdata', key: 'sale-data' },
+              {
+                option: 'Jeg skalregistrere igangsettingsdata',
+                key: 'start-data',
+              },
+              {
+                option: 'Jeg skal regstrere overleveringsdata',
+                key: 'handover-data',
+              },
             ],
             'lead-placeholder': null,
             key: 'task',
             'hide-label': true,
+            size: 'full',
           },
           {
             label: 'Selgers navn',
@@ -103,6 +112,8 @@
             component: 'short-text',
             options: null,
             'lead-placeholder': null,
+            size: 'full',
+            condition: '{"task":"sale-data"}',
           },
           {
             label: 'Byggleders navn',
@@ -111,6 +122,8 @@
             component: 'short-text',
             options: null,
             'lead-placeholder': null,
+            size: 'full',
+            condition: '{"task": {"$ne": "sale-data"}}',
           },
           {
             label: 'Selskap',
@@ -119,6 +132,7 @@
             component: 'dropdown',
             options: [{ option: 'Silva bolig' }],
             'lead-placeholder': null,
+            size: 'full',
           },
           {
             label: 'Husnavn',
