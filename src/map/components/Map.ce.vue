@@ -248,8 +248,12 @@ const markerIcon = reactive({
 }
 
 .kvass-map {
+  aspect-ratio: var(
+    --kvass-widgets-map-aspect-ratio,
+    var(--kvass-map-aspect-ratio)
+  );
   @media screen and (max-width: 680px) {
-    aspect-ratio: 1/1.4;
+    aspect-ratio: var(--kvass-widgets-map-aspect-ratio-small-device, 1/1.4);
   }
 }
 </style>
