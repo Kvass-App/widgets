@@ -29,7 +29,7 @@ const props = defineProps({
   },
   columns: {
     type: Number,
-    default: 'repeat(auto-fit, minmax(300px, 1fr))',
+    default: 'repeat(auto-fill, minmax(300px, 1fr))',
   },
 })
 
