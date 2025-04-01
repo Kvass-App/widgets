@@ -22,6 +22,7 @@ const props = defineProps({
   repaymentPeriodMin: { type: Number, default: 5 },
   purchasePriceFixed: { type: Boolean },
   purchasePrice: { type: Number, required: true },
+  jointDebt: { type: Number },
   ctaLink: { type: Number },
   ctaLabel: { type: Number },
   labels: {
@@ -50,6 +51,7 @@ const t = getLabelFactory(props.labels, {
   cost: 'Kostnad',
   total: 'Totalt',
   loanCalculator: 'Lånekalkulator',
+  exclJointDebt: 'ekskl. fellesgjeld',
 })
 
 const currency = formatFactory('currency', {
@@ -156,7 +158,9 @@ const onPurchasePriceInput = () => {
     <Slider
       v-model="purchasePriceInput"
       @update:model-value="onPurchasePriceInput"
-      :label="t('purchasePrice')"
+      :label="
+        t('purchasePrice') + (jointDebt ? ' (' + t('exclJointDebt') + ')' : '')
+      "
       :min="Math.round(purchasePrice / 2)"
       :max="Math.round(purchasePrice * 2)"
       :disabled="purchasePriceFixed"
@@ -192,7 +196,11 @@ const onPurchasePriceInput = () => {
         {{ percent(effectiveRate) }} {{ t('effectiveInterestRateShort') }} /
         {{ percent(nominelInterestRate) }} {{ t('nominalInterestRateShort') }}
       </div>
-      <div>{{ t('loanAmount') }}: {{ currency(loanAmount) }}</div>
+      <div>
+        {{ t('loanAmount')
+        }}{{ jointDebt ? ' (' + t('exclJointDebt') + ')' : '' }}:
+        {{ currency(loanAmount) }}
+      </div>
     </div>
 
     <div data-part="summary">
