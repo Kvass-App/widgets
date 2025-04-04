@@ -201,7 +201,7 @@ const getLabel = (key) => {
       </tr>
     </table>
 
-    <Alert v-if="partOwnershipEnabled">
+    <Alert v-if="[true, 'true'].includes(partOwnershipEnabled)">
       <Flex justify="space-between">
         <img
           v-if="partOwnershipLogo"
