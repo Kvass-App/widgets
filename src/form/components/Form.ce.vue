@@ -4,12 +4,8 @@ import { onMounted, ref, watch, computed } from 'vue'
 import { createFormSubmit } from '../api'
 import useValidator from '../../composables/useValidator.js'
 import {
-  Card,
   Grid,
   Button,
-  Image,
-  Icon,
-  Flex,
   FormControl,
   Input,
   RadioGroup,
@@ -201,15 +197,12 @@ function resetForm() {
     }),
   )
 
-  console.log(template.value)
   // set default data
   data.value = template.value
 }
 
 function submit() {
   if (!formIsValid.value) return
-
-  console.log(data.value)
   const dataToSubmit = data.value
 
   createFormSubmit(props.accountUrl, props.formId, {
@@ -220,50 +213,6 @@ function submit() {
     // setTimeout(() => (submitted.value = false), props.submitTimeout)
   })
 }
-
-// function submit() {
-//   if (!formIsValid.value) return
-
-//   for (const property in data.value) {
-//     updateValue(property, data.value[property])
-//   }
-
-//   // only submit fields defined in template
-//   const dataToSubmit = convertData(template, Clone(data.value))
-
-//   // set tags from prop
-//   if (props.tags.length) dataToSubmit.tags = props.tags
-
-//   promise.value = GqlCreateLead({
-//     data: {
-//       ...dataToSubmit,
-//       reference: reference.value,
-//       scopes: scopes.value,
-//     },
-//     sendBrochure: props.sendBrochure,
-//   }).then((leadData) => {
-//     if (kvassApi.value) {
-//       kvassApi.value.emit('track', {
-//         event: 'lead',
-//         data: {
-//           ...data.value,
-//           ...dataToSubmit,
-//           [typeLowerCase]: reference.value.ref,
-//           reference: reference.value,
-//           scopes: scopes.value,
-//           id: leadData.LeadCreate.id,
-//         },
-//       })
-//     }
-
-//     submitted.value = true
-//     emit('onSubmit')
-
-//     const { comment, ...rest } = data.value
-//     sessionStorage.setItem('lead', JSON.stringify(rest))
-//     reset()
-//   })
-// }
 
 function updateValue(key, value) {
   const current = key.replace('contact.', '')
@@ -304,7 +253,7 @@ onMounted(resetForm)
 <template>
   <div v-if="formFields.fields?.length" class="kvass-form">
     <h2>{{ props.title }}</h2>
-    {{ validator.errors }}
+
     <form class="kvass-form__form" @submit.prevent="submit">
       <Grid columns="2">
         <template v-for="field in formFields.filteredFields">
@@ -371,6 +320,9 @@ onMounted(resetForm)
         margin-left: 0.3rem;
       }
     }
+  }
+  .k-button--variant-secondary {
+    background-color: white;
   }
 
   .k-radiogroup--variant-radio {
