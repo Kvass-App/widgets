@@ -31,10 +31,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  apiKey: String,
   templateProvider: {
     type: String,
     default: 'google',
   },
+
   disablePreviewOn: {
     type: Array,
     default: () => [],
@@ -122,7 +124,7 @@ async function getData() {
       )
       .flat()
   } else {
-    const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyCKj22SVMc7W1VzteuqpsnRo_u95L2TX_A`
+    const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${props.apiKey}`
     try {
       const response = await fetch(url)
       if (!response.ok) {
