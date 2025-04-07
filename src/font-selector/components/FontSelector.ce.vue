@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
-import { Alert, Dropdown } from '@kvass/ui'
+import { Alert, Dropdown, Checkbox, Grid } from '@kvass/ui'
 import { Translate } from '../../utils/index.js'
 
 const props = defineProps({
@@ -26,15 +26,25 @@ const props = defineProps({
   templateFont: {
     type: String,
   },
+
+  showAllOption: {
+    type: Boolean,
+    default: false,
+  },
+  apiKey: String,
   templateProvider: {
     type: String,
     default: 'google',
   },
+
   disablePreviewOn: {
     type: Array,
     default: () => [],
   },
 })
+
+const items = ref([])
+const showAllFonts = ref(false)
 
 const providers = ref(
   getProviders([
@@ -97,22 +107,47 @@ const styles = computed(
     `--kvass-font-selector-font-family: '${selectedFont.value}'`,
 )
 
-const items = computed(() => {
-  return providers.value
-    .map((provider) =>
-      provider.fonts.map((font) => {
+async function getData() {
+  if (!showAllFonts.value) {
+    items.value = providers.value
+      .map((provider) =>
+        provider.fonts.map((font) => {
+          return {
+            icon: props.disablePreviewOn.includes(font)
+              ? 'gridicons:customize'
+              : `simple-icons:${provider.value}fonts`,
+            label: font,
+            provider: provider.value,
+            action: () => (selectedFont.value = font),
+          }
+        }),
+      )
+      .flat()
+  } else {
+    const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${props.apiKey}`
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`)
+      }
+
+      const res = await response.json()
+      items.value = res?.items.map((font) => {
         return {
-          icon: props.disablePreviewOn.includes(font)
+          icon: props.disablePreviewOn.includes(font.family)
             ? 'gridicons:customize'
-            : `simple-icons:${provider.value}fonts`,
-          label: font,
-          provider: provider.value,
-          action: () => (selectedFont.value = font),
+            : `simple-icons:googlefonts`,
+          label: font.family,
+          provider: 'google',
+          action: () => (selectedFont.value = font.family),
         }
-      }),
-    )
-    .flat()
-})
+      })
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+}
+
 onMounted(() => {
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
@@ -135,13 +170,25 @@ onMounted(() => {
       <span v-if="label" class="kvass-font-selector__label">{{
         Translate(label)
       }}</span>
+    </label>
+    <Grid
+      :style="'padding:1rem'"
+      columns="repeat(auto-fit, minmax(170px, 1fr))"
+    >
       <Dropdown
         class="kvass-font-selector__dropdown"
         :label="selectedFont || Translate('select')"
         :items="items"
+        @click="getData"
       >
       </Dropdown>
-    </label>
+      <Checkbox
+        v-if="props.showAllOption"
+        v-model="showAllFonts"
+        label="Vis alle google fonts"
+      />
+    </Grid>
+
     <div
       :class="[
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
@@ -152,7 +199,9 @@ onMounted(() => {
       }}</small>
       <Alert
         v-if="
-          props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
+          showAllFonts ||
+          props.disablePreviewOn.includes(selectedFont) ||
+          selectedFont === ''
         "
         variant="neutral"
       >
@@ -218,8 +267,6 @@ onMounted(() => {
       --kvass-font-selector-border-radius,
       var(--__kvass-font-selector-border-radius)
     );
-    border-end-end-radius: 0;
-    border-end-start-radius: 0;
 
     font-size: 1em;
     padding: 1rem;
@@ -235,11 +282,12 @@ onMounted(() => {
         --kvass-font-selector-border-color,
         var(--__kvass-font-selector-border-color)
       );
-    border-bottom: 0;
   }
   .k-dropdown {
     border-radius: 0;
     padding: 0;
+    max-height: 500px;
+    overflow: auto;
   }
 
   &__preview {
