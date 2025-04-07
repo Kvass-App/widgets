@@ -84,7 +84,10 @@ const currency = (val) => {
 }
 
 const currencyShorter = (val) => {
-  return Intl.NumberFormat(props.locale, { notation: 'compact' }).format(val)
+  return Intl.NumberFormat(props.locale, {
+    notation: 'compact',
+    maximumSignificantDigits: 6,
+  }).format(val)
 }
 
 const getDivisor = (n, d = 10) => {
@@ -153,7 +156,7 @@ watch(deposit, (val) => (depositInput.value = val))
 
 const onDepositInputBlur = () => {
   depositInput.value = Math.min(
-    props.price,
+    total.value,
     Math.max(defaultDeposit, depositInput.value),
   )
   deposit.value = depositInput.value
