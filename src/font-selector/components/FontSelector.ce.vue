@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
-import { Alert, Dropdown, Checkbox, Grid } from '@kvass/ui'
+import { Alert, Dropdown } from '@kvass/ui'
 import { Translate } from '../../utils/index.js'
 
 const props = defineProps({
@@ -42,9 +42,6 @@ const props = defineProps({
     default: () => [],
   },
 })
-
-const items = ref([])
-const showAllFonts = ref(false)
 
 const providers = ref(
   getProviders([
@@ -170,25 +167,13 @@ onMounted(() => {
       <span v-if="label" class="kvass-font-selector__label">{{
         Translate(label)
       }}</span>
-    </label>
-    <Grid
-      :style="'padding:1rem'"
-      columns="repeat(auto-fit, minmax(170px, 1fr))"
-    >
       <Dropdown
         class="kvass-font-selector__dropdown"
         :label="selectedFont || Translate('select')"
         :items="items"
-        @click="getData"
       >
       </Dropdown>
-      <Checkbox
-        v-if="props.showAllOption"
-        v-model="showAllFonts"
-        label="Vis alle google fonts"
-      />
-    </Grid>
-
+    </label>
     <div
       :class="[
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
@@ -199,9 +184,7 @@ onMounted(() => {
       }}</small>
       <Alert
         v-if="
-          showAllFonts ||
-          props.disablePreviewOn.includes(selectedFont) ||
-          selectedFont === ''
+          props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
         "
         variant="neutral"
       >
@@ -267,6 +250,8 @@ onMounted(() => {
       --kvass-font-selector-border-radius,
       var(--__kvass-font-selector-border-radius)
     );
+    border-end-end-radius: 0;
+    border-end-start-radius: 0;
 
     font-size: 1em;
     padding: 1rem;
@@ -282,12 +267,11 @@ onMounted(() => {
         --kvass-font-selector-border-color,
         var(--__kvass-font-selector-border-color)
       );
+    border-bottom: 0;
   }
   .k-dropdown {
     border-radius: 0;
     padding: 0;
-    max-height: 500px;
-    overflow: auto;
   }
 
   &__preview {
