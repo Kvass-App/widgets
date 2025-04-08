@@ -3,8 +3,17 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
-import { Alert, Dropdown, Checkbox, Grid } from '@kvass/ui'
-import { Translate } from '../../utils/index.js'
+
+import {
+  Alert,
+  Checkbox,
+  Grid,
+  Input,
+  FormControl,
+  Icon,
+  Button,
+} from '@kvass/ui'
+import { Translate, Debounce } from '../../utils/index.js'
 
 const props = defineProps({
   customPriovider: {
@@ -44,7 +53,10 @@ const props = defineProps({
 })
 
 const items = ref([])
+const allData = ref([])
 const showAllFonts = ref(false)
+const search = ref('')
+const openList = ref(false)
 
 const providers = ref(
   getProviders([
@@ -70,6 +82,10 @@ const selectedFont = ref(
   props.value ? (JSON.parse(`${props.value}`) || {}).font : '',
 )
 
+const hasInputErrors = computed(() => {
+  return !allData.value.some((i) => i.label === search.value)
+})
+
 const selectedProvider = computed(() => {
   const provider = providers.value.find((p) =>
     p.fonts?.includes(selectedFont.value),
@@ -93,7 +109,19 @@ function update(font) {
   )
 }
 const element = useCurrentElement()
+function triggerSearch(newValue) {
+  if (newValue !== selectedFont.value) {
+    openList.value = true
+  }
 
+  if (!allData.value.length) {
+    return getData()
+  }
+
+  items.value = allData.value.filter((i) => {
+    return i.label.startsWith(newValue)
+  })
+}
 watch(selectedFont, (newFont) => {
   if (!newFont) return
 
@@ -101,11 +129,30 @@ watch(selectedFont, (newFont) => {
   update(newFont)
 })
 
+watch(search, (newValue, oldValue) => {
+  triggerSearch(newValue)
+})
+watch(showAllFonts, (newValue, oldValue) => {
+  getData()
+})
+
 const styles = computed(
   () =>
     selectedFont.value &&
     `--kvass-font-selector-font-family: '${selectedFont.value}'`,
 )
+
+function onFocus() {
+  if (!allData.value.length) {
+    return getData()
+  }
+  openList.value = true
+}
+
+const onBlur = Debounce(function () {
+  if (hasInputErrors.value) search.value = selectedFont.value
+  openList.value = false
+}, 300)
 
 async function getData() {
   if (!showAllFonts.value) {
@@ -118,7 +165,11 @@ async function getData() {
               : `simple-icons:${provider.value}fonts`,
             label: font,
             provider: provider.value,
-            action: () => (selectedFont.value = font),
+            action: () => {
+              selectedFont.value = font
+              search.value = font
+              openList.value = false
+            },
           }
         }),
       )
@@ -139,13 +190,19 @@ async function getData() {
             : `simple-icons:googlefonts`,
           label: font.family,
           provider: 'google',
-          action: () => (selectedFont.value = font.family),
+          action: () => {
+            selectedFont.value = font.family
+            search.value = font.family
+            openList.value = false
+          },
         }
       })
     } catch (error) {
       console.error(error.message)
     }
   }
+
+  allData.value = items.value
 }
 
 onMounted(() => {
@@ -160,6 +217,7 @@ onMounted(() => {
   )
 
   WebFontLoader.load(config)
+  search.value = selectedFont.value || ''
   update(selectedFont.value)
 })
 </script>
@@ -172,20 +230,27 @@ onMounted(() => {
       }}</span>
     </label>
     <Grid :style="'padding:1rem 0'" columns="1">
-      <Dropdown
-        class="kvass-font-selector__dropdown"
-        :label="selectedFont || Translate('select')"
-        :items="items"
-        @click="getData"
-      >
-      </Dropdown>
+      <FormControl label="Velg / søk etter font">
+        <Input v-model="search" @focus="onFocus" @blur="onBlur">
+          <template #suffix>
+            <Icon @click="triggerSearch" icon="fa-pro-solid:angle-down"></Icon>
+          </template>
+        </Input>
+        <div v-if="openList" class="kvass-font-selector__select-list">
+          <Button
+            v-for="item in items"
+            :label="item.label"
+            :icon-right="item.icon"
+            @click="item.action"
+          ></Button>
+        </div>
+      </FormControl>
       <Checkbox
         v-if="props.showAllOption"
         v-model="showAllFonts"
         label="Vis alle google fonts"
       />
     </Grid>
-
     <div
       :class="[
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
@@ -257,35 +322,31 @@ onMounted(() => {
   .k-alert {
     font-weight: 400 !important;
   }
-  &__dropdown {
-    width: 100%;
 
+  .k-formcontrol {
+    position: relative;
+  }
+  &__select-list {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    position: absolute;
+    min-width: 50%;
+    top: 100%;
+    z-index: 1;
+    max-height: 400px;
+    overflow: auto;
+  }
+  .k-input {
     border-radius: var(
       --kvass-font-selector-border-radius,
       var(--__kvass-font-selector-border-radius)
     );
+    &__suffix {
+      background: transparent;
+    }
+  }
 
-    font-size: 1em;
-    padding: 1rem;
-    border: var(
-        --kvass-font-selector-border-width,
-        var(--__kvass-font-selector-border-width)
-      )
-      var(
-        --kvass-font-selector-border-style,
-        var(--__kvass-font-selector-border-style)
-      )
-      var(
-        --kvass-font-selector-border-color,
-        var(--__kvass-font-selector-border-color)
-      );
-  }
-  .k-dropdown {
-    border-radius: 0;
-    padding: 0;
-    max-height: 500px;
-    overflow: auto;
-  }
   .k-checkbox {
     font-size: 0.75em;
     --k-checkbox-size: 0.8em;

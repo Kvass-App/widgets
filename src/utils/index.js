@@ -201,37 +201,37 @@ const parse = (v) => {
 
 const getLabel =
   (v = {}, d = {}) =>
-    (key) =>
-      parse(v)[key] || d[key] || key
+  (key) =>
+    parse(v)[key] || d[key] || key
 
 const format =
   (type, options = {}) =>
-    (value) => {
-      switch (type) {
-        case 'currency':
-          const { locale, ...rest } = options
-          return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            maximumFractionDigits: 0,
-            ...rest,
-          }).format(value)
-        case 'number':
-          return new Intl.NumberFormat(options.locale).format(value)
-        case 'year':
-        case 'years':
-          return [
-            value,
-            new Intl.RelativeTimeFormat(options.locale)
-              .formatToParts(value, 'year')
-              .at(-1).value,
-          ].join(' ')
-        case 'percent':
-          const { maximumFractionDigits = 0 } = options
-          return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
-        default:
-          return value
-      }
+  (value) => {
+    switch (type) {
+      case 'currency':
+        const { locale, ...rest } = options
+        return new Intl.NumberFormat(locale, {
+          style: 'currency',
+          maximumFractionDigits: 0,
+          ...rest,
+        }).format(value)
+      case 'number':
+        return new Intl.NumberFormat(options.locale).format(value)
+      case 'year':
+      case 'years':
+        return [
+          value,
+          new Intl.RelativeTimeFormat(options.locale)
+            .formatToParts(value, 'year')
+            .at(-1).value,
+        ].join(' ')
+      case 'percent':
+        const { maximumFractionDigits = 0 } = options
+        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+      default:
+        return value
     }
+  }
 
 const getCurrencyInputProps = (options = {}) => {
   const { locale, currency } = options
@@ -247,6 +247,16 @@ const getCurrencyInputProps = (options = {}) => {
 
   if (data.match(/^\d/)) return { suffix: symbol, mask }
   return { symbol, mask }
+}
+
+function Debounce(fn, wait = 300) {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      fn.apply(this, args)
+    }, wait)
+  }
 }
 
 export {
@@ -265,5 +275,6 @@ export {
   getLabel,
   format,
   getCurrencyInputProps,
-  transformBoolean
+  transformBoolean,
+  Debounce,
 }
