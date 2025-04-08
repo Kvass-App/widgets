@@ -119,7 +119,7 @@ function triggerSearch(newValue) {
   }
 
   items.value = allData.value.filter((i) => {
-    return i.label.startsWith(newValue)
+    return i.label.toLowerCase().startsWith(newValue?.toLowerCase())
   })
 }
 watch(selectedFont, (newFont) => {
