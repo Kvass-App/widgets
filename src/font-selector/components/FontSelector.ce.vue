@@ -97,6 +97,7 @@ const selectedProvider = computed(() => {
 })
 
 function update(font) {
+  if (!font) return
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
@@ -109,7 +110,8 @@ function update(font) {
   )
 }
 const element = useCurrentElement()
-function triggerSearch(newValue) {
+
+function triggerSearch(newValue = '') {
   if (newValue !== selectedFont.value) {
     openList.value = true
   }
@@ -117,6 +119,8 @@ function triggerSearch(newValue) {
   if (!allData.value.length) {
     return getData()
   }
+
+  if (typeof newValue !== 'string') return
 
   items.value = allData.value.filter((i) => {
     return i.label.toLowerCase().startsWith(newValue?.toLowerCase())
@@ -131,6 +135,7 @@ watch(selectedFont, (newFont) => {
 
 watch(search, (newValue, oldValue) => {
   triggerSearch(newValue)
+  loadFonts()
 })
 watch(showAllFonts, (newValue, oldValue) => {
   getData()
@@ -148,9 +153,25 @@ function onFocus() {
   }
   openList.value = true
 }
+function loadFonts() {
+  // Initialize WebFontLoader
+  const config = Object.fromEntries(
+    Object.entries(providers.value).map(([_, provider]) => [
+      provider.value,
+      {
+        families: [
+          ...provider.fonts.map((font) => `${font}:400,700`),
+          `${selectedFont.value}:400,700`,
+        ],
+      },
+    ]),
+  )
+
+  WebFontLoader.load(config)
+}
 
 const onBlur = Debounce(function () {
-  if (hasInputErrors.value) search.value = selectedFont.value
+  if (hasInputErrors.value) search.value = selectedFont.value || ''
   openList.value = false
 }, 300)
 
@@ -208,15 +229,8 @@ async function getData() {
 onMounted(() => {
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
-  // Initialize WebFontLoader
-  const config = Object.fromEntries(
-    Object.entries(providers.value).map(([_, provider]) => [
-      provider.value,
-      { families: provider.fonts.map((font) => `${font}:400,700`) },
-    ]),
-  )
+  loadFonts()
 
-  WebFontLoader.load(config)
   search.value = selectedFont.value || ''
   update(selectedFont.value)
 })
@@ -261,9 +275,7 @@ onMounted(() => {
       }}</small>
       <Alert
         v-if="
-          showAllFonts ||
-          props.disablePreviewOn.includes(selectedFont) ||
-          selectedFont === ''
+          props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
         "
         variant="neutral"
       >
