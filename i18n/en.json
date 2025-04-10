@@ -1,6 +1,7 @@
 {
   "cancel" : "Cancel",
   "confirm" : "Confirm",
+  "email" : "Email",
   "fa-pro-brands" : "Brands icons",
   "fa-pro-duotone" : "Duotone icons",
   "fa-pro-light" : "Light icons",
@@ -17,9 +18,14 @@
   "iconSelectWidgetHelpText" : "Search in English for icon you are looking for, for example 'Helicopter'.",
   "iconsSelectWidgetIconsFound" : "Hits",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "No icons to match your search.",
+  "leadMessage" : "Notification",
   "loadAllElements" : "Load all elements",
+  "name" : "Name",
+  "phone" : "Phone",
+  "phoneValidation" : "You have not entered a valid phone number",
   "primaryTitle" : "Main title",
   "secondaryTitle" : "Secondary title",
   "select" : "Select",
-  "selectIcon" : "Select icon"
+  "selectIcon" : "Select icon",
+  "submit" : "Submit {x}"
 }
