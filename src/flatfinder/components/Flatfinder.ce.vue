@@ -15,6 +15,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  showResidentialList: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
 
@@ -25,6 +29,7 @@ const props = defineProps({
       :project-url="projectUrl"
       :project-id="projectId"
       :path-prefix="pathPrefix"
+      :show-residential-list="showResidentialList"
     />
   </LazyLoad>
 </template>
