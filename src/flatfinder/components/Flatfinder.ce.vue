@@ -34,6 +34,34 @@ const props = defineProps({
   </LazyLoad>
 </template>
 
-<style>
+<style lang="scss">
 @import url('@kvass/vue3-flatfinder/style.css');
+
+.kvass-flatfinder {
+  // https://help.kvass.no/nb/articles/301111-embed-unit-selector
+  --k-rangeslider-range-background: var(--kvass-flatfinder-filter-background);
+  --k-checkbox-accent: var(--kvass-flatfinder-filter-background);
+  --k-button-secondary-background: var(--kvass-flatfinder-filter-background);
+  --k-button-secondary-text: var(--kvass-flatfinder-filter-contrast);
+  --k-button-secondary-border: var(--kvass-flatfinder-filter-border-color);
+  --k-button-secondary-background-hover: var(
+    --kvass-flatfinder-filter-background-hover,
+    var(--kvass-flatfinder-filter-background)
+  );
+  --k-button-border-radius: var(--kvass-flatfinder-filter-border-radius);
+
+  .k-datatable {
+    color: var(--kvass-flatfinder-list-color, inherit);
+    &__row {
+      --k-datatable-odd-color: var(--kvass-flatfinder-list-odd-background);
+      &:nth-child(even) .k-datatable__cell {
+        background-color: var(--kvass-flatfinder-list-even-background);
+      }
+    }
+  }
+  .k-checkbox[data-state='checked']:not([data-disabled]) [data-part='control'] {
+    --k-checkbox-accent: var(--kvass-flatfinder-filter-background);
+    --k-checkbox-accent-contrast: var(--kvass-flatfinder-filter-contrast);
+  }
+}
 </style>
