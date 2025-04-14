@@ -49,6 +49,7 @@ const props = defineProps({
     var(--kvass-flatfinder-filter-background)
   );
   --k-button-border-radius: var(--kvass-flatfinder-filter-border-radius);
+  font-size: var(--kvass-flatfinder-font-size, 16px);
 
   .k-datatable {
     color: var(--kvass-flatfinder-list-color, inherit);
