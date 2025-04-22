@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { Card, Grid, Button, Image, Icon, Flex } from '@kvass/ui'
+import { RenderBlock, getTitle, getThumbnail, ValidateBlocks } from './renderer'
 
 const Shorten = (e, l) => (e.length > l ? e.substring(e, l - 3) + '...' : e)
 const Replace = (s, d) => s.replace(/{(\w+)}/g, (m, k) => d[k] || m)
@@ -11,13 +12,10 @@ const FormatDate = (e) =>
     month: 'short',
     day: 'numeric',
   }).format(new Date(e))
-const WrapMap = { bold: 'b', italic: 'i' }
-const Wrap = (t, e) => `<${WrapMap[t] || t}>${e}</${WrapMap[t] || t}>`
 const defaultUrl =
   '/api/integration/preset/knips/statics/getPosts?feed={feed}&limit={limit}'
 
 const props = defineProps({
-  url: String,
   feed: String,
   author: {
     type: Boolean,
@@ -33,43 +31,20 @@ const props = defineProps({
   },
 })
 
-const getTitle = (item) =>
-  item.blocks.find((b) => ['h1', 'h2'].includes(b.type))?.text
-
-const el = ref(null)
-const dialog = ref(null)
-
 const items = ref([])
 const item = ref(null)
 const mapItem = (item) => {
-  const getThumbnail = () => {
-    if (item.featuredImage.type === 'video')
-      return {
-        component: 'video',
-        props: {
-          src: item.blocks.find(
-            (b) => b.type === 'video' && b.imageUrl === item.featuredImage.src,
-          )?.videoStorageUrl,
-          autoplay: true,
-          type: 'video/mp4',
-        },
-      }
-
-    return {
-      component: Image,
-      props: { src: item.featuredImage.src, 'aspect-ratio': '16/9' },
-    }
-  }
-
   return {
     id: item.id,
     title: getTitle(item),
     date: FormatDate(item.publishDate),
     project: item?.project,
     author: item?.author?.name,
+    externalUrl: item.externalUrl,
     thumbnailImage: item.featuredImage.src,
-    thumbnail: getThumbnail(),
+    thumbnail: getThumbnail(item),
     claps: item.clapCount,
+    isSupported: ValidateBlocks(item),
     shortContent: Shorten(
       item.blocks
         .filter((b) => b.type === 'regular')
@@ -77,61 +52,7 @@ const mapItem = (item) => {
         .join('\n'),
       125,
     ),
-    content: [
-      ...item.blocks
-        .flatMap((b) => {
-          switch (b.type) {
-            case 'image':
-              return
-            case 'h1':
-            case 'h2':
-              return { component: 'h2', content: b.text }
-            case 'form':
-              const form = item.forms.find((f) => f.id === b.formId)
-              return {
-                component: Button,
-                label: form.title,
-                variant: 'tertiary',
-                is: 'a',
-                href: `${props.url}/p/${item.id}?showForm=${form.id}`,
-                target: '_blank',
-              }
-            case 'link':
-              if (
-                b.url.replace(/\/$/, '') ===
-                (window.location.origin + window.location.pathname).replace(
-                  /\/$/,
-                  '',
-                )
-              )
-                return
-              return {
-                component: b.style === 'button' ? Button : 'a',
-                [b.style === 'button' ? 'label' : 'content']: b.text,
-                variant: 'tertiary',
-                is: 'a',
-                href: b.urlRedirect || b.url,
-                target: '_blank',
-              }
-            case 'regular':
-              if (!b.spans?.length) return { component: 'p', content: b.text }
-              return b.spans.map((s) => {
-                let content = s.text
-                s.styles.forEach((t) => (content = Wrap(t, content)))
-                return { component: 'p', content }
-              })
-            case 'video':
-              if (item.featuredImage.src === b.imageUrl) return
-              return {
-                component: 'video',
-                type: 'video/mp4',
-                controls: true,
-                src: b.videoStorageUrl,
-              }
-          }
-        })
-        .filter(Boolean),
-    ],
+    content: item.blocks.flatMap((b) => RenderBlock(b, item)).filter(Boolean),
   }
 }
 
@@ -154,10 +75,10 @@ const getPosts = () => {
           .filter((e) => e.status === 'published' && e.channel === 'public')
           .map(mapItem)),
     )
-  // .then(() => onDialog(items.value.at(1)))
 }
 
 const onDialog = (e) => {
+  if (!e.isSupported) return window.open(`${e.externalUrl}`)
   item.value = e
 }
 
@@ -220,7 +141,8 @@ onMounted(getPosts)
       </Card>
     </Grid>
     <div v-if="item" class="knips-feed__modal" @click="onModalClick">
-      <Card>
+      <div class="knips-feed__modal-backdrop"></div>
+      <Card appearance="flat">
         <template #header v-if="item">
           <component
             :is="item.thumbnail.component"
@@ -343,6 +265,11 @@ onMounted(getPosts)
     align-self: center;
   }
 
+  [data-field='dialog-content'] {
+    display: flex;
+    flex-direction: column;
+  }
+
   [data-field='clap'] {
     cursor: pointer;
 
@@ -359,6 +286,39 @@ onMounted(getPosts)
     }
   }
 
+  [data-block-type]:empty {
+    display: none;
+  }
+
+  [data-block-type='divider'] {
+    border: none;
+    border-top: 1px solid currentColor;
+    opacity: 0.2;
+  }
+
+  [data-block-type='quote'] {
+    font-style: italic;
+    margin-block: 1rem;
+    border-left: 0.25em solid rgba(black, 0.2);
+    padding-left: 0.5em;
+  }
+
+  [data-block-type='list'] {
+    margin-bottom: 0;
+
+    & + [data-block-type='list'] {
+      margin-top: 0.25em;
+    }
+  }
+
+  [data-block-type='link'] {
+    margin: 0 auto;
+  }
+
+  [alignment='center'] {
+    text-align: center;
+  }
+
   &__modal {
     position: fixed;
     top: 0;
@@ -369,15 +329,15 @@ onMounted(getPosts)
     background-color: rgb(0 0 0 / 0.3);
     z-index: 10000;
 
-    padding: 2rem;
-
     display: flex;
     align-items: flex-start;
     justify-content: center;
 
     .k-card {
-      max-width: 65ch;
+      width: 100%;
+      max-width: 75ch;
       max-height: calc(100vh - 4rem);
+      margin: 2rem;
       overflow-y: auto;
       position: relative;
     }
@@ -386,6 +346,15 @@ onMounted(getPosts)
       border-top-left-radius: inherit;
       border-top-right-radius: inherit;
       overflow: clip;
+      padding: var(--k-ui-spacing-lg);
+    }
+
+    &-backdrop {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(black, 0.2);
+      backdrop-filter: blur(8px);
     }
   }
 }
