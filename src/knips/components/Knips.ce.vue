@@ -215,6 +215,10 @@ onMounted(getPosts)
     right: 1rem;
     background-color: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(8px);
+
+    &:not(:hover) {
+      color: black;
+    }
   }
 
   .k-card {
@@ -286,8 +290,12 @@ onMounted(getPosts)
     }
   }
 
-  [data-block-type]:empty {
+  [data-block-type='regular']:empty {
     display: none;
+  }
+
+  [data-block-type='video'] {
+    margin-block: 2em;
   }
 
   [data-block-type='divider'] {
