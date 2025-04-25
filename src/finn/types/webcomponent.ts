@@ -1,10 +1,7 @@
 export type View = 'dashboard' | 'mutate'
 
 export type Webcomponent = {
-  integrationId: string
-  tenant: string
-  token: string
-  view: View
-  id: string
-  project: string
+  labels: Record<string, string> // string
+  locale: string
+  currency: string
 }

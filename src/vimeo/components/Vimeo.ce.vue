@@ -172,7 +172,8 @@ export default {
 
   async mounted() {
     if (this.displayThumbnail)
-      this.thumbnail = `/api/media/thumbnail?url=${this.url}`
+      this.thumbnail =
+        this.thumbnailSource || `/api/media/thumbnail?url=${this.url}`
 
     if (this.ignoreConsent || !this.kvassDefined) return this.init()
 
