@@ -19,6 +19,7 @@
   "iconsSelectWidgetIconsFound" : "Hits",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "No icons to match your search.",
   "leadMessage" : "Notification",
+  "leadMessageSent" : "Thank you for your interest. You will soon be contacted by a customer service representative.",
   "loadAllElements" : "Load all elements",
   "name" : "Name",
   "phone" : "Phone",
@@ -27,5 +28,7 @@
   "secondaryTitle" : "Secondary title",
   "select" : "Select",
   "selectIcon" : "Select icon",
+  "showAll" : "Show all",
+  "somethingWentWrong" : "Something went wrong",
   "submit" : "Submit {x}"
 }

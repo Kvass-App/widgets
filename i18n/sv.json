@@ -19,6 +19,7 @@
   "iconsSelectWidgetIconsFound" : "träff",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Inga ikoner matchade din sökning.",
   "leadMessage" : "Besked/Information",
+  "leadMessageSent" : "Tack för ditt intresse. Du kommer snart att kontaktas av en kundtjänstmedarbetare.",
   "loadAllElements" : "Ladda alla",
   "name" : "Namn",
   "phone" : "Telefon",
@@ -27,5 +28,7 @@
   "secondaryTitle" : "Sekundär titel",
   "select" : "Välj",
   "selectIcon" : "Välj ikon",
+  "showAll" : "Visa alla",
+  "somethingWentWrong" : "Ett fel inträffade",
   "submit" : "Skicka in {x}"
 }

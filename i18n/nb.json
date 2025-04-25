@@ -19,6 +19,7 @@
   "iconsSelectWidgetIconsFound" : "treff",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Ingen ikoner passer søket ditt.",
   "leadMessage" : "Beskjed",
+  "leadMessageSent" : "Takk for din interesse. Du vil snart bli kontaktet av kundebehandler.",
   "loadAllElements" : "Last inn alle",
   "name" : "Navn",
   "phone" : "Telefon",
@@ -27,5 +28,7 @@
   "secondaryTitle" : "Sekundærtittel",
   "select" : "Velg",
   "selectIcon" : "Velg ikon",
+  "showAll" : "Vis alle",
+  "somethingWentWrong" : "Noe gikk galt",
   "submit" : "Send inn {x}"
 }

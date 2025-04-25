@@ -1,5 +1,5 @@
 <script setup>
-import { Slugify, Translate } from '../../utils'
+import { Slugify, Translate, uploadFunction } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
 import { createFormSubmit } from '../api'
 import useValidator from '../../composables/useValidator.js'
@@ -13,24 +13,24 @@ import {
   Dropdown,
   Checkbox,
   File,
+  Alert,
 } from '@kvass/ui'
 import Number from './Fields/Number'
 import Date from './Fields/Date'
+import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
 
-import Privacy from './Fields/Privacy'
-
 const componentMap = {
-  privacy: Privacy,
   radio: RadioGroup,
   'short-text': Input,
   number: Number,
   'long-text': TextArea,
   dropdown: Dropdown,
   checkbox: Checkbox,
-  checklist: Checkbox,
+  checklist: CheckList,
   file: File,
   date: Date,
+  privacy: Checkbox,
 }
 
 const props = defineProps({
@@ -47,7 +47,7 @@ const props = defineProps({
     required: true,
   },
 
-  actionLabel: {
+  submitButtonLabel: {
     type: String,
     default: 'Send inn',
   },
@@ -55,10 +55,19 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  successMessage: {
+    type: String,
+    default: '',
+  },
+  submitTimeout: {
+    type: Number,
+    default: 5000,
+  },
 })
 
 const template = ref({})
 const data = ref({})
+const submitError = ref(false)
 const promise = ref(null)
 const submitted = ref(false)
 const visited = ref([])
@@ -67,6 +76,8 @@ const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   t,
   'nb',
 )
+
+const hideFormFieldLabelOn = ['checkbox', 'privacy']
 
 //computed
 const formIsValid = computed(() => {
@@ -79,11 +90,73 @@ const privacyUrlComp = computed(() => {
   return `/legal/privacy`
 })
 
+function updateValue(key, value) {
+  data.value[key] = value
+}
+
+function getFieldOptions(i, key) {
+  let base = {
+    ...i,
+    key,
+    options: {
+      validation: i.required === 'yes' ? 'required' : '',
+      props: {
+        placeholder: i.placeholder,
+        items: i.options?.length
+          ? i.options.map((o) => {
+              const id = o.key || Slugify(o.option)
+              return {
+                id,
+                label: o.option,
+                action: () => {
+                  updateValue(key, id)
+                },
+              }
+            })
+          : null,
+      },
+    },
+  }
+
+  switch (i.component) {
+    case 'file':
+      base.options.props = {
+        upload: uploadFunction,
+        uploadOptions: { maxSize: '12MB' },
+        fileSizeError: 'Filen / Filene er for store',
+        'drop-message': 'Dra en fil hit eller <b>velg</b> for å laste opp',
+        multiple: false,
+        required: false,
+        labels: {
+          delete: 'Slett',
+          download: 'Last ned',
+          copy: 'Kopier lenke',
+          maxSize: 'Maks størrelse',
+        },
+      }
+      return base
+
+    case 'privacy':
+      base.options.slot = `<span
+          >${base.label || t('leadPrivacy', [''])}
+          <a  href="${privacyUrlComp.value}" target="_blank">
+            ${t(
+              'privacy',
+            ).toLowerCase()} <span class='lead-privacy-required'> * </span>
+          </a>
+        </span>`
+      return base
+
+    default:
+      return base
+  }
+}
+
 //functions
 const formFields = computed(() => {
   const fields = JSON.parse(props.fields)
     .map((i) => {
-      const key = i.key || Slugify(i.label)
+      const key = i.key
       if (['lead'].includes(i.component)) {
         const placeholder = i['lead-placeholder']
         return [
@@ -133,28 +206,7 @@ const formFields = computed(() => {
           },
         ]
       } else {
-        return {
-          ...i,
-          key,
-          options: {
-            validation: i.required === 'yes' ? 'required' : '',
-            props: {
-              placeholder: i.placeholder,
-              items: i.options?.length
-                ? i.options.map((o) => {
-                    const id = o.key || Slugify(o.option)
-                    return {
-                      id,
-                      label: o.option,
-                      action: () => {
-                        updateValue(key, id)
-                      },
-                    }
-                  })
-                : null,
-            },
-          },
-        }
+        return getFieldOptions(i, key)
       }
     })
     .flat()
@@ -193,10 +245,10 @@ function resetForm() {
       const defaultValue = ['radio'].includes(i.component)
         ? i?.options?.props?.items?.[0]?.id
         : null
-      return [i.key, defaultValue]
+      return [i.key, '']
     }),
   )
-
+  visited.value = []
   // set default data
   data.value = template.value
 }
@@ -205,25 +257,27 @@ function submit() {
   if (!formIsValid.value) return
   const dataToSubmit = data.value
 
-  createFormSubmit(props.accountUrl, props.formId, {
-    ...dataToSubmit,
-  }).then(() => {
-    submitted.value = true
-    resetForm()
-    // setTimeout(() => (submitted.value = false), props.submitTimeout)
-  })
+  promise.value = createFormSubmit(
+    props.accountUrl || window.location.origin,
+    props.formId,
+    {
+      ...dataToSubmit,
+    },
+  )
+    .then(() => {
+      submitted.value = true
+      setTimeout(() => {
+        submitted.value = false
+        resetForm()
+      }, props.submitTimeout)
+    })
+    .catch((err) => {
+      console.log(err)
+      submitError.value = true
+      return setTimeout(() => (submitted.value = false), props.submitTimeout)
+    })
 }
 
-function updateValue(key, value) {
-  const current = key.replace('contact.', '')
-  // if (key.includes('contact')) {
-  //   return (data.value.contact = {
-  //     ...data.value.contact,
-  //     [current]: value,
-  //   })
-  // }
-  data.value[key] = value
-}
 function isFieldVisible(field) {
   let condition = field.condition
   if (!condition) return true
@@ -232,70 +286,107 @@ function isFieldVisible(field) {
 }
 
 function getLabel(key, component) {
-  if (component === 'dropdown') {
-    const current = formFields.value.fields.find((i) => i.key === key)?.options
-      ?.props.items
+  switch (component) {
+    case 'dropdown': {
+      const current = formFields.value.fields.find((i) => i.key === key)
+        ?.options?.props.items
 
-    return (
-      (current || []).find((i) => i.id === data.value[key])?.label || 'Velg'
-    )
+      return (
+        (current || []).find((i) => i.id === data.value[key])?.label || 'Velg'
+      )
+    }
+    case 'checkbox': {
+      const current = formFields.value.fields.find((i) => i.key === key)
+      return current?.label
+    }
+
+    default:
+      return ''
   }
-  return
 }
 function onBlur(key) {
   if (visited.value.includes(key)) return
   visited.value.push(key)
 }
 
-onMounted(resetForm)
+onMounted(() => {
+  resetForm()
+})
 </script>
 
 <template>
   <div v-if="formFields.fields?.length" class="kvass-form">
-    <h2>{{ props.title }}</h2>
+    <div class="kvass-form__wrapper">
+      <h2>{{ props.title }}</h2>
+      <form class="kvass-form__form" @submit.prevent="submit">
+        <Grid columns="2">
+          <template v-for="field in formFields.filteredFields">
+            <FormControl
+              :class="[
+                'kvass-form__field',
+                { 'kvass-form__field--size-half': field.size === 'half' },
+                {
+                  'kvass-form__field--required': (
+                    field.options?.validation || ''
+                  ).includes('required'),
+                },
+              ]"
+              :label="
+                field?.['hide-label'] ||
+                hideFormFieldLabelOn.includes(field.component)
+                  ? ''
+                  : field.label
+              "
+              :error="
+                !isFieldValid(field.key) && visited.includes(field.key)
+                  ? getFieldError(field.key)
+                  : ''
+              "
+            >
+              <component
+                :is="componentMap[field.component]"
+                v-bind="field.options?.props"
+                v-model="data[field.key]"
+                @blur="onBlur(field.key)"
+                :label="getLabel(field.key, field.component)"
+              >
+                <template v-if="field?.options?.slot" #default>
+                  <span v-html="field?.options?.slot"></span>
+                </template>
+              </component>
+            </FormControl>
+          </template>
 
-    <form class="kvass-form__form" @submit.prevent="submit">
-      <Grid columns="2">
-        <template v-for="field in formFields.filteredFields">
-          <FormControl
+          <Alert
+            v-if="submitted || submitError"
             :class="[
               'kvass-form__field',
-              { 'kvass-form__field--size-half': field.size === 'half' },
-              {
-                'kvass-form__field--required': (
-                  field.options?.validation || ''
-                ).includes('required'),
-              },
+              { 'kvass-form__field--size-half': false },
+              ,
             ]"
-            :label="field.label"
-            :error="
-              !isFieldValid(field.key) && visited.includes(field.key)
-                ? getFieldError(field.key)
-                : ''
-            "
+            :variant="!submitError ? 'info' : 'danger'"
           >
-            <component
-              :is="componentMap[field.component]"
-              v-bind="field.options?.props"
-              :model-value="data[field.key]"
-              @input="($ev) => updateValue(field.key, $ev.target.value)"
-              @blur="onBlur(field.key)"
-              :label="getLabel(field.key, field.component)"
-            ></component>
-          </FormControl>
-        </template>
-
-        <Button
-          :label="props.actionLabel"
-          :success-label="t('completed')"
-          type="submit"
-          icon-right="fa-pro-solid:arrow-right"
-          :promise="promise"
-          :variant="'primary'"
-          :disabled="!formIsValid"
-        />
-      </Grid>
-    </form>
+            <div
+              v-html="
+                !submitError
+                  ? props.successMessage || `<p>${t('leadMessageSent')}</p>`
+                  : `<p>${t('somethingWentWrong')}</p>`
+              "
+            ></div>
+          </Alert>
+          <Button
+            class="kvass-form__submit-button"
+            :label="props.submitButtonLabel"
+            :success-label="t('completed')"
+            type="submit"
+            icon-right="fa-pro-solid:arrow-right"
+            :promise="promise"
+            :variant="'primary'"
+            :disabled="!formIsValid || props.formError"
+          />
+        </Grid>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -303,10 +394,20 @@ onMounted(resetForm)
 @import url('@kvass/ui/style.css');
 
 .kvass-form {
-  padding: 3rem;
-  background-color: rgb(226, 224, 224);
-  max-width: 500px;
-  margin: 0 auto;
+  background-color: var(--kvass-form-background, transparent);
+  padding: var(--kvass-form-padding, 1rem);
+  color: var(--kvass-form-text-color, currentColor);
+
+  &__wrapper {
+    max-width: 700px;
+    margin-inline: auto;
+  }
+
+  &__submit-button {
+    grid-column-end: span 2;
+    max-width: fit-content;
+    margin: 2rem auto 0 auto;
+  }
 
   &__field {
     grid-column-end: span 2;
@@ -322,9 +423,18 @@ onMounted(resetForm)
     }
   }
   .k-button--variant-secondary {
-    background-color: white;
+    &,
+    &:hover {
+      border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
+      background-color: white;
+      color: var(--kvass-form-text-color, currentColor);
+      border-radius: var(--k-ui-rounding);
+    }
   }
 
+  .k-formcontrol__label {
+    text-transform: var(--kvass-form-label-transform);
+  }
   .k-radiogroup--variant-radio {
     --k-radiogroup-size: 1rem;
     [data-part='item-control'][data-state='checked'] {

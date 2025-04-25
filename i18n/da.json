@@ -19,6 +19,7 @@
   "iconsSelectWidgetIconsFound" : "Resultat",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Der er ingen ikoner, der matcher din søgning",
   "leadMessage" : "Besked",
+  "leadMessageSent" : "Tak for din interesse. Du vil snart blive kontaktet af vores account manager.",
   "loadAllElements" : "Tilfjøj alle",
   "name" : "Navn",
   "phone" : "Telefon",
@@ -27,5 +28,7 @@
   "secondaryTitle" : "Sekundærtitel",
   "select" : "Vælg",
   "selectIcon" : "Vælg ikon",
+  "showAll" : "Vis alle",
+  "somethingWentWrong" : "Noget gik galt",
   "submit" : "Indsend {x}"
 }

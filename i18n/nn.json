@@ -1,0 +1,12 @@
+{
+  "email" : "E-post",
+  "goBack" : "Gå tilbake",
+  "leadMessage" : "Beskjed",
+  "leadMessageSent" : "Takk for di interesse. Du vil snart bli kontakta av kundebehandlar.",
+  "name" : "Namn",
+  "phone" : "Telefon",
+  "phoneValidation" : "Du har ikkje tastet inn eit gyldig telefonnummer",
+  "select" : "Vel",
+  "somethingWentWrong" : "Noko gjekk gale",
+  "submit" : "Send inn {x}\n"
+}
