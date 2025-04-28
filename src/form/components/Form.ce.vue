@@ -106,6 +106,8 @@ function getValidation(item) {
   switch (item.component) {
     case 'privacy':
       return 'accepted'
+    case 'number':
+      return item.required === 'yes' ? 'numeric|required' : ''
     case 'checkbox':
       return item.required === 'yes' ? 'accepted' : ''
     default:
