@@ -51,6 +51,10 @@ const props = defineProps({
     type: String,
     default: 'Send inn',
   },
+  privacyPrefix: {
+    type: String,
+    default: '',
+  },
   fields: {
     type: Object,
     default: () => ({}),
@@ -85,7 +89,13 @@ const formIsValid = computed(() => {
 })
 
 const privacyUrlComp = computed(() => {
-  return `/legal/privacy`
+  const base = `/legal/privacy`
+
+  if (props.privacyPrefix) {
+    return `${props.privacyPrefix}${base}`
+  }
+
+  return base
 })
 
 function updateValue(key, value) {
@@ -96,6 +106,8 @@ function getValidation(item) {
   switch (item.component) {
     case 'privacy':
       return 'accepted'
+    case 'checkbox':
+      return item.required === 'yes' ? 'accepted' : ''
     default:
       return item.required === 'yes' ? 'required' : ''
   }
@@ -147,7 +159,7 @@ function getFieldOptions(i, key) {
           <a  href="${privacyUrlComp.value}" target="_blank">
             ${t(
               'privacy',
-            ).toLowerCase()} <span class='lead-privacy-required'> * </span>
+            ).toLowerCase()} <span class='kvass-form__privacy--required'> * </span>
           </a>
         </span>`
       return base
@@ -163,18 +175,24 @@ const formFields = computed(() => {
     .map((i) => {
       const key = i.key
       if (['lead'].includes(i.component)) {
+        const base = {
+          size: i.size,
+          'hide-label': i?.['hide-label'],
+        }
         const placeholder = i['lead-placeholder']
         return [
           {
             key: 'contact.name',
             component: 'short-text',
             label: t('name'),
+
             options: {
               validation: 'required',
               props: {
                 placeholder: placeholder?.name,
               },
             },
+            ...base,
           },
           {
             key: 'contact.email',
@@ -186,6 +204,7 @@ const formFields = computed(() => {
                 placeholder: placeholder?.email,
               },
             },
+            ...base,
           },
           {
             key: 'contact.phone',
@@ -197,6 +216,7 @@ const formFields = computed(() => {
                 placeholder: placeholder?.phone,
               },
             },
+            ...base,
           },
           {
             key: 'comment',
@@ -208,6 +228,7 @@ const formFields = computed(() => {
                 placeholder: placeholder?.comment,
               },
             },
+            ...base,
           },
           {
             ...getFieldOptions({ component: 'privacy' }, 'privacy'),
@@ -256,6 +277,7 @@ function resetForm() {
       return [i.key, defaultValue]
     }),
   )
+
   visited.value = []
   // set default data
   data.value = template.value
@@ -408,6 +430,10 @@ onMounted(() => {
 
   h2 {
     font-family: var(--kvass-form-title-font-family, var(--secondary-font));
+  }
+
+  &__privacy--required {
+    color: var(--k-ui-color-danger);
   }
   &__wrapper {
     max-width: 700px;
