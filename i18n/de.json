@@ -1,13 +1,16 @@
 {
   "cancel" : "Abbrechen",
   "confirm" : "Bestätigen",
+  "delete" : "Löschen",
   "email" : "E-Mail",
   "goBack" : "Zurückgehen",
   "leadMessage" : "Kommentar",
   "leadMessageSent" : "Danke für Ihr Interesse. In Kürze wird sich ein Kundenbearbeiter mit Ihnen in Verbindung setzen.",
+  "leadPrivacy" : "Ich stimme der {0} zu.",
   "name" : "Name",
   "phone" : "Telefon",
   "phoneValidation" : "Sie haben keine gültige Telefonnummer eingegeben",
+  "privacy" : "Datenschutzerklärung",
   "select" : "Auswählen",
   "showAll" : "Alle anzeigen",
   "somethingWentWrong" : "Etwas ist schiefgelaufen"

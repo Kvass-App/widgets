@@ -51,16 +51,28 @@ function LoadScript(src, options = { type: 'text/javascript' }) {
   document.body.appendChild(script)
 }
 
-function Translate(key, plural = 1) {
+function Translate(key, plural = 1, options = {}) {
+
   const messages = { en, nb }
 
   const lang = document.documentElement.getAttribute('lang') || 'nb'
   let value = messages[lang]?.[key] || key
 
-  if (value.includes('|')) {
+  if (value?.includes('|')) {
     const split = value.split('|')
     value = split[plural - 1]
   }
+
+  if (options instanceof Array) {
+    const splitPattern = /\{.*?\}/
+    const replaceValues = value.match(splitPattern)
+
+
+    replaceValues.forEach((i, index) => {
+      value = value.replace(i, options[index])
+    })
+  }
+
   return value
 }
 
@@ -201,37 +213,37 @@ const parse = (v) => {
 
 const getLabel =
   (v = {}, d = {}) =>
-  (key) =>
-    parse(v)[key] || d[key] || key
+    (key) =>
+      parse(v)[key] || d[key] || key
 
 const format =
   (type, options = {}) =>
-  (value) => {
-    switch (type) {
-      case 'currency':
-        const { locale, ...rest } = options
-        return new Intl.NumberFormat(locale, {
-          style: 'currency',
-          maximumFractionDigits: 0,
-          ...rest,
-        }).format(value)
-      case 'number':
-        return new Intl.NumberFormat(options.locale).format(value)
-      case 'year':
-      case 'years':
-        return [
-          value,
-          new Intl.RelativeTimeFormat(options.locale)
-            .formatToParts(value, 'year')
-            .at(-1).value,
-        ].join(' ')
-      case 'percent':
-        const { maximumFractionDigits = 0 } = options
-        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
-      default:
-        return value
+    (value) => {
+      switch (type) {
+        case 'currency':
+          const { locale, ...rest } = options
+          return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            maximumFractionDigits: 0,
+            ...rest,
+          }).format(value)
+        case 'number':
+          return new Intl.NumberFormat(options.locale).format(value)
+        case 'year':
+        case 'years':
+          return [
+            value,
+            new Intl.RelativeTimeFormat(options.locale)
+              .formatToParts(value, 'year')
+              .at(-1).value,
+          ].join(' ')
+        case 'percent':
+          const { maximumFractionDigits = 0 } = options
+          return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+        default:
+          return value
+      }
     }
-  }
 
 const getCurrencyInputProps = (options = {}) => {
   const { locale, currency } = options

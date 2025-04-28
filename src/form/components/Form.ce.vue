@@ -71,7 +71,7 @@ const submitError = ref(false)
 const promise = ref(null)
 const submitted = ref(false)
 const visited = ref([])
-const t = (i) => Translate(i)
+const t = (i, options) => Translate(i, 1, options)
 const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   t,
   'nb',
@@ -81,12 +81,10 @@ const hideFormFieldLabelOn = ['checkbox', 'privacy']
 
 //computed
 const formIsValid = computed(() => {
-  // data.value?.privacyAccepted &&
   return validator.value.passes
 })
 
 const privacyUrlComp = computed(() => {
-  // if (props.privacyUrl) return props.privacyUrl
   return `/legal/privacy`
 })
 
@@ -94,12 +92,21 @@ function updateValue(key, value) {
   data.value[key] = value
 }
 
+function getValidation(item) {
+  switch (item.component) {
+    case 'privacy':
+      return 'accepted'
+    default:
+      return item.required === 'yes' ? 'required' : ''
+  }
+}
+
 function getFieldOptions(i, key) {
   let base = {
     ...i,
     key,
     options: {
-      validation: i.required === 'yes' ? 'required' : '',
+      validation: getValidation(i),
       props: {
         placeholder: i.placeholder,
         items: i.options?.length
@@ -123,15 +130,13 @@ function getFieldOptions(i, key) {
       base.options.props = {
         upload: uploadFunction,
         uploadOptions: { maxSize: '12MB' },
-        fileSizeError: 'Filen / Filene er for store',
-        'drop-message': 'Dra en fil hit eller <b>velg</b> for å laste opp',
+        fileSizeError: t('fileSizeError'),
+        'drop-message': t('fileDropAreaMessage'),
         multiple: false,
         required: false,
         labels: {
-          delete: 'Slett',
-          download: 'Last ned',
-          copy: 'Kopier lenke',
-          maxSize: 'Maks størrelse',
+          delete: t('delete'),
+          maxSize: t('maxSize'),
         },
       }
       return base
@@ -204,6 +209,9 @@ const formFields = computed(() => {
               },
             },
           },
+          {
+            ...getFieldOptions({ component: 'privacy' }, 'privacy'),
+          },
         ]
       } else {
         return getFieldOptions(i, key)
@@ -245,7 +253,7 @@ function resetForm() {
       const defaultValue = ['radio'].includes(i.component)
         ? i?.options?.props?.items?.[0]?.id
         : null
-      return [i.key, '']
+      return [i.key, defaultValue]
     }),
   )
   visited.value = []
@@ -398,6 +406,9 @@ onMounted(() => {
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
 
+  h2 {
+    font-family: var(--kvass-form-title-font-family, var(--secondary-font));
+  }
   &__wrapper {
     max-width: 700px;
     margin-inline: auto;
