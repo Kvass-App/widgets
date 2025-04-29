@@ -466,7 +466,7 @@ onMounted(() => {
     &:hover {
       border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
       background-color: white;
-      color: var(--kvass-form-text-color, currentColor);
+      color: black;
       border-radius: var(--k-ui-rounding);
     }
   }
@@ -478,6 +478,21 @@ onMounted(() => {
     --k-radiogroup-size: 1rem;
     [data-part='item-control'][data-state='checked'] {
       border-width: 2px;
+    }
+  }
+  .k-file-droparea {
+    color: black;
+  }
+  b,
+  a {
+    color: currentColor;
+  }
+  .k-checkbox {
+    &[data-state='checked']:not([data-disabled]) [data-part='control'] {
+      --k-checkbox-accent: var(--primary);
+      --k-checkbox-accent-contrast: var(--primary-contrast);
+      --k-checkbox-border-color: var(--primary-contrast);
+      border-color: var(--primary-contrast);
     }
   }
 }
