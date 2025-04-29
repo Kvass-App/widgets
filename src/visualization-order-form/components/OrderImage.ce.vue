@@ -9,10 +9,14 @@ import {
   Dialog,
   RadioGroup,
   TextArea,
+  Dropdown,
+  File,
 } from '@kvass/ui'
 import Tooltip from './Tooltip.ce.vue'
 import Validator from '../composeable/Validator'
 import { vTooltip } from 'floating-vue'
+
+import { Rooms } from '../enums'
 
 import { Clone } from '../../utils'
 
@@ -39,8 +43,8 @@ const template = {
   units: null,
   description: '',
   attachments: [],
-  drone: false,
-  room: '',
+  visualizationTechnique: 'eyelevel',
+  room: null,
 }
 
 const order = ref<ImageOrder>(Clone(props.modelValue || template))
@@ -48,11 +52,14 @@ const order = ref<ImageOrder>(Clone(props.modelValue || template))
 const rules = computed(() => {
   const base = {
     type: 'required',
-    description: 'required',
   }
 
   if (order.value.type === 'interior') {
     base['room'] = 'required'
+
+    if (order.value.room === 'other') {
+      base['description'] = 'required'
+    }
   }
 
   if (order.value.type === 'exterior') {
@@ -68,7 +75,7 @@ const labels = computed(() => {
     type: getLabel('type'),
     description: getLabel('deliveryDescription'),
     units: getLabel('numberOfUnits'),
-    drone: getLabel('drone'),
+    visualizationTechnique: getLabel('visualizationTechnique'),
   }
 })
 
@@ -179,12 +186,25 @@ watch(isDialogOpen, async (val) => {
                 }"
               ></Input>
             </FormControl>
-            <FormControl v-bind="validate('drone')">
+
+            <FormControl v-bind="validate('visualizationTechnique')">
               <template #label>
-                <span>{{ getLabel('drone') }}</span>
-                <Tooltip class="k-ml-xxs" :content="getLabel('droneTooltip')" />
+                <span>{{ getLabel('visualizationTechnique') }}</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  :content="getLabel('visualizationTechniqueTooltip')"
+                />
               </template>
-              <Switch v-model="order.drone"></Switch>
+              <RadioGroup
+                variant="segment"
+                direction="vertical"
+                v-model="order.visualizationTechnique"
+                :items="[
+                  { id: 'eyelevel', label: getLabel('eyelevel') },
+                  { id: 'photomontage', label: getLabel('photomontage') },
+                ]"
+                :getRootNode="() => root.value.getRootNode()"
+              ></RadioGroup>
             </FormControl>
           </template>
 
@@ -197,10 +217,24 @@ watch(isDialogOpen, async (val) => {
                   :content="getLabel('interiorRoomTooltip')"
                 />
               </template>
-              <Input
-                v-model="order.room"
-                :placeholder="getLabel('interiorRoomPlaceholder')"
-              ></Input>
+              <Dropdown
+                :teleport="false"
+                :label="
+                  getLabel(
+                    Rooms.find((v) => v.id === order.room)?.label || 'select',
+                  )
+                "
+                :items="
+                  Rooms.map((v) => {
+                    return {
+                      ...v,
+                      label: getLabel(v.label),
+                      action: () => (order.room = v.id),
+                    }
+                  })
+                "
+              >
+              </Dropdown>
             </FormControl>
           </template>
         </TransitionGroup>

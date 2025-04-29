@@ -28,10 +28,52 @@ Last opp filene her, så får vi et bedre grunnlag for å forstå visjonen din o
   summaryTitle: 'Oppsummering',
   summarySubtitle: 'Her får du en oppstilling av pris for dine valg.',
 
-  confirmationTitle: '',
-  confirmationSubtitle: '',
+  livingRoom: 'Stue',
+  kitchen: 'Kjøkken',
+  bedroom: 'Soverom',
+  bathroom: 'Baderom',
+  other: 'Annet',
+
+  eyelevel: 'Bakkeplan',
+  photomontage: 'Fotomontasje',
+  visualizationTechnique: 'Kameravinkel og presentasjonsmetode',
+  visualizationTechniqueTooltip: `<div><b>Bakkeplan</b> handler om hvor kameraet er plasset (på øyehøyde)</div><div><b>Fotomontasje</b> handler om hvordan man setter sammen 3D med ekte bilder, for å få en realistisk presentasjon</div>`,
+
+  referenceImages: 'Referansebilder og inspirasjonsbilder',
+  '3dModelArchitect': '3D modeleringsbilde/arkitektegning',
+
+  uploadArchitectDrawing: 'Last opp tegning fra arkitekt',
+  upload3dModel: 'Last opp 3D modeleringsbilde',
+  uploadDroneImages: 'Last opp drone bilder',
+  hasDroneImage: 'Har du dronebilde?',
+  missingDromeImage:
+    'Det kan forekomme ekstra kostnader hvis vi må få tak i drone bilde for å sette opp fotomontasje',
+
+  has3DModel: 'Har du 3D modeleringsbilde?',
+  missing3DModel:
+    'Det kan forekomme ekstra kostnader hvis vi må modelere opp model på egenhånd',
+
+  droneImageForVisualization: 'Dronebilde for fotomontasje',
+
+  name: 'Navn',
+  phone: 'Telefon',
+  email: 'Epost',
+  companyName: 'Bedrifts navn',
+  organizationNumber: 'Org. nummer',
+
+  loadingTitle: 'Sender bestilling',
+  loadingSubtitle: 'Sender bestilling, vennligst vent...',
+
+  confirmationTitle: 'Bestilling sendt',
+  confirmationSubtitle:
+    'Takk for din bestilling, vi vil kontakte deg for videre oppfølgning',
 
   sendOrder: 'Send Bestilling',
+
+  interiorImages: 'Interiør 3D bilder',
+  exteriorImagesSmall: 'Eksteriør 3D bilder - 0 til 10 enheter',
+  exteriorImagesMedium: 'Eksteriør 3D bilder - 11 til 29 enheter',
+  exteriorImagesLarge: 'Eksteriør 3D bilder - 30 enheter og oppover',
 
   '3dImages': '3D bilder',
   imageType: 'Type visualisering',
@@ -114,11 +156,14 @@ Takk for at du hjelper oss med å forstå visjonen din!</div>`,
   comment: 'Kommentar',
   cancel: 'Avbryt',
   confirm: 'Bekreft',
+
+  yes: 'Ja',
+  no: 'Nei',
 }
 
 const Services = [
   {
-    id: 'movableElements',
+    id: 'moveableElements',
     vimeo: {
       url: 'https://player.vimeo.com/video/1045022734?muted=1&autoplay=1&controls=0&dnt=1&app_id=122963',
       displayThumbnail: true,
@@ -178,4 +223,27 @@ const Services = [
   },
 ]
 
-export { Services, DefaultLabels }
+const Rooms = [
+  {
+    id: 'livingRoom',
+    label: 'livingRoom',
+  },
+  {
+    id: 'bedroom',
+    label: 'bedroom',
+  },
+  {
+    id: 'kitchen',
+    label: 'kitchen',
+  },
+  {
+    id: 'bathroom',
+    label: 'bathroom',
+  },
+  {
+    id: 'other',
+    label: 'other',
+  },
+]
+
+export { Services, DefaultLabels, Rooms }

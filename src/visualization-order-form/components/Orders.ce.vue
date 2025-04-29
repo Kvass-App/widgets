@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue'
-import { Flex, Button, Card, Icon } from '@kvass/ui'
+import { Grid, Button, Card, Icon } from '@kvass/ui'
 
 import OrderImage from './OrderImage.ce.vue'
 
@@ -20,16 +20,33 @@ const remove = (index: number) => {
 }
 
 const getOrderIcon = (item: ImageOrder) => {
-  if (item.type === 'interior') return 'fa-pro-solid:couch'
+  if (item.type === 'interior') {
+    if (item.room === 'livingRoom') return 'fa-pro-solid:couch'
+    if (item.room === 'bathroom') return 'fa-pro-solid:bath'
+    if (item.room === 'bedroom') return 'fa-pro-solid:bed'
+    if (item.room === 'kitchen') return 'fa-pro-solid:refrigerator'
+    if (item.room === 'other') return 'fa-pro-solid:image'
+  }
 
-  if (item.drone) return 'gis:drone'
+  if (item.type === 'exterior') {
+    if (item.visualizationTechnique === 'eyelevel')
+      return 'fa-pro-solid:building'
+    if (item.visualizationTechnique === 'photomontage') return 'gis:drone'
+  }
 
   return 'fa-pro-solid:image-landscape'
+}
+
+const getOrderLabel = (item: ImageOrder) => {
+  if (item.type === 'interior')
+    return `${getLabel(item.type)} - ${getLabel(item.room)}`
+
+  return `${getLabel(item.type)} - ${getLabel(item.visualizationTechnique)}`
 }
 </script>
 
 <template>
-  <Flex wrap direction="row" class="order" justify="space-evenly">
+  <Grid class="order" columns="1fr 1fr" gap="1rem 2rem">
     <template v-for="(item, index) in modelValue" :key="item.index">
       <OrderImage
         v-model="modelValue[index]"
@@ -44,26 +61,10 @@ const getOrderIcon = (item: ImageOrder) => {
             <template #header>
               <Icon class="order__card-icon" :icon="getOrderIcon(item)" />
               <div class="k-card__title">
-                {{ `${getLabel('3dImage')} - ${getLabel(item.type)}` }}
+                {{ getOrderLabel(item) }}
               </div>
             </template>
-            <template #default>
-              <Flex direction="column">
-                <template v-if="item.type === 'interior'">
-                  <div>
-                    <div>{{ getLabel('interiorRoom') }}</div>
-                    <div>{{ item.room }}</div>
-                  </div>
-                </template>
 
-                <template v-if="item.type === 'exterior'">
-                  <div>
-                    <div>{{ getLabel('numberOfUnits') }}</div>
-                    <div>{{ item.units }}</div>
-                  </div>
-                </template>
-              </Flex>
-            </template>
             <template #actions>
               <Button
                 v-bind="triggerProps"
@@ -75,7 +76,7 @@ const getOrderIcon = (item: ImageOrder) => {
         </template>
       </OrderImage>
     </template>
-  </Flex>
+  </Grid>
 </template>
 
 <style lang="scss">

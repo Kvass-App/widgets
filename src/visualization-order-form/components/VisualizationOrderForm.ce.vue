@@ -1,27 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch, provide } from 'vue'
-import {
-  FormControl,
-  Input,
-  Switch,
-  Alert,
-  Flex,
-  Button,
-  Card,
-  File,
-  RadioGroup,
-  Stepper,
-  type StepperStep,
-} from '@kvass/ui'
+import { ref, computed, provide } from 'vue'
+import { Stepper, type StepperStep } from '@kvass/ui'
 
 import type { Order } from '../types'
-import OrderImage from './OrderImage.ce.vue'
-
-import Service from './Service.ce.vue'
-
-import Orders from './Orders.ce.vue'
-
-import Pricing from './Pricing.ce.vue'
 
 import IdleStep from './Steps/Idle.ce.vue'
 import OrderImageStep from './Steps/OrderImage.ce.vue'
@@ -29,33 +10,49 @@ import UploadFilesStep from './Steps/UploadFiles.ce.vue'
 import ServicesStep from './Steps/Services.ce.vue'
 import SummaryStep from './Steps/Summary.ce.vue'
 import ConfirmationStep from './Steps/Confirmation.ce.vue'
+import LoadingStep from './Steps/Loading.ce.vue'
 
 import { Services as servicesItems, DefaultLabels } from '../enums'
 
 import { setValidatorLangauge } from '../composeable/Validator'
 
-import { GetLabelInjectionKey, RootNodeInjectionKey } from '../keys'
+import {
+  GetLabelInjectionKey,
+  RootNodeInjectionKey,
+  PropsInjectionKey,
+} from '../keys'
 
 import type { Props } from '../types'
-
-import Validator from '../composeable/Validator'
-import { vTooltip } from 'floating-vue'
-import Tooltip from './Tooltip.ce.vue'
 
 const props = withDefaults(defineProps<Props>(), {
   labels: '{}',
   locale: 'nb-NO',
   currency: 'NOK',
   validatorLanguage: 'nb',
-  callbackUrl: 'https://local.kvass.test/api/file/test',
+  callbackUrl: 'http://localhost:3001/api/visualization/form',
+  lead: '{}',
 })
 
 setValidatorLangauge(props.validatorLanguage)
 
 const order = ref<Order>({
   images: [],
-  files: [],
-  // modeling: false,
+  files: {
+    hasModel: true,
+    model: [],
+    shared: [],
+    hasDrone: true,
+    drone: [],
+  },
+  lead: {
+    name: '',
+    phone: '',
+    email: '',
+    company: {
+      name: '',
+      organizationNumber: '',
+    },
+  },
   services: servicesItems.map((v) => {
     return {
       id: v.id,
@@ -84,74 +81,7 @@ provide(
   RootNodeInjectionKey,
   computed(() => root),
 )
-
-const promise = ref()
-
-const orderImageKey = ref(0)
-
-const submit = () => {
-  console.log('subit called')
-  return
-  const { files, images, services } = order.value
-
-  const formData = new FormData()
-
-  files.forEach((element) => {
-    formData.append('files', element)
-  })
-
-  images.forEach((element) => {
-    formData.append('images', JSON.stringify(element))
-  })
-
-  services.forEach((element) => {
-    if (!element.selected) return
-    formData.append('services', JSON.stringify(element))
-  })
-
-  promise.value = fetch(props.callbackUrl, {
-    method: 'POST',
-    body: formData,
-  })
-    .then((data) => {
-      console.log('Data uploaded successfully:', data)
-    })
-    .catch((error) => {
-      console.error('Error uploading data:', error)
-    })
-}
-
-const upload = (
-  file: any,
-  onProgress: (val: number) => void,
-  options: unknown,
-) => {
-  return Promise.resolve(file)
-}
-
-const rules = computed(() => {
-  const base = {
-    images: 'min:1',
-    files: ['required', 'min:1'],
-  }
-
-  return base
-})
-
-const labels = computed(() => {
-  return {
-    files: getLabel('files'),
-    images: getLabel('3dImages'),
-  }
-})
-
-const validator = Validator({
-  rules: rules,
-  labels: labels,
-  data: order,
-})
-
-const { bind: validate } = validator
+provide(PropsInjectionKey, props)
 
 const steps = computed((): StepperStep[] => {
   return [
@@ -188,9 +118,13 @@ const steps = computed((): StepperStep[] => {
       component: SummaryStep,
       bind: {
         modelValue: order.value,
-        onSubmit: () => {
-          submit()
-        },
+      },
+    },
+    {
+      id: 'loading',
+      component: LoadingStep,
+      bind: {
+        modelValue: order.value,
       },
     },
     {

@@ -18,16 +18,11 @@ const modelValue = defineModel<Order>({ default: {} })
 </script>
 
 <template>
-  <Card
-    class="confirmation"
-    is="form"
-    :title="getLabel('orderSendt')"
-    :subtitle="getLabel('thankYouForYourOrder')"
-  >
+  <Card class="confirmation" is="form">
     <template #header>
       <Icon icon="fa-pro-solid:circle-check" class="confirmation__icon" />
-      <div class="k-card__title">{{ getLabel('orderSendt') }}</div>
-      <div class="k-card__subtitle">{{ getLabel('thankYouForYourOrder') }}</div>
+      <div class="k-card__title">{{ getLabel('confirmationTitle') }}</div>
+      <div class="k-card__subtitle">{{ getLabel('confirmationSubtitle') }}</div>
     </template>
   </Card>
 </template>

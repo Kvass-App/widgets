@@ -1,23 +1,20 @@
+import { Rooms } from './enums'
+
 export type Props = {
   labels: string // Record<string, string> // string
   locale: string
   currency: string
   validatorLanguage: string
   callbackUrl: string
+  lead: string // Record<string, string> // string
 }
 
 export type ImageOrder = {
   type: 'interior' | 'exterior'
-
   units: number | undefined
-  drone: boolean
-
+  visualizationTechnique: string // enums
   description: string
-  attachments: any[]
-
-  room: string
-
-  // Inspirasjonsbilder ?
+  room: (typeof Rooms)[number]['id']
 }
 
 export type Service = {
@@ -26,15 +23,24 @@ export type Service = {
   selected: boolean
 }
 
-// export type Image = {
-//   type: 'interior' | 'exterior'
-//   description: string
-//   droneImage: boolean
-// } & ({ type: 'interior'; units?: number } | { type: 'exterior'; units: number })
-
 export type Order = {
   images: ImageOrder[]
-  files: any[]
+  files: {
+    hasModel: boolean
+    model: any[]
+    shared: any[]
+    hasDrone: boolean
+    drone: any[]
+  }
+  lead: {
+    name: string
+    phone: string
+    email: string
+    company: {
+      name: string
+      organizationNumber: string
+    }
+  }
   services: Service[]
 }
 

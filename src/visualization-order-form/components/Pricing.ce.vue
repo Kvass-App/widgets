@@ -14,7 +14,7 @@ import {
 } from '@kvass/ui'
 
 import PricingLine from './PricingLine.ce.vue'
-import { Services } from '../enums'
+import { Services, Rooms } from '../enums'
 
 import type { Order } from '../types'
 
@@ -56,15 +56,17 @@ const interior = computed(() => {
   if (!items.length) return
 
   return {
-    title: 'Interiør 3D bilder',
-    lines: [
-      {
-        description: getLabel('3dImages'),
-        value: 7000 * items.length,
+    title: getLabel('interiorImages'),
+    lines: Rooms.map((v) => {
+      const total = items.filter((item) => item.room === v.id).length
+
+      return {
+        description: getLabel(v.label),
+        value: 7000 * total,
         type: 'fixed',
-        comment: `${items.length} ${getLabel('totalSuffix')}`,
-      },
-    ].filter((v) => v.value),
+        comment: `${total} ${getLabel('totalSuffix')}`,
+      }
+    }).filter((v) => v.value),
   }
 })
 
@@ -77,23 +79,25 @@ const exteriorSmall = computed(() => {
 
   if (!items.length) return
 
-  const nonDrone = items.filter((v) => !v.drone)
-  const drone = items.filter((v) => v.drone)
+  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
+  const photomontage = items.filter(
+    (v) => v.visualizationTechnique === 'photomontage',
+  )
 
   return {
-    title: 'Exteriør 3D bilder - Liten enhets pakke',
+    title: getLabel('exteriorImagesSmall'),
     lines: [
       {
         description: getLabel('3dImages'),
-        value: 8000 * nonDrone.length,
+        value: 8000 * eyelevel.length,
         type: 'fixed',
-        comment: `${nonDrone.length} ${getLabel('totalSuffix')}`,
+        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
       },
       {
         description: getLabel('droneExterior'),
-        value: 9000 * drone.length,
+        value: 9000 * photomontage.length,
         type: 'fixed',
-        comment: `${drone.length} ${getLabel('totalSuffix')}`,
+        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
       },
     ].filter((v) => v.value),
   }
@@ -108,23 +112,25 @@ const exteriorMedium = computed(() => {
 
   if (!items.length) return
 
-  const nonDrone = items.filter((v) => !v.drone)
-  const drone = items.filter((v) => v.drone)
+  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
+  const photomontage = items.filter(
+    (v) => v.visualizationTechnique === 'photomontage',
+  )
 
   return {
     title: 'Exteriør 3D bilder - Medium enhets pakke',
     lines: [
       {
         description: getLabel('3dImages'),
-        value: 10000 * nonDrone.length,
+        value: 10000 * eyelevel.length,
         type: 'fixed',
-        comment: `${nonDrone.length} ${getLabel('totalSuffix')}`,
+        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
       },
       {
         description: getLabel('droneExterior'),
-        value: 11000 * drone.length,
+        value: 11000 * photomontage.length,
         type: 'fixed',
-        comment: `${drone.length} ${getLabel('totalSuffix')}`,
+        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
       },
     ].filter((v) => v.value),
   }
@@ -137,23 +143,25 @@ const exteriorLarge = computed(() => {
 
   if (!items.length) return
 
-  const nonDrone = items.filter((v) => !v.drone)
-  const drone = items.filter((v) => v.drone)
+  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
+  const photomontage = items.filter(
+    (v) => v.visualizationTechnique === 'photomontage',
+  )
 
   return {
     title: 'Exteriør 3D bilder - Stor enhets pakke',
     lines: [
       {
         description: getLabel('3dImages'),
-        value: nonDrone.length ? getLabel('seperateOffer') : 0,
+        value: eyelevel.length ? getLabel('seperateOffer') : 0,
         type: 'offer',
-        comment: `${nonDrone.length} ${getLabel('totalSuffix')}`,
+        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
       },
       {
         description: getLabel('droneExterior'),
-        value: drone.length ? getLabel('seperateOffer') : 0,
+        value: photomontage.length ? getLabel('seperateOffer') : 0,
         type: 'offer',
-        comment: `${drone.length} ${getLabel('totalSuffix')}`,
+        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
       },
     ].filter((v) => v.value),
   }
