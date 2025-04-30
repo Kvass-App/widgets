@@ -475,9 +475,18 @@ onMounted(() => {
     text-transform: var(--kvass-form-label-transform);
   }
   .k-radiogroup--variant-radio {
-    --k-radiogroup-size: 1rem;
+    --k-radiogroup-accent: var(--primary);
+    --k-radiogroup-size: 10px;
+    border-width: 5px;
+
     [data-part='item-control'][data-state='checked'] {
-      border-width: 2px;
+      border-width: 5px;
+      outline-color: var(--k-radiogroup-accent);
+    }
+    [data-part='item-control'] {
+      border-width: 5px;
+      border-color: transparent;
+      outline: 1px solid var(--k-ui-color-neutral);
     }
   }
   .k-file-droparea {
