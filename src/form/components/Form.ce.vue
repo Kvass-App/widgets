@@ -432,6 +432,7 @@ onMounted(() => {
 
   h2 {
     font-family: var(--kvass-form-title-font-family, var(--secondary-font));
+    letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
   }
 
   &__privacy--required {
