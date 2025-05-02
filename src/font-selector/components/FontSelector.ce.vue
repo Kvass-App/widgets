@@ -262,7 +262,7 @@ onMounted(() => {
       <Checkbox
         v-if="props.showAllOption"
         v-model="showAllFonts"
-        label="Vis alle google fonts"
+        label="Vis alle Google fonts"
       />
     </Grid>
     <div
