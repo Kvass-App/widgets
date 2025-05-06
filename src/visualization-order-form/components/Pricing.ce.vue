@@ -14,7 +14,7 @@ import {
 } from '@kvass/ui'
 
 import PricingLine from './PricingLine.ce.vue'
-import { Services, Rooms } from '../enums'
+import { Services, Rooms, CameraAngles } from '../enums'
 
 import type { Order } from '../types'
 
@@ -79,22 +79,27 @@ const exteriorSmall = computed(() => {
 
   if (!items.length) return
 
-  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
-  const photomontage = items.filter(
-    (v) => v.visualizationTechnique === 'photomontage',
-  )
+  const exterior = items.filter((v) => !v.photomontage)
+  const photomontage = items.filter((v) => v.photomontage)
 
   return {
     title: getLabel('exteriorImagesSmall'),
     lines: [
+      ...CameraAngles.map((v) => {
+        const total = exterior.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: getLabel(v.label),
+          value: 8000 * total,
+          type: 'fixed',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
+
       {
-        description: getLabel('3dImages'),
-        value: 8000 * eyelevel.length,
-        type: 'fixed',
-        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
-      },
-      {
-        description: getLabel('droneExterior'),
+        description: getLabel('photomontage'),
         value: 9000 * photomontage.length,
         type: 'fixed',
         comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
@@ -104,28 +109,32 @@ const exteriorSmall = computed(() => {
 })
 
 const exteriorMedium = computed(() => {
-  const isBetween0And10 = (number) => number >= 11 && number <= 29
+  const isBetween11And29 = (number) => number >= 11 && number <= 29
 
   const items = props.order.images.filter(
-    (v) => v.type === 'exterior' && isBetween0And10(v.units),
+    (v) => v.type === 'exterior' && isBetween11And29(v.units),
   )
 
   if (!items.length) return
 
-  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
-  const photomontage = items.filter(
-    (v) => v.visualizationTechnique === 'photomontage',
-  )
+  const exterior = items.filter((v) => !v.photomontage)
+  const photomontage = items.filter((v) => v.photomontage)
 
   return {
-    title: 'Exteriør 3D bilder - Medium enhets pakke',
+    title: getLabel('exteriorImagesMedium'),
     lines: [
-      {
-        description: getLabel('3dImages'),
-        value: 10000 * eyelevel.length,
-        type: 'fixed',
-        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
-      },
+      ...CameraAngles.map((v) => {
+        const total = exterior.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: getLabel(v.label),
+          value: 10000 * total,
+          type: 'fixed',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
       {
         description: getLabel('droneExterior'),
         value: 11000 * photomontage.length,
@@ -143,20 +152,24 @@ const exteriorLarge = computed(() => {
 
   if (!items.length) return
 
-  const eyelevel = items.filter((v) => v.visualizationTechnique === 'eyelevel')
-  const photomontage = items.filter(
-    (v) => v.visualizationTechnique === 'photomontage',
-  )
+  const exterior = items.filter((v) => !v.photomontage)
+  const photomontage = items.filter((v) => v.photomontage)
 
   return {
-    title: 'Exteriør 3D bilder - Stor enhets pakke',
+    title: getLabel('exteriorImagesLarge'),
     lines: [
-      {
-        description: getLabel('3dImages'),
-        value: eyelevel.length ? getLabel('seperateOffer') : 0,
-        type: 'offer',
-        comment: `${eyelevel.length} ${getLabel('totalSuffix')}`,
-      },
+      ...CameraAngles.map((v) => {
+        const total = exterior.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: getLabel(v.label),
+          value: total ? getLabel('seperateOffer') : 0,
+          type: 'fixed',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
       {
         description: getLabel('droneExterior'),
         value: photomontage.length ? getLabel('seperateOffer') : 0,

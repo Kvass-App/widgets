@@ -3,20 +3,18 @@ import { ref, computed, watch, inject, nextTick } from 'vue'
 import {
   FormControl,
   Input,
-  Switch,
   Flex,
   Button,
   Dialog,
   RadioGroup,
   TextArea,
   Dropdown,
-  File,
 } from '@kvass/ui'
 import Tooltip from './Tooltip.ce.vue'
 import Validator from '../composeable/Validator'
 import { vTooltip } from 'floating-vue'
 
-import { Rooms } from '../enums'
+import { Rooms, CameraAngles } from '../enums'
 
 import { Clone } from '../../utils'
 
@@ -43,7 +41,9 @@ const template = {
   units: null,
   description: '',
   attachments: [],
-  visualizationTechnique: 'eyelevel',
+  cameraAngle: 'eyelevel',
+  photomontage: false,
+  // visualizationTechnique: 'eyelevel',
   room: null,
 }
 
@@ -100,6 +100,16 @@ const submit = () => {
   emit('update:modelValue', Clone(order.value))
 }
 
+const photomontageComp = computed({
+  get() {
+    return order.value.photomontage ? 'yes' : 'no'
+  },
+  // setter
+  set(newValue) {
+    order.value.photomontage = newValue === 'yes' ? true : false
+  },
+})
+
 const dialog = ref()
 
 const isDialogOpen = ref(false)
@@ -108,6 +118,8 @@ const dialogMounted = ref(false)
 watch(isDialogOpen, async (val) => {
   if (val) {
     await nextTick()
+    order.value = Clone(props.modelValue || template)
+
     dialogMounted.value = true
   } else {
     dialogMounted.value = false
@@ -134,11 +146,8 @@ watch(isDialogOpen, async (val) => {
       <slot name="trigger" :trigger-props="triggerProps"> </slot>
     </template>
     <template #default>
-      <Flex direction="column" gap="2rem">
-        <FormControl
-          v-bind="validate('type')"
-          v-if="isDialogOpen && dialogMounted"
-        >
+      <Flex direction="column" gap="2rem" v-if="isDialogOpen && dialogMounted">
+        <FormControl v-bind="validate('type')">
           <template #label>
             <span>{{ getLabel('imageType') }}</span>
             <Tooltip class="k-ml-xxs" :content="getLabel('imageTypeTooltip')" />
@@ -187,21 +196,51 @@ watch(isDialogOpen, async (val) => {
               ></Input>
             </FormControl>
 
-            <FormControl v-bind="validate('visualizationTechnique')">
+            <FormControl v-bind="validate('cameraAngle')">
               <template #label>
-                <span>{{ getLabel('visualizationTechnique') }}</span>
+                <span>{{ getLabel('cameraAngle') }}</span>
                 <Tooltip
                   class="k-ml-xxs"
-                  :content="getLabel('visualizationTechniqueTooltip')"
+                  :content="getLabel('cameraAngleTooltip')"
                 />
               </template>
               <RadioGroup
                 variant="segment"
                 direction="vertical"
-                v-model="order.visualizationTechnique"
+                v-model="order.cameraAngle"
+                :items="
+                  CameraAngles.map((v) => {
+                    return {
+                      ...v,
+                      label: getLabel(v.label),
+                    }
+                  })
+                "
+                :getRootNode="() => root.value.getRootNode()"
+              ></RadioGroup>
+            </FormControl>
+
+            <FormControl v-bind="validate('photomontage')">
+              <template #label>
+                <span>{{ getLabel('selectPhotomontage') }}</span>
+                <Tooltip
+                  class="k-ml-xxs"
+                  :content="getLabel('selectPhotomontageTooltip')"
+                />
+              </template>
+              <RadioGroup
+                variant="segment"
+                direction="vertical"
+                v-model="photomontageComp"
                 :items="[
-                  { id: 'eyelevel', label: getLabel('eyelevel') },
-                  { id: 'photomontage', label: getLabel('photomontage') },
+                  {
+                    id: 'yes',
+                    label: getLabel('yes'),
+                  },
+                  {
+                    id: 'no',
+                    label: getLabel('no'),
+                  },
                 ]"
                 :getRootNode="() => root.value.getRootNode()"
               ></RadioGroup>
@@ -212,10 +251,10 @@ watch(isDialogOpen, async (val) => {
             <FormControl v-bind="validate('room')">
               <template #label>
                 <span>{{ getLabel('interiorRoom') }}</span>
-                <Tooltip
+                <!-- <Tooltip
                   class="k-ml-xxs"
                   :content="getLabel('interiorRoomTooltip')"
-                />
+                /> -->
               </template>
               <Dropdown
                 :teleport="false"

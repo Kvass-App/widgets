@@ -1,4 +1,4 @@
-import { Rooms } from './enums'
+import { Rooms, CameraAngles } from './enums'
 
 export type Props = {
   labels: string // Record<string, string> // string
@@ -12,9 +12,11 @@ export type Props = {
 export type ImageOrder = {
   type: 'interior' | 'exterior'
   units: number | undefined
-  visualizationTechnique: string // enums
+  // visualizationTechnique: string // enums
   description: string
   room: (typeof Rooms)[number]['id']
+  cameraAngle: (typeof CameraAngles)[number]['id']
+  photomontage: boolean
 }
 
 export type Service = {
@@ -29,7 +31,6 @@ export type Order = {
     hasModel: boolean
     model: any[]
     shared: any[]
-    hasDrone: boolean
     drone: any[]
   }
   lead: {

@@ -29,9 +29,9 @@ const getOrderIcon = (item: ImageOrder) => {
   }
 
   if (item.type === 'exterior') {
-    if (item.visualizationTechnique === 'eyelevel')
-      return 'fa-pro-solid:building'
-    if (item.visualizationTechnique === 'photomontage') return 'gis:drone'
+    if (item.photomontage) return 'fa-pro-solid:camera'
+
+    return 'fa-pro-solid:building'
   }
 
   return 'fa-pro-solid:image-landscape'
@@ -41,7 +41,14 @@ const getOrderLabel = (item: ImageOrder) => {
   if (item.type === 'interior')
     return `${getLabel(item.type)} - ${getLabel(item.room)}`
 
-  return `${getLabel(item.type)} - ${getLabel(item.visualizationTechnique)}`
+  if (item.photomontage)
+    return `${getLabel('photomontage')} - ${getLabel(item.cameraAngle)}`
+
+  return `${getLabel(item.type)} - ${getLabel(item.cameraAngle)}`
+}
+
+const truncate = (text, char = 25) => {
+  return text.slice(0, char) + (text.length > char ? '...' : '')
 }
 </script>
 
@@ -63,12 +70,15 @@ const getOrderLabel = (item: ImageOrder) => {
               <div class="k-card__title">
                 {{ getOrderLabel(item) }}
               </div>
+              <div class="k-card__sublabel">
+                {{ truncate(item.description) }}
+              </div>
             </template>
 
             <template #actions>
               <Button
                 v-bind="triggerProps"
-                :label="`Rediger`"
+                :label="getLabel('edit')"
                 iconRight="fa-pro-light:pen-to-square"
               ></Button>
             </template>
@@ -87,6 +97,10 @@ const getOrderLabel = (item: ImageOrder) => {
     & > .k-card__header {
       align-items: center;
       gap: 0.5rem;
+
+      .k-card__title {
+        text-align: center;
+      }
     }
   }
   &__card-icon {
