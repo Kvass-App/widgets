@@ -1,5 +1,5 @@
 <script setup>
-import { Slugify, Translate, uploadFunction } from '../../utils'
+import { Slugify, Translate } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
 import { createFormSubmit } from '../api'
 import useValidator from '../../composables/useValidator.js'
@@ -46,10 +46,13 @@ const props = defineProps({
     type: String,
     required: true,
   },
-
   submitButtonLabel: {
     type: String,
     default: 'Send inn',
+  },
+  submitButtonTheme: {
+    type: String,
+    default: 'secondary',
   },
   privacyPrefix: {
     type: String,
@@ -142,10 +145,33 @@ function getFieldOptions(i, key) {
   switch (i.component) {
     case 'file':
       base.options.props = {
-        upload: uploadFunction,
-        uploadOptions: { maxSize: '12MB' },
+        upload: async (rawFile) => {
+          const url = `${window.location.origin}/api/form/upload`
+
+          const file = await Promise.resolve(rawFile)
+
+          const body = new FormData()
+          body.append('file', file)
+
+          return fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            body,
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error('Upload failed')
+              return res.json()
+            })
+            .catch((err) => {
+              throw new Error('Upload failed')
+            })
+        },
+        uploadOptions: { maxSize: '5MB' },
         fileSizeError: t('fileSizeError'),
         'drop-message': t('fileDropAreaMessage'),
+        'disable-preview': true,
+        rename: false,
+
         multiple: false,
         required: false,
         labels: {
@@ -413,7 +439,7 @@ onMounted(() => {
             type="submit"
             icon-right="fa-pro-solid:arrow-right"
             :promise="promise"
-            :variant="'primary'"
+            :variant="submitButtonTheme"
             :disabled="!formIsValid || props.formError"
           />
         </Grid>
@@ -462,14 +488,19 @@ onMounted(() => {
       }
     }
   }
-  .k-button--variant-secondary {
-    &,
-    &:hover {
-      border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
-      background-color: white;
-      color: black;
-      border-radius: var(--k-ui-rounding);
+  .k-dropdown-trigger {
+    &.k-button--variant-secondary {
+      &,
+      &:hover {
+        border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
+        background-color: white;
+        color: black;
+        border-radius: var(--k-ui-rounding);
+      }
     }
+  }
+  .k-file-thumbnail .k-buttongroup {
+    display: none;
   }
 
   .k-formcontrol__label {
