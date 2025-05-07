@@ -38,10 +38,9 @@ setValidatorLangauge(props.validatorLanguage)
 const order = ref<Order>({
   images: [],
   files: {
-    hasModel: true,
+    hasModel: false,
     model: [],
     shared: [],
-    hasDrone: true,
     drone: [],
   },
   lead: {
@@ -160,15 +159,27 @@ const steps = computed((): StepperStep[] => {
 
   --k-dialog-max-width: 80ch;
   --k-dialog-min-width: min(
-    80ch,
+    60ch,
     calc(100% - var(--k-dialog-card-margin-mobile, var(--k-ui-spacing-sm)))
   );
+
+  --k-ui-color-primary: var(--primary, blue);
+  --k-ui-color-primary-dark: var(--primary-dark, darkBlue);
+  --k-ui-color-primary-darkest: var(--primary-darkest, darkBlue);
+  --k-ui-color-primary-light: var(--primary-light, lightBlue);
+  --k-ui-color-primary-lightest: var(--primary-lightest, lightBlue);
+
+  --k-card-background: #fafafa;
+
+  --k-ui-color-neutral: #c9c9c9;
+  --k-ui-color-neutral-dark: #939393;
+  --k-ui-color-neutral-darkest: #272727;
+  --k-ui-color-neutral-light: #eaeaea;
+  --k-ui-color-neutral-lightest: #f8f8f8;
 
   .k-card__subtitle {
     white-space: break-spaces;
   }
-
-  // --k-card-spacing: 1.75rem;
 
   .k-file-droparea {
     padding: 3rem 1rem;
