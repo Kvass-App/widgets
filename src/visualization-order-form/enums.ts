@@ -47,6 +47,9 @@ Nøytralt er et bilde rett forfra som fungerer godt med svært mange enheter og 
   selectPhotomontageTooltip:
     'Fotomontasje er en form for bildekollasje hvor man setter sammen 3D med ekte bilder for å få en mer realistisk presentasjon.',
 
+  selectPhotomontageAlert:
+    'En fotomontasje forutsetter at du leverer dronebilder av prosjektet til oss',
+
   visualizationTechnique: 'Kameravinkel og presentasjonsmetode',
   visualizationTechniqueTooltip: `<div><b>Bakkeplan</b> handler om hvor kameraet er plasset (på øyehøyde)</div><div><b>Fotomontasje</b> handler om hvordan man setter sammen 3D med ekte bilder, for å få en realistisk presentasjon</div>`,
 
@@ -88,7 +91,7 @@ pdf
   confirmationSubtitle:
     'Takk for din forespørsel. Vi gjennomgår materialet og tar kontakt med deg dersom vi har spørsmål som vi trenger for å gi deg et konkret tilbud!',
 
-  sendOrder: 'Send Bestilling',
+  sendOrder: 'Send forespørsel',
   edit: 'Rediger',
 
   interiorImages: 'Interiør 3D bilder',
@@ -172,6 +175,15 @@ Det er også relevant for oss å se andre type bilder som du liker/ser for deg.`
   comment: 'Kommentar',
   cancel: 'Avbryt',
   confirm: 'Bekreft',
+
+  noPrice: 'Ikke fastsatt',
+  requiredFields: 'For å gå videre, må du fylle ut følgende:',
+
+  acceptPrivacyStatement:
+    'Ved registrering godtar du vilkårene i <a target="_blank" href="https://legal.kvass.no/privacy/no">personvernerklæringen</a> vår.',
+
+  leadContactForm:
+    'Fyll inn din kontaktinformasjon, vi sender et uforpliktende tilbud',
 
   yes: 'Ja',
   no: 'Nei',

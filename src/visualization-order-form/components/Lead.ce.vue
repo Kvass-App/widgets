@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, computed, onMounted } from 'vue'
-import { Button, Card, FormControl, Input, Flex } from '@kvass/ui'
+import { FormControl, Input, Flex } from '@kvass/ui'
 
 import {
   GetLabelInjectionKey,
@@ -39,10 +39,17 @@ const labels = computed(() => {
   }
 })
 
+const customMessages = computed(() => {
+  return {
+    required: ':attribute',
+  }
+})
+
 const validator = Validator({
   rules: rules,
   labels: labels,
   data: modelValue,
+  customMessages: customMessages,
 })
 
 const { bind: validate } = validator
@@ -79,6 +86,7 @@ onMounted(() => {
 
 <template>
   <Flex direction="column">
+    <h3>{{ getLabel('leadContactForm') }}</h3>
     <FormControl
       :label="getLabel('name')"
       v-bind="validate('name')"
@@ -114,6 +122,8 @@ onMounted(() => {
     >
       <Input v-model="modelValue.company.organizationNumber" />
     </FormControl>
+
+    <div v-html="getLabel('acceptPrivacyStatement')"></div>
   </Flex>
 </template>
 

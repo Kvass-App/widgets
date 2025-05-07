@@ -1,17 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, inject, nextTick } from 'vue'
-import {
-  FormControl,
-  Input,
-  Switch,
-  Alert,
-  Flex,
-  Button,
-  Card,
-  Dialog,
-  RadioGroup,
-  TextArea,
-} from '@kvass/ui'
+import { computed, inject } from 'vue'
 
 import PricingLine from './PricingLine.ce.vue'
 import { Services, Rooms, CameraAngles } from '../enums'
@@ -47,7 +35,7 @@ const getTotal = (lines: Line[]) => {
     { type: 'fixed', value: result.fixed },
     { type: 'monthly', value: result.monthly },
     { type: 'hourly', value: result.hourly },
-    { type: 'offer', value: result.offer },
+    // { type: 'offer', value: result.offer },
   ].filter(({ value }) => value)
 }
 
@@ -166,7 +154,7 @@ const exteriorLarge = computed(() => {
         return {
           description: getLabel(v.label),
           value: total ? getLabel('seperateOffer') : 0,
-          type: 'fixed',
+          type: 'offer',
           comment: `${total} ${getLabel('totalSuffix')}`,
         }
       }).filter((v) => v.value),
@@ -181,7 +169,7 @@ const exteriorLarge = computed(() => {
 })
 
 const total = computed(() => {
-  return getTotal(
+  const value = getTotal(
     [
       interior.value,
       exteriorSmall.value,
@@ -193,6 +181,10 @@ const total = computed(() => {
       .map(({ lines }) => lines)
       .flat(),
   )
+
+  if (!value.length) return [{ type: 'offer', value: getLabel('noPrice') }]
+
+  return value
 })
 
 const services = computed(() => {

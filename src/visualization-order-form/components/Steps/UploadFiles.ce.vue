@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
-import { FormControl, Button, Card, File, Flex, Switch, Alert } from '@kvass/ui'
+import { computed, inject, watch } from 'vue'
+import { FormControl, Button, Card, File, Flex, Alert } from '@kvass/ui'
 import { vTooltip } from 'floating-vue'
 import Tooltip from '../Tooltip.ce.vue'
 
@@ -48,7 +48,8 @@ const labels = computed(() => {
 
 const customMessages = computed(() => {
   return {
-    min: getLabel('selectImages'),
+    min: '',
+    required: ':attribute',
   }
 })
 
@@ -198,10 +199,13 @@ const upload = (
       <Button :label="getLabel('prev')" @click="onPrev" />
       <Button
         v-tooltip="{
-          content: Object.entries(validator.errors.value.errors)
+          content: `${getLabel('requiredFields')}
+• ${Object.entries(validator.errors.value.errors)
             .map(([key, value]) => value)
             .flat()
-            .join('\n'),
+            .filter(Boolean)
+            .join('\n• ')}
+`,
           disabled: validator.passes.value,
           container: false,
         }"

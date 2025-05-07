@@ -9,6 +9,7 @@ import {
   RadioGroup,
   TextArea,
   Dropdown,
+  Alert,
 } from '@kvass/ui'
 import Tooltip from './Tooltip.ce.vue'
 import Validator from '../composeable/Validator'
@@ -43,7 +44,6 @@ const template = {
   attachments: [],
   cameraAngle: 'eyelevel',
   photomontage: false,
-  // visualizationTechnique: 'eyelevel',
   room: null,
 }
 
@@ -75,7 +75,12 @@ const labels = computed(() => {
     type: getLabel('type'),
     description: getLabel('deliveryDescription'),
     units: getLabel('numberOfUnits'),
-    visualizationTechnique: getLabel('visualizationTechnique'),
+  }
+})
+
+const customMessages = computed(() => {
+  return {
+    required: ':attribute',
   }
 })
 
@@ -83,6 +88,7 @@ const validator = Validator({
   rules: rules,
   labels: labels,
   data: order,
+  customMessages: customMessages,
 })
 
 const { bind: validate } = validator
@@ -245,6 +251,11 @@ watch(isDialogOpen, async (val) => {
                 :getRootNode="() => root.value.getRootNode()"
               ></RadioGroup>
             </FormControl>
+            <Alert
+              v-if="order.photomontage"
+              variant="info"
+              :content="getLabel('selectPhotomontageAlert')"
+            ></Alert>
           </template>
 
           <template v-if="order.type === 'interior'">
@@ -308,10 +319,13 @@ watch(isDialogOpen, async (val) => {
       <Button :label="getLabel('cancel')" @click="close"></Button>
       <Button
         v-tooltip="{
-          content: Object.entries(validator.errors.value.errors)
+          content: `${getLabel('requiredFields')}
+• ${Object.entries(validator.errors.value.errors)
             .map(([key, value]) => value)
             .flat()
-            .join('\n'),
+            .filter(Boolean)
+            .join('\n• ')}
+`,
           disabled: validator.passes.value,
           container: false,
         }"

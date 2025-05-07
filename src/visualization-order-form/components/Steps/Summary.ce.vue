@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, computed, ref } from 'vue'
-import { Button, Card, FormControl, Input, Flex } from '@kvass/ui'
+import { Button, Card } from '@kvass/ui'
 import { vTooltip } from 'floating-vue'
 
 import Pricing from '../Pricing.ce.vue'
@@ -31,10 +31,13 @@ const passes = computed(() => {
 const validatorErrors = computed(() => {
   if (!lead.value) return ''
 
-  return Object.entries(lead.value.validator.errors.value.errors)
+  return `${getLabel('requiredFields')}
+• ${Object.entries(lead.value.validator.errors.value.errors)
     .map(([key, value]) => value)
     .flat()
-    .join('\n')
+    .filter(Boolean)
+    .join('\n• ')}
+`
 })
 
 const modelValue = defineModel<Order>({ default: {} })
