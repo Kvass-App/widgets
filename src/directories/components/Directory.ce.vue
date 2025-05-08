@@ -31,7 +31,9 @@ const icons = reactive(
   typeof props.icons === 'object' ? props.icons : JSON.parse(props.icons),
 )
 
-const currentPath = ref('')
+const url = new URL(window.location.href)
+const role = window.localStorage.getItem('role')
+const currentPath = ref(url.searchParams.get('directory') || '')
 const layout = ref('grid')
 const searchInput = ref('')
 
@@ -48,49 +50,51 @@ const breadcrumbs = computed(() =>
   })),
 )
 
-const items = computed(() => {
-  const files = []
-  const directories = new Map()
+const filterByRole = (v) => !role || !v?.acl?.length || v.acl.includes(role)
 
-  value.forEach((item) => {
-    const { path } = item
+const getFolderContent = (path = '') => {
+  const getSubpath = (v) =>
+    v.path
+      .split('/')
+      .slice(0, !path ? 1 : path.split('/').length + 1)
+      .join('/')
 
-    if (searchInput.value) {
-      return item.files
-        .map((file) => ({ ...file, fullPath: `${path}/${file.name}` }))
-        .filter((item) =>
-          new RegExp(searchInput.value, 'i').test(item.fullPath),
-        )
-        .forEach((item) => files.push(item))
-    }
-
-    const pathSplitted = path.split('/')
-
-    if (item.path === currentPath.value) files.push(...item.files)
-    if (currentPath.value === '' && item.path !== '')
-      directories.set(pathSplitted[0], pathSplitted[0])
-
-    if (
-      pathSplitted.length > currentPathSplitted.value.length &&
-      pathSplitted.slice(0, currentPathSplitted.value.length).join('/') ===
-        currentPathSplitted.value.join('/')
-    ) {
-      const nextDirName = pathSplitted[currentPathSplitted.value.length]
-      directories.set(
-        nextDirName,
-        pathSplitted.slice(0, currentPathSplitted.value.length + 1).join('/'),
-      )
-    }
-  })
+  const addedPaths = []
 
   return [
-    ...Array.from(directories).map(([name, path]) => ({
-      isDirectory: true,
-      name,
-      path,
-    })),
-    ...files.map((file) => ({ isDirectory: false, ...file })),
+    ...value
+      .filter(
+        (v) => v.path !== path && v.path.startsWith(path) && filterByRole(v),
+      )
+      .map((v) => {
+        const subpath = getSubpath(v)
+        if (addedPaths.includes(subpath)) return
+        addedPaths.push(subpath)
+        return {
+          isDirectory: true,
+          name: subpath.split('/').pop(),
+          path: subpath,
+        }
+      })
+      .filter(Boolean),
+    ...value
+      .filter((v) => v.path === path)
+      .flatMap((v) => v.files.map((f) => ({ isDirectory: false, ...f })))
+      .filter(filterByRole),
   ]
+}
+
+const items = computed(() => {
+  if (searchInput.value) {
+    return value
+      .flatMap((v) => v.files)
+      .map((file) => ({ ...file, fullPath: `${item.path}/${file.name}` }))
+      .filter((item) => new RegExp(searchInput.value, 'i').test(item.fullPath))
+      .filter(filterByRole)
+      .forEach((item) => files.push(item))
+  }
+
+  return getFolderContent(currentPath.value)
 })
 
 function onItemClick(item) {
