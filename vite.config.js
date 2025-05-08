@@ -72,6 +72,9 @@ export default defineConfig({
         nabolagsprofil: fileURLToPath(
           new URL('./src/nabolagsprofil/main.js', import.meta.url),
         ),
+        'visualization-order-form': fileURLToPath(
+          new URL('./src/visualization-order-form/main.js', import.meta.url),
+        ),
       },
     },
   },

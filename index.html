@@ -39,34 +39,6 @@
         justify-content: center;
         background-color: #eaeaea;
       }
-
-      :root {
-        --k-loan-background-color: #202020;
-        --k-loan-primary: #e7cfa7;
-        --k-loan-cta-alignment: center;
-        --k-loan-slider-track-background: rgb(255 255 255 / 0.2);
-        --k-loan-border-radius: 0px;
-
-        --_k-directory-items-gap: var(--k-directory-items-gap, 1.5rem);
-        --_k-directory-item-grid-gap: var(--k-directory-item-grid-gap, 0.5rem);
-        --_k-directory-item-list-gap: var(--k-directory-item-list-gap, 1rem);
-        --_k-directory-border-radius: var(
-          --k-directory-border-radius,
-          var(--border-radius)
-        );
-        --_k-directory-thumbnail-width: var(
-          --k-directory-thumbnail-width,
-          50px
-        );
-        --_k-directory-title-size: var(--k-directory-title-size, 1.5rem);
-        --_k-directory-title-weight: var(--k-directory-title-weight, normal);
-
-        --k-button-secondary-text: currentColor;
-      }
-
-      kvass-loan-calculator {
-        max-width: 400px;
-      }
     </style>
   </head>
 
@@ -76,10 +48,10 @@
       feed="https://ankerhagen.local.kvass.test/api/integration/preset/knips/statics/getPosts?feed=8249aaf2-cf1e-46e5-a795-77451d6839db&limit=6"
     ></knips-feed>
     <script type="module" src="/src/knips/main.js"></script> -->
-    <kvass-loan-calculator
-      purchase-price="5600000"
-      joint-debt="2000000"
-    ></kvass-loan-calculator>
-    <script type="module" src="/src/loan-calculator/main.js"></script>
+    <kvass-visualization-order-form></kvass-visualization-order-form>
+    <script type="module" src="/src/visualization-order-form/main.js"></script>
+
+    <!-- <kvass-finn></kvass-finn>
+    <script type="module" src="/src/finn/main.js"></script> -->
   </body>
 </html>

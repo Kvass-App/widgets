@@ -1,5 +1,5 @@
 <script setup>
-import { Slugify, Translate, uploadFunction } from '../../utils'
+import { Slugify, Translate } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
 import { createFormSubmit } from '../api'
 import useValidator from '../../composables/useValidator.js'
@@ -46,10 +46,13 @@ const props = defineProps({
     type: String,
     required: true,
   },
-
   submitButtonLabel: {
     type: String,
     default: 'Send inn',
+  },
+  submitButtonTheme: {
+    type: String,
+    default: 'secondary',
   },
   privacyPrefix: {
     type: String,
@@ -142,10 +145,33 @@ function getFieldOptions(i, key) {
   switch (i.component) {
     case 'file':
       base.options.props = {
-        upload: uploadFunction,
-        uploadOptions: { maxSize: '12MB' },
+        upload: async (rawFile) => {
+          const url = `${window.location.origin}/api/form/upload`
+
+          const file = await Promise.resolve(rawFile)
+
+          const body = new FormData()
+          body.append('file', file)
+
+          return fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            body,
+          })
+            .then((res) => {
+              if (!res.ok) throw new Error('Upload failed')
+              return res.json()
+            })
+            .catch((err) => {
+              throw new Error('Upload failed')
+            })
+        },
+        uploadOptions: { maxSize: '5MB' },
         fileSizeError: t('fileSizeError'),
         'drop-message': t('fileDropAreaMessage'),
+        'disable-preview': true,
+        rename: false,
+
         multiple: false,
         required: false,
         labels: {
@@ -155,13 +181,22 @@ function getFieldOptions(i, key) {
       }
       return base
 
+    case 'checkbox':
+      base.options.slot = base.required
+        ? `<span
+          >${base.label}
+           <span class='kvass-form__checkbox--required'> * </span>
+        </span>`
+        : ''
+
+      return base
     case 'privacy':
       base.options.slot = `<span
           >${base.label || t('leadPrivacy', [''])}
           <a  href="${privacyUrlComp.value}" target="_blank">
             ${t(
               'privacy',
-            ).toLowerCase()} <span class='kvass-form__privacy--required'> * </span>
+            ).toLowerCase()} <span class='kvass-form__checkbox--required'> * </span>
           </a>
         </span>`
       return base
@@ -413,7 +448,7 @@ onMounted(() => {
             type="submit"
             icon-right="fa-pro-solid:arrow-right"
             :promise="promise"
-            :variant="'primary'"
+            :variant="submitButtonTheme"
             :disabled="!formIsValid || props.formError"
           />
         </Grid>
@@ -430,12 +465,25 @@ onMounted(() => {
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
 
+  --_kvass-form-ui-background: var(
+    --kvass-form-ui-background,
+    var(--secondary)
+  );
+  --_kvass-form-ui-color: var(
+    ,
+    --kvass-form-ui-color,
+    var(--secondary-contrast)
+  );
+
+  @media (max-width: 767px) {
+    padding: 1rem;
+  }
   h2 {
     font-family: var(--kvass-form-title-font-family, var(--secondary-font));
     letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
   }
 
-  &__privacy--required {
+  &__checkbox--required {
     color: var(--k-ui-color-danger);
   }
   &__wrapper {
@@ -453,6 +501,9 @@ onMounted(() => {
     grid-column-end: span 2;
     &--size-half {
       grid-column-end: span 1;
+      @media (max-width: 767px) {
+        grid-column-end: span 2;
+      }
     }
     &--required .k-formcontrol__label {
       &::after {
@@ -462,21 +513,26 @@ onMounted(() => {
       }
     }
   }
-  .k-button--variant-secondary {
-    &,
-    &:hover {
-      border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
-      background-color: white;
-      color: black;
-      border-radius: var(--k-ui-rounding);
+  .k-dropdown-trigger {
+    &.k-button--variant-secondary {
+      &,
+      &:hover {
+        border: 1px solid var(--k-input-border-color, var(--k-ui-color-neutral));
+        background-color: white;
+        color: black;
+        border-radius: var(--k-ui-rounding);
+      }
     }
+  }
+  .k-file-thumbnail .k-buttongroup {
+    display: none;
   }
 
   .k-formcontrol__label {
     text-transform: var(--kvass-form-label-transform);
   }
   .k-radiogroup--variant-radio {
-    --k-radiogroup-accent: var(--primary);
+    --k-radiogroup-accent: var(--_kvass-form-ui-background);
     --k-radiogroup-size: 10px;
     border-width: 5px;
 
@@ -487,7 +543,7 @@ onMounted(() => {
     [data-part='item-control'] {
       border-width: 5px;
       border-color: transparent;
-      outline: 1px solid var(--k-ui-color-neutral);
+      outline: 1px solid var(--_kvass-form-ui-background);
     }
   }
   .k-file-droparea {
@@ -498,11 +554,14 @@ onMounted(() => {
     color: currentColor;
   }
   .k-checkbox {
+    display: grid !important;
+    grid-template-columns: 1.3rem 1fr;
+    --k-checkbox-border-color: var(--_kvass-form-ui-background);
     &[data-state='checked']:not([data-disabled]) [data-part='control'] {
-      --k-checkbox-accent: var(--primary);
-      --k-checkbox-accent-contrast: var(--primary-contrast);
-      --k-checkbox-border-color: var(--primary-contrast);
-      border-color: var(--primary-contrast);
+      --k-checkbox-accent: var(--_kvass-form-ui-background);
+      --k-checkbox-accent-contrast: var(--_kvass-form-ui-color);
+      --k-checkbox-border-color: var(--_kvass-form-ui-color);
+      border-color: var(--_kvass-form-ui-color);
     }
   }
 }
