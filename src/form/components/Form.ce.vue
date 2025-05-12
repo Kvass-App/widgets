@@ -524,8 +524,11 @@ onMounted(() => {
       }
     }
   }
-  .k-file-thumbnail .k-buttongroup {
-    display: none;
+  .k-file-thumbnail {
+    .k-file-thumbnail__copy,
+    .k-file-thumbnail__download {
+      display: none;
+    }
   }
 
   .k-formcontrol__label {
