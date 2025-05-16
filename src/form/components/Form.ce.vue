@@ -465,13 +465,10 @@ onMounted(() => {
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
 
-  --_kvass-form-ui-background: var(
-    --kvass-form-ui-background,
-    var(--secondary)
-  );
-  --_kvass-form-ui-color: var(
-    ,
-    --kvass-form-ui-color,
+  --_kvass-form-ui-color: var(--kvass-form-ui-color, var(--secondary));
+
+  --_kvass-form-ui-contrast-color: var(
+    --kvass-form-ui-contrast-color,
     var(--secondary-contrast)
   );
 
@@ -535,7 +532,7 @@ onMounted(() => {
     text-transform: var(--kvass-form-label-transform);
   }
   .k-radiogroup--variant-radio {
-    --k-radiogroup-accent: var(--_kvass-form-ui-background);
+    --k-radiogroup-accent: var(--_kvass-form-ui-color);
     --k-radiogroup-size: 10px;
     border-width: 5px;
 
@@ -546,7 +543,7 @@ onMounted(() => {
     [data-part='item-control'] {
       border-width: 5px;
       border-color: transparent;
-      outline: 1px solid var(--_kvass-form-ui-background);
+      outline: 1px solid var(--_kvass-form-ui-color);
     }
   }
   .k-file-droparea {
@@ -559,12 +556,12 @@ onMounted(() => {
   .k-checkbox {
     display: grid !important;
     grid-template-columns: 1.3rem 1fr;
-    --k-checkbox-border-color: var(--_kvass-form-ui-background);
+    --k-checkbox-border-color: var(--_kvass-form-ui-color);
     &[data-state='checked']:not([data-disabled]) [data-part='control'] {
-      --k-checkbox-accent: var(--_kvass-form-ui-background);
-      --k-checkbox-accent-contrast: var(--_kvass-form-ui-color);
-      --k-checkbox-border-color: var(--_kvass-form-ui-color);
-      border-color: var(--_kvass-form-ui-color);
+      --k-checkbox-accent: var(--_kvass-form-ui-color);
+      --k-checkbox-accent-contrast: var(--_kvass-form-ui-contrast-color);
+      --k-checkbox-border-color: var(--_kvass-form-ui-contrast-color);
+      border-color: var(--_kvass-form-ui-contrast-color);
     }
   }
 }
