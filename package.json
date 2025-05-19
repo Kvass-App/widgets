@@ -12,7 +12,7 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.30",
+    "@kvass/location-selector": "^1.0.31",
     "@kvass/map": "^1.0.19",
     "@kvass/storage": "^1.1.0",
     "@kvass/ui": "1.6.56",
