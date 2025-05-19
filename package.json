@@ -12,11 +12,11 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@img-comparison-slider/vue": "^8.0.0",
-    "@kvass/location-selector": "^1.0.28",
+    "@kvass/location-selector": "^1.0.29",
     "@kvass/map": "^1.0.19",
     "@kvass/storage": "^1.1.0",
     "@kvass/ui": "1.6.56",
-    "@kvass/vue3-flatfinder": "^1.0.73",
+    "@kvass/vue3-flatfinder": "^1.0.74",
     "@vueuse/core": "^10.9.0",
     "chart.js": "^4.4.2",
     "chartjs-plugin-datalabels": "^2.2.0",
