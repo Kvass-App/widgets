@@ -72,7 +72,7 @@ const element = useCurrentElement()
 watch(
   () => item.value,
   (val) => {
-    if (!val || !element.value) return
+    if (!element.value) return
 
     element.value.dispatchEvent(
       new CustomEvent('webcomponent:update', {
