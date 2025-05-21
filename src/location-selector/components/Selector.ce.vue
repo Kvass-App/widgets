@@ -28,6 +28,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  reset: {
+    type: Boolean,
+    default: true,
+  },
   value: {
     type: String,
   },
@@ -96,6 +100,7 @@ watch(
     :label="props.label"
     :show-selected="transformBoolean(props.showSelected)"
     :show-warning="transformBoolean(props.showWarning)"
+    :reset="transformBoolean(props.reset)"
     :language="language"
   />
 </template>
