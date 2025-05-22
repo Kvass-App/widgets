@@ -217,37 +217,40 @@ const Services = [
   {
     id: 'floorplan',
     image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+      src: 'https://assets.kvass.no/682f133a52780702b9e9a47f',
     },
     label: 'floorplan',
     description: 'floorplanDescription',
   },
 
   {
-    id: 'sundiagram',
-    image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
-    },
-    label: 'sundiagram',
-    description: 'sundiagramDescription',
-  },
-
-  {
     id: 'interactiv3DModel',
     image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+      src: 'https://assets.kvass.no/682f133752780702b9e9a473',
     },
     label: 'interactiv3DModel',
     description: 'interactiv3DModelDescription',
+    model: {
+      src: 'https://webmodell.no/stream/?id=FLKWTIM86woCBORjvFid ',
+    },
   },
 
   {
     id: '360',
-    image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+    iframe: {
+      src: 'https://kuula.co/share/hGvrb?logo=1&info=1&fs=1&vr=0&autorotate=0.04&thumbs=1',
     },
     label: '360',
     description: '360Description',
+  },
+
+  {
+    id: 'sundiagram',
+    // image: {
+    //   src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+    // },
+    label: 'sundiagram',
+    description: 'sundiagramDescription',
   },
 ]
 
