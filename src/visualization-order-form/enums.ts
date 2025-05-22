@@ -292,4 +292,45 @@ const CameraAngles = [
   },
 ]
 
-export { Services, DefaultLabels, Rooms, CameraAngles }
+const FileExtentions = [
+  '.3ds', // Autodesk 3D Studio
+  '.obj', // Wavefront Object
+  '.fbx', // Autodesk FBX (Filmbox)
+  '.blend', // Blender
+  '.stl', // Stereolithography
+  '.dae', // COLLADA (Digital Asset Exchange)
+  '.ply', // Polygon File Format
+  '.glb', // Binary glTF
+  '.gltf', // GL Transmission Format
+  '.x3d', // Extensible 3D
+  '.vrml', // Virtual Reality Modeling Language (.wrl)
+  '.ma', // Autodesk Maya ASCII
+  '.mb', // Autodesk Maya Binary
+  '.c4d', // Maxon Cinema 4D
+  '.lwo', // LightWave Object
+  '.lws', // LightWave Scene
+  '.max', // Autodesk 3ds Max Scene
+  '.x', // DirectX Model Format
+  '.uasset', // Unreal Engine Asset
+  '.abc', // Alembic
+  '.skp', // SketchUp
+  '.3mf', // 3D Manufacturing Format
+  '.prt', // NX or Creo Part File
+  '.sldprt', // SolidWorks Part
+  '.sldasm', // SolidWorks Assembly
+  '.amf', // Additive Manufacturing File
+  '.igs', // IGES
+  '.iges', // IGES alternative extension
+  '.step', // STEP
+  '.stp', // STEP alternative extension
+  '.x_t', // Parasolid (text)
+  '.x_b', // Parasolid (binary)
+  '.objz', // Compressed OBJ
+  '.zip', // Compressed Archive
+  '.rar', // Compressed Archive
+  '.7z', // 7-Zip Archive
+  '.tar', // TAR Archive
+  '.gz', // Gzip Archive
+]
+
+export { Services, DefaultLabels, Rooms, CameraAngles, FileExtentions }

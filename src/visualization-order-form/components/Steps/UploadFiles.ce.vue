@@ -4,6 +4,7 @@ import { FormControl, Button, Card, File, Flex, Alert } from '@kvass/ui'
 import { vTooltip } from 'floating-vue'
 import Tooltip from '../Tooltip.ce.vue'
 
+import { FileExtentions } from '../../enums'
 import Validator from '../../composeable/Validator'
 import { GetLabelInjectionKey, RootNodeInjectionKey } from '../../keys'
 
@@ -143,7 +144,7 @@ const upload = (
               <span>{{ getLabel('uploadarchitectDrawingOrModel') }}</span>
             </template>
             <File
-              :accept="['.pdf', '.3ds', '.fbx']"
+              :accept="FileExtentions"
               v-model="modelValue.files.model"
               :multiple="true"
               :sortable="false"
