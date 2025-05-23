@@ -187,6 +187,9 @@ Det er også relevant for oss å se andre type bilder som du liker/ser for deg.`
 
   yes: 'Ja',
   no: 'Nei',
+
+  somethingWentWrong: 'Upps..! Noe gikk galt',
+  contactSupport: 'Kontakt support@kvass.no',
 }
 
 const Services = [

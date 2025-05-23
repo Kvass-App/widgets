@@ -87,40 +87,32 @@ onMounted(() => {
 <template>
   <Flex direction="column">
     <h3>{{ getLabel('leadContactForm') }}</h3>
-    <FormControl
-      :label="getLabel('name')"
-      v-bind="validate('name')"
-      :disabled="parsedLead.name"
-    >
-      <Input v-model="modelValue.name" />
+    <FormControl :label="getLabel('name')" v-bind="validate('name')">
+      <Input v-model="modelValue.name" :disabled="Boolean(parsedLead.name)" />
     </FormControl>
-    <FormControl
-      :label="getLabel('phone')"
-      v-bind="validate('phone')"
-      :disabled="parsedLead.phone"
-    >
-      <Input v-model="modelValue.phone" />
+    <FormControl :label="getLabel('phone')" v-bind="validate('phone')">
+      <Input v-model="modelValue.phone" :disabled="Boolean(parsedLead.phone)" />
     </FormControl>
-    <FormControl
-      :label="getLabel('email')"
-      v-bind="validate('email')"
-      :disabled="parsedLead.email"
-    >
-      <Input v-model="modelValue.email" />
+    <FormControl :label="getLabel('email')" v-bind="validate('email')">
+      <Input v-model="modelValue.email" :disabled="Boolean(parsedLead.email)" />
     </FormControl>
     <FormControl
       :label="getLabel('companyName')"
       v-bind="validate('company.name')"
-      :disabled="parsedLead?.company?.name"
     >
-      <Input v-model="modelValue.company.name" />
+      <Input
+        v-model="modelValue.company.name"
+        :disabled="Boolean(parsedLead?.company?.name)"
+      />
     </FormControl>
     <FormControl
       :label="getLabel('organizationNumber')"
       v-bind="validate('company.organizationNumber')"
-      :disabled="parsedLead?.company?.organizationNumber"
     >
-      <Input v-model="modelValue.company.organizationNumber" />
+      <Input
+        v-model="modelValue.company.organizationNumber"
+        :disabled="Boolean(parsedLead?.company?.organizationNumber)"
+      />
     </FormControl>
 
     <div v-html="getLabel('acceptPrivacyStatement')"></div>
