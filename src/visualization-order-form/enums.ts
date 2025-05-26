@@ -295,6 +295,8 @@ const CameraAngles = [
 ]
 
 const FileExtentions = [
+  'directory',
+  '.pdf',
   '.3ds', // Autodesk 3D Studio
   '.obj', // Wavefront Object
   '.fbx', // Autodesk FBX (Filmbox)
