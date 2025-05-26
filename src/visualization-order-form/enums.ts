@@ -107,7 +107,6 @@ Eksteriør: Utendørs 3D bilde`,
   exterior: 'Eksteriør',
   totalSuffix: 'stk',
 
-  droneExterior: 'Drone bilder',
   numberOfUnits: 'Antall enheter',
   numberOfUnitsTooltip:
     'Definer hvor mange enheter som vil være synlig i 3D bildet. For eksempel 32 leiligheter.',
