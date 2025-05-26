@@ -75,6 +75,23 @@ watch(
   },
 )
 
+const preTransform = (e: DragEvent) => {
+  const items = e.dataTransfer?.items || []
+  const result: any[] = []
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const entry = item.webkitGetAsEntry?.()
+
+    if (entry && entry.isFile) {
+      const file = item.getAsFile()
+      if (file) result.push(file)
+    }
+  }
+
+  return result
+}
+
 const upload = (
   file: any,
   onProgress: (val: number) => void,
@@ -110,12 +127,14 @@ const upload = (
               <span>{{ getLabel('uploadFiles') }}</span>
             </template>
             <File
+              :uploadOptions="{
+                preTransform: preTransform,
+              }"
               :accept="'*'"
               v-model="modelValue.files.shared"
               :multiple="true"
               :sortable="false"
               :upload="upload"
-              :uploadOptions="{}"
               :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
@@ -149,7 +168,9 @@ const upload = (
               :multiple="true"
               :sortable="false"
               :upload="upload"
-              :uploadOptions="{}"
+              :uploadOptions="{
+                preTransform: preTransform,
+              }"
               :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
@@ -182,7 +203,9 @@ const upload = (
                 :multiple="true"
                 :sortable="false"
                 :upload="upload"
-                :uploadOptions="{}"
+                :uploadOptions="{
+                  preTransform: preTransform,
+                }"
                 :dropMessage="getLabel('dropMessage')"
                 :rename="false"
                 :labels="{
