@@ -76,6 +76,8 @@ watch(
 )
 
 const preTransform = (e: DragEvent) => {
+  if (e.type !== 'drop') return (e.target as HTMLInputElement).files || []
+
   const items = e.dataTransfer?.items || []
   const result: any[] = []
 
