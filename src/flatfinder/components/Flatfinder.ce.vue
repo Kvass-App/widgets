@@ -19,6 +19,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  relationPlacement: {
+    type: String,
+    default: 'bottom',
+    enums: ['top', 'bottom '],
+  },
 })
 </script>
 
@@ -30,6 +35,7 @@ const props = defineProps({
       :project-id="projectId"
       :path-prefix="pathPrefix"
       :show-residential-list="showResidentialList"
+      :relationPlacement="relationPlacement"
     />
   </LazyLoad>
 </template>
