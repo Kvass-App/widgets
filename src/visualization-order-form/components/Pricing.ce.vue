@@ -86,12 +86,18 @@ const exteriorSmall = computed(() => {
         }
       }).filter((v) => v.value),
 
-      {
-        description: getLabel('photomontage'),
-        value: 9000 * photomontage.length,
-        type: 'fixed',
-        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
-      },
+      ...CameraAngles.map((v) => {
+        const total = photomontage.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: `${getLabel('photomontage')} - ${getLabel(v.label)} `,
+          value: 9000 * total,
+          type: 'fixed',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
     ].filter((v) => v.value),
   }
 })
@@ -123,12 +129,19 @@ const exteriorMedium = computed(() => {
           comment: `${total} ${getLabel('totalSuffix')}`,
         }
       }).filter((v) => v.value),
-      {
-        description: getLabel('droneExterior'),
-        value: 11000 * photomontage.length,
-        type: 'fixed',
-        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
-      },
+
+      ...CameraAngles.map((v) => {
+        const total = photomontage.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: `${getLabel('photomontage')} - ${getLabel(v.label)} `,
+          value: 11000 * total,
+          type: 'fixed',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
     ].filter((v) => v.value),
   }
 })
@@ -158,12 +171,19 @@ const exteriorLarge = computed(() => {
           comment: `${total} ${getLabel('totalSuffix')}`,
         }
       }).filter((v) => v.value),
-      {
-        description: getLabel('droneExterior'),
-        value: photomontage.length ? getLabel('seperateOffer') : 0,
-        type: 'offer',
-        comment: `${photomontage.length} ${getLabel('totalSuffix')}`,
-      },
+
+      ...CameraAngles.map((v) => {
+        const total = photomontage.filter(
+          (item) => item.cameraAngle === v.id,
+        ).length
+
+        return {
+          description: `${getLabel('photomontage')} - ${getLabel(v.label)} `,
+          value: total ? getLabel('seperateOffer') : 0,
+          type: 'offer',
+          comment: `${total} ${getLabel('totalSuffix')}`,
+        }
+      }).filter((v) => v.value),
     ].filter((v) => v.value),
   }
 })

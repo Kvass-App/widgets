@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, onMounted } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { Card, Icon, Spinner } from '@kvass/ui'
 
 import {
@@ -19,6 +19,8 @@ const props = defineProps<{
   onPrev: any
 }>()
 
+const isError = ref(false)
+
 const modelValue = defineModel<Order>({ default: {} })
 
 const submit = () => {
@@ -26,13 +28,9 @@ const submit = () => {
 
   const formData = new FormData()
 
-  files.shared.forEach((file) => {
-    formData.append('files', file)
-  })
-  files.model.forEach((file) => {
-    formData.append('files', file)
-  })
-  files.model.forEach((file) => {
+  const mergedFiles = [...files.shared, ...files.model, ...files.drone]
+
+  mergedFiles.forEach((file) => {
     formData.append('files', file)
   })
 
@@ -46,20 +44,19 @@ const submit = () => {
   })
 
   formData.append('lead', JSON.stringify(lead))
-  formData.append(
-    'metadata',
-    JSON.stringify({ hasModel: files.hasModel, hasDrone: files.hasDrone }),
-  )
+  formData.append('metadata', JSON.stringify({ hasModel: files.hasModel }))
 
   fetch(rootProps.callbackUrl, {
     method: 'POST',
     body: formData,
   })
-    .then((data) => {
-      console.log('Data uploaded successfully:', data)
+    .then((res) => {
+      if (!res.ok) throw res
+      console.log('Data uploaded successfully:', res)
       props.onNext()
     })
     .catch((error) => {
+      isError.value = true
       console.error('Error uploading data:', error)
     })
 }
@@ -69,7 +66,13 @@ onMounted(submit)
 
 <template>
   <Card class="loading" is="form">
-    <template #header>
+    <template #header v-if="isError">
+      <Icon icon="fa-pro-solid:circle-exclamation" class="loading__icon" />
+
+      <div class="k-card__title">{{ getLabel('somethingWentWrong') }}</div>
+      <div class="k-card__subtitle">{{ getLabel('contactSupport') }}</div>
+    </template>
+    <template #header v-else>
       <Spinner size="large" class="k-mb-lg loading__spinner"></Spinner>
 
       <div class="k-card__title">{{ getLabel('loadingTitle') }}</div>
@@ -77,11 +80,16 @@ onMounted(submit)
     </template>
   </Card>
 </template>
-
 <style lang="scss">
 .loading {
   &__spinner {
     // color: var(--k-ui-color-primary);
+  }
+
+  &__icon {
+    font-size: 3rem;
+    color: var(--k-ui-color-danger);
+    margin-bottom: 1rem;
   }
 
   .k-card__header {

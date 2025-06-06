@@ -10,6 +10,18 @@ export type Category = {
   disabledReason: string
 }
 
+const houseBuildingTypes = [
+  'detached',
+  'flat',
+  'semidetached',
+  'terraced',
+  'leisure',
+  'fourPlex',
+  'chainLinkedHouse',
+  'boatBerth',
+  'boathouse',
+]
+
 export default [
   {
     type: 'ESTATE_PLANNED',
@@ -36,7 +48,7 @@ export default [
     disabled: (units: Unit[]) => {
       if (!units.length) return true
 
-      const types = ['detached', 'flat', 'semidetached', 'terraced']
+      const types = houseBuildingTypes.filter((v) => v !== 'leisure')
 
       return !units.some((unit) => {
         return (
@@ -54,7 +66,7 @@ export default [
     disabled: (units: Unit[]) => {
       if (!units.length) return false
 
-      const types = ['detached', 'flat', 'semidetached', 'terraced', 'leisure']
+      const types = houseBuildingTypes
 
       return !units.some((unit) => {
         return (
@@ -91,13 +103,14 @@ export default [
     disabled: (units: Unit[]) => {
       if (!units.length) return false
 
-      const types = ['detached', 'flat', 'semidetached', 'terraced', 'leisure']
+      const typesToSkip = houseBuildingTypes
 
       // we are missing rent properties in Kvass
 
       return !units.some((unit) => {
         return (
-          unit.saleType === 'sale' && !types.includes(unit.propertyType.value)
+          unit.saleType === 'sale' &&
+          !typesToSkip.includes(unit.propertyType.value)
         )
       })
     },

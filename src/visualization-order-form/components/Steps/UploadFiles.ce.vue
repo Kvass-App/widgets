@@ -4,6 +4,7 @@ import { FormControl, Button, Card, File, Flex, Alert } from '@kvass/ui'
 import { vTooltip } from 'floating-vue'
 import Tooltip from '../Tooltip.ce.vue'
 
+import { FileExtentions } from '../../enums'
 import Validator from '../../composeable/Validator'
 import { GetLabelInjectionKey, RootNodeInjectionKey } from '../../keys'
 
@@ -74,6 +75,25 @@ watch(
   },
 )
 
+const preTransform = (e: DragEvent) => {
+  if (e.type !== 'drop') return (e.target as HTMLInputElement).files || []
+
+  const items = e.dataTransfer?.items || []
+  const result: any[] = []
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const entry = item.webkitGetAsEntry?.()
+
+    if (entry && entry.isFile) {
+      const file = item.getAsFile()
+      if (file) result.push(file)
+    }
+  }
+
+  return result
+}
+
 const upload = (
   file: any,
   onProgress: (val: number) => void,
@@ -109,12 +129,14 @@ const upload = (
               <span>{{ getLabel('uploadFiles') }}</span>
             </template>
             <File
+              :uploadOptions="{
+                preTransform: preTransform,
+              }"
               :accept="'*'"
               v-model="modelValue.files.shared"
               :multiple="true"
               :sortable="false"
               :upload="upload"
-              :uploadOptions="{}"
               :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
@@ -143,12 +165,14 @@ const upload = (
               <span>{{ getLabel('uploadarchitectDrawingOrModel') }}</span>
             </template>
             <File
-              :accept="['.pdf', '.3ds', '.fbx']"
+              :accept="FileExtentions"
               v-model="modelValue.files.model"
               :multiple="true"
               :sortable="false"
               :upload="upload"
-              :uploadOptions="{}"
+              :uploadOptions="{
+                preTransform: preTransform,
+              }"
               :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
@@ -181,7 +205,9 @@ const upload = (
                 :multiple="true"
                 :sortable="false"
                 :upload="upload"
-                :uploadOptions="{}"
+                :uploadOptions="{
+                  preTransform: preTransform,
+                }"
                 :dropMessage="getLabel('dropMessage')"
                 :rename="false"
                 :labels="{

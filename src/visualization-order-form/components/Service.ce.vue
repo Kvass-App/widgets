@@ -72,72 +72,108 @@ const reset = () => {
           ...item.vimeo,
         }"
       ></Vimeo>
+
+      <iframe
+        v-if="item.iframe"
+        class="kvass-embed"
+        :src="item.iframe.src"
+        :style="`--kvass-embed-aspect-ratio: ${item.iframe.aspectRatio || '16/9'}; --kvass-embed-background-color: ${item.iframe.backgroundColor || '#fafafa'}`"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
     </template>
 
     <template #actions>
-      <Dialog
-        :teleport="false"
-        alignment="center"
-        @open="reset()"
-        @close="reset()"
-        :title="getLabel(item.label)"
-        :subtitle="getLabel(item.description)"
-      >
-        <template #trigger="{ triggerProps }">
-          <Button
-            v-bind="triggerProps"
-            :variant="modelValue.selected ? 'primary' : 'secondary'"
-            :label="
-              modelValue.selected ? getLabel('selected') : getLabel('select')
-            "
-          />
-        </template>
-        <template #default>
-          <FormControl :label="getLabel('comment')">
-            <TextArea v-model="service.comment" :rows="6" />
-          </FormControl>
+      <Flex direction="column" align="center">
+        <Dialog
+          :teleport="false"
+          alignment="center"
+          v-if="item.model"
+          :title="getLabel(item.label)"
+          class="model"
+        >
+          <template #trigger="{ triggerProps }">
+            <Button
+              v-bind="triggerProps"
+              icon="ic:twotone-3d-rotation"
+              class="model__trigger"
+            />
+          </template>
+          <template #default>
+            <iframe
+              v-if="item.model"
+              class="kvass-embed"
+              :src="item.model.src"
+              :style="`--kvass-embed-aspect-ratio: ${item.model.aspectRatio || '16/9'}; --kvass-embed-background-color: ${item.model.backgroundColor || '#fafafa'}`"
+              frameborder="0"
+              allowfullscreen
+            ></iframe>
+          </template>
+        </Dialog>
+        <Dialog
+          :teleport="false"
+          alignment="center"
+          @open="reset()"
+          @close="reset()"
+          :title="getLabel(item.label)"
+          :subtitle="getLabel(item.description)"
+        >
+          <template #trigger="{ triggerProps }">
+            <Button
+              v-bind="triggerProps"
+              :variant="modelValue.selected ? 'primary' : 'secondary'"
+              :label="
+                modelValue.selected ? getLabel('selected') : getLabel('select')
+              "
+            />
+          </template>
+          <template #default>
+            <FormControl :label="getLabel('comment')">
+              <TextArea v-model="service.comment" :rows="6" />
+            </FormControl>
 
-          <div class="k-mt-lg">{{ getLabel('priceNotIncluded') }}</div>
-        </template>
-        <template #actions="{ close }">
-          <Button
-            v-if="service.selected"
-            :label="getLabel('removeSelected')"
-            @click="
-              () => {
-                update({
-                  ...service,
-                  comment: '',
-                  selected: false,
-                })
-                close()
-              }
-            "
-          />
+            <div class="k-mt-lg">{{ getLabel('priceNotIncluded') }}</div>
+          </template>
+          <template #actions="{ close }">
+            <Button
+              v-if="service.selected"
+              :label="getLabel('removeSelected')"
+              @click="
+                () => {
+                  update({
+                    ...service,
+                    comment: '',
+                    selected: false,
+                  })
+                  close()
+                }
+              "
+            />
 
-          <Button
-            :label="getLabel('cancel')"
-            @click="
-              () => {
-                close()
-              }
-            "
-          />
-          <Button
-            variant="primary"
-            :label="getLabel('confirm')"
-            @click="
-              () => {
-                update({
-                  ...service,
-                  selected: true,
-                })
-                close()
-              }
-            "
-          />
-        </template>
-      </Dialog>
+            <Button
+              :label="getLabel('cancel')"
+              @click="
+                () => {
+                  close()
+                }
+              "
+            />
+            <Button
+              variant="primary"
+              :label="getLabel('confirm')"
+              @click="
+                () => {
+                  update({
+                    ...service,
+                    selected: true,
+                  })
+                  close()
+                }
+              "
+            />
+          </template>
+        </Dialog>
+      </Flex>
     </template>
   </Card>
 </template>
@@ -146,37 +182,25 @@ const reset = () => {
 @import url('@kvass/ui/style.css');
 
 .k-service {
-  // @media (width < 800px) {
-  //   &.k-card--variant-horizontal.k-card--has-thumbnail {
-  //     grid-template-columns: 1fr !important;
-  //     grid-template-areas:
-  //       'thumbnail'
-  //       'header'
-  //       'content'
-  //       'actions';
-  //   }
-  // }
+  .kvass-embed {
+    width: 100%;
+    aspect-ratio: var(--kvass-embed-aspect-ratio);
+    background-color: var(--kvass-embed-background-color);
+  }
 
-  // &.k-card--variant-horizontal .k-card__actions {
-  //   justify-content: end;
-  //   // background: linear-gradient(to left, #f8f8f8, #e0e0e0);
-  // }
-  // &.k-card--variant-horizontal {
-  //   grid-template-columns: 400px 1fr !important;
-  //   // grid-template-areas:
-  //   //     "thumbnail header"
-  //   //     "thumbnail content"
-  //   //     "thumbnail actions";
-  // }
-  // &.k-card > .k-card__thumbnail {
-  //   // background: linear-gradient(to right, #f8f8f8, #e0e0e0);
+  .model {
+    --k-dialog-max-width: 80%;
+    --k-dialog-min-width: 80%;
 
-  //   background: linear-gradient(
-  //     to right,
-  //     #f8f8f8 0%,
-  //     #e0e0e0 50%,
-  //     #f8f8f8 100%
-  //   );
-  // }
+    @media (max-width: 800px) {
+      --k-dialog-min-width: calc(
+        100% - var(--k-dialog-card-margin-mobile, var(--k-ui-spacing-sm))
+      );
+    }
+  }
+
+  .model__trigger {
+    font-size: 2rem;
+  }
 }
 </style>

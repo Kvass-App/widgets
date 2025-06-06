@@ -107,7 +107,6 @@ Eksteriør: Utendørs 3D bilde`,
   exterior: 'Eksteriør',
   totalSuffix: 'stk',
 
-  droneExterior: 'Drone bilder',
   numberOfUnits: 'Antall enheter',
   numberOfUnitsTooltip:
     'Definer hvor mange enheter som vil være synlig i 3D bildet. For eksempel 32 leiligheter.',
@@ -187,6 +186,9 @@ Det er også relevant for oss å se andre type bilder som du liker/ser for deg.`
 
   yes: 'Ja',
   no: 'Nei',
+
+  somethingWentWrong: 'Upps..! Noe gikk galt',
+  contactSupport: 'Kontakt support@kvass.no',
 }
 
 const Services = [
@@ -217,37 +219,40 @@ const Services = [
   {
     id: 'floorplan',
     image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+      src: 'https://assets.kvass.no/682f133a52780702b9e9a47f',
     },
     label: 'floorplan',
     description: 'floorplanDescription',
   },
 
   {
-    id: 'sundiagram',
-    image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
-    },
-    label: 'sundiagram',
-    description: 'sundiagramDescription',
-  },
-
-  {
     id: 'interactiv3DModel',
     image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+      src: 'https://assets.kvass.no/682f133752780702b9e9a473',
     },
     label: 'interactiv3DModel',
     description: 'interactiv3DModelDescription',
+    model: {
+      src: 'https://webmodell.no/stream/?id=FLKWTIM86woCBORjvFid ',
+    },
   },
 
   {
     id: '360',
-    image: {
-      src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+    iframe: {
+      src: 'https://kuula.co/share/hGvrb?logo=1&info=1&fs=1&vr=0&autorotate=0.04&thumbs=1',
     },
     label: '360',
     description: '360Description',
+  },
+
+  {
+    id: 'sundiagram',
+    // image: {
+    //   src: 'https://cms.kvass.no/media/Kvass_visualisering_1680x1080px.jpg',
+    // },
+    label: 'sundiagram',
+    description: 'sundiagramDescription',
   },
 ]
 
@@ -289,4 +294,47 @@ const CameraAngles = [
   },
 ]
 
-export { Services, DefaultLabels, Rooms, CameraAngles }
+const FileExtentions = [
+  'directory',
+  '.pdf',
+  '.3ds', // Autodesk 3D Studio
+  '.obj', // Wavefront Object
+  '.fbx', // Autodesk FBX (Filmbox)
+  '.blend', // Blender
+  '.stl', // Stereolithography
+  '.dae', // COLLADA (Digital Asset Exchange)
+  '.ply', // Polygon File Format
+  '.glb', // Binary glTF
+  '.gltf', // GL Transmission Format
+  '.x3d', // Extensible 3D
+  '.vrml', // Virtual Reality Modeling Language (.wrl)
+  '.ma', // Autodesk Maya ASCII
+  '.mb', // Autodesk Maya Binary
+  '.c4d', // Maxon Cinema 4D
+  '.lwo', // LightWave Object
+  '.lws', // LightWave Scene
+  '.max', // Autodesk 3ds Max Scene
+  '.x', // DirectX Model Format
+  '.uasset', // Unreal Engine Asset
+  '.abc', // Alembic
+  '.skp', // SketchUp
+  '.3mf', // 3D Manufacturing Format
+  '.prt', // NX or Creo Part File
+  '.sldprt', // SolidWorks Part
+  '.sldasm', // SolidWorks Assembly
+  '.amf', // Additive Manufacturing File
+  '.igs', // IGES
+  '.iges', // IGES alternative extension
+  '.step', // STEP
+  '.stp', // STEP alternative extension
+  '.x_t', // Parasolid (text)
+  '.x_b', // Parasolid (binary)
+  '.objz', // Compressed OBJ
+  '.zip', // Compressed Archive
+  '.rar', // Compressed Archive
+  '.7z', // 7-Zip Archive
+  '.tar', // TAR Archive
+  '.gz', // Gzip Archive
+]
+
+export { Services, DefaultLabels, Rooms, CameraAngles, FileExtentions }

@@ -141,7 +141,7 @@ const steps = computed((): StepperStep[] => {
   <div ref="root" class="kvass-visualization-order-form">
     <Stepper
       :steps="steps"
-      state-handler="sessionStorage"
+      state-handler="none"
       stateKey="k-visualization-order-form-step"
       ref="stepper"
       :hidebreadcrumbs="true"
@@ -187,9 +187,11 @@ const steps = computed((): StepperStep[] => {
 
   .k-dialog__backdrop,
   .k-dialog__container {
-    z-index: 1;
+    z-index: 1010;
     text-align: left;
   }
+
+  --k-dropdown-z-index: 1009;
 
   .v-popper {
     cursor: help;
