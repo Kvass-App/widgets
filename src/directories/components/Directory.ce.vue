@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Item from './Item.vue'
 import { Icon, Button, Input } from '@kvass/ui'
 
@@ -15,12 +15,12 @@ const props = defineProps({
   icons: {
     type: Object,
     default: () => ({
-      folder: 'fa-pro-light:folder',
-      file: 'fa-pro-light:file',
-      download: 'fa-pro-light:arrow-down-to-line',
-      'application/pdf': 'fa-pro-light:file-pdf',
-      back: 'fa-pro-light:arrow-left',
-      breadcrumb: 'fa-pro-light:chevron-right',
+      folder: 'fa-pro-duotone:folder',
+      file: 'fa-pro-duotone:file',
+      download: 'fa-pro-duotone:arrow-down-to-line',
+      'application/pdf': 'fa-pro-duotone:file-pdf',
+      back: 'fa-pro-duotone:arrow-left',
+      breadcrumb: 'fa-pro-duotone:chevron-right',
     }),
   },
 })
@@ -34,7 +34,23 @@ const icons = reactive(
 const url = new URL(window.location.href)
 const role = window.localStorage.getItem('role')
 const currentPath = ref(url.searchParams.get('directory') || '')
-const layout = ref('grid')
+watch(currentPath, (v) => {
+  let u = new URL(window.location.href)
+  if (v === u.searchParams.get('directory')) return
+
+  if (v) u.searchParams.set('directory', v)
+  else u.searchParams.delete('directory')
+  window.history.pushState({}, '', u.toString())
+})
+
+onMounted(() => {
+  window.addEventListener('popstate', () => {
+    currentPath.value =
+      new URL(window.location.href).searchParams.get('directory') || ''
+  })
+})
+
+const layout = ref('list')
 const searchInput = ref('')
 
 const layoutComputed = computed(() =>
@@ -43,12 +59,16 @@ const layoutComputed = computed(() =>
 
 const currentPathSplitted = computed(() => currentPath.value.split('/'))
 
-const breadcrumbs = computed(() =>
-  currentPathSplitted.value.map((name, i) => ({
+const breadcrumbs = computed(() => [
+  {
+    name: 'Dokumenter',
+    path: '',
+  },
+  ...currentPathSplitted.value.map((name, i) => ({
     name,
     path: currentPathSplitted.value.slice(0, i + 1).join('/'),
   })),
-)
+])
 
 const filterByRole = (v) => !role || !v?.acl?.length || v.acl.includes(role)
 
@@ -122,6 +142,7 @@ const back = () =>
           @click="layout = l"
           :disabled="searchInput.length"
           :icon="`fa-pro-solid:${l}`"
+          variant="primary"
         />
       </div>
     </div>
@@ -134,6 +155,8 @@ const back = () =>
         class="k-directory__back"
         :icon="icons.back"
         size="small"
+        variant="primary"
+        label="Gå tilbake"
         @click="back"
       />
 
@@ -153,6 +176,10 @@ const back = () =>
       v-if="searchInput.length && !items.length"
     >
       <p>Ingen treff for "{{ searchInput }}"</p>
+    </div>
+
+    <div class="k-directory__no-results" v-else-if="!items.length">
+      <p>Ingen dokumenter</p>
     </div>
 
     <div
@@ -190,7 +217,7 @@ const back = () =>
   --_k-directory-title-size: var(--k-directory-title-size, 1.5rem);
   --_k-directory-title-weight: var(--k-directory-title-weight, normal);
 
-  --k-button-secondary-text: currentColor;
+  --k-button-primary-background: var(--_k-directory-item-background);
 
   &__header {
     display: flex;

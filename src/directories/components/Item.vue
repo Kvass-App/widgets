@@ -67,8 +67,8 @@ const icon = computed(() => {
 
     .k-directory-item__icon {
       aspect-ratio: 16 / 9;
-      font-size: 3rem;
       grid-column-end: span 2;
+      font-size: 6rem;
     }
   }
 
@@ -85,6 +85,7 @@ const icon = computed(() => {
       grid-area: icon;
       aspect-ratio: 1;
       width: 100%;
+      font-size: 1.8rem;
     }
 
     .k-directory-item__label {
