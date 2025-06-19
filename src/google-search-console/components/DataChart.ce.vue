@@ -68,6 +68,7 @@ const props = defineProps({
       },
     }),
   },
+  integration: { type: String, required: true },
 })
 
 // Input format:
@@ -144,9 +145,9 @@ watch(
 
     // Må sette inn dynamisk url - props?
     const url = new URL(
-      `https://local.kvass.test/api/integration/685258896549edb201d797b5/callbacks/gscData`,
+      `https://local.kvass.test/api/integration/${props.integration}/callbacks/gscData`,
     )
-
+    url.searchParams.append('type', 'interactionData')
     if (startDate.value !== undefined)
       url.searchParams.append('startDate', startDate.value)
     if (endDate.value !== undefined)
