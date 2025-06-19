@@ -2,10 +2,13 @@
 import DataChart from './DataChart.ce.vue'
 import QueryTable from './QueryTable.ce.vue'
 import { Flex } from '@kvass/ui'
-const integration = '6853cc47161936c4e6dc832a'
+
+const props = defineProps({
+  integration_id: String,
+})
 </script>
 
 <template>
-  <DataChart :integration="integration" />
-  <QueryTable :integration="integration" />
+  <DataChart :integration_id="props.integration_id" />
+  <QueryTable :integration_id="props.integration_id" />
 </template>

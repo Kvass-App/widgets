@@ -25,12 +25,12 @@ const startDate = ref()
 const endDate = ref()
 
 const props = defineProps({
-  integration: { type: String, required: true },
+  integration_id: { type: String, required: true },
 })
 
 async function fetchQueryData() {
   const url = new URL(
-    `https://local.kvass.test/api/integration/${props.integration}/callbacks/gscData`,
+    `https://local.kvass.test/api/integration/${props.integration_id}/callbacks/gscData`,
   )
 
   if (query.value !== '') {
