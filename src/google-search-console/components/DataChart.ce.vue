@@ -12,9 +12,34 @@ import {
   CategoryScale,
 } from 'chart.js'
 import 'chartjs-adapter-date-fns'
-
+import { getLabel as getLabelFactory } from '../../utils/index.js'
 import { Line } from 'vue-chartjs'
 import { Flex, FormControl, Checkbox, Grid, Input, DataTable } from '@kvass/ui'
+
+const props = defineProps({
+  integration_id: {
+    type: String,
+    required: true,
+  },
+  app_url: {
+    type: String,
+    required: true,
+  },
+  labels: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
+const t = getLabelFactory(props.labels, {
+  settings: 'Innstillinger',
+  clicks: 'Klikk',
+  impressions: 'Visninger',
+  ctr: 'Klikkfrekvens',
+  position: 'Posisjon',
+  startDate: 'Startdato',
+  endDate: 'Sluttdato',
+})
 
 const startDate = ref()
 const endDate = ref()
@@ -31,50 +56,38 @@ ChartJS.register(
   CategoryScale,
 )
 
-// Definer props
-// Burde nok endres
-const props = defineProps({
-  options: {
-    type: Object,
-    default: () => ({
-      responsive: true,
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day',
-          },
-          title: {
-            display: true,
-            text: 'Dato',
-          },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Verdi',
-          },
-        },
+const options = ref({
+  responsive: true,
+  scales: {
+    x: {
+      type: 'time',
+      time: {
+        unit: 'day',
       },
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-        },
-        title: {
-          display: false,
-        },
+      title: {
+        display: true,
+        text: 'Dato',
       },
-    }),
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: 'Verdi',
+      },
+    },
   },
-  integration_id: { type: String, required: true },
+  plugins: {
+    legend: {
+      display: true,
+      position: 'bottom',
+    },
+    title: {
+      display: false,
+    },
+  },
 })
 
-// Input format:
-// label, bordercolor, data([dato, verdi])
-
-// Resize graph
 onMounted(() => {
   window.addEventListener('resize', resizeChart)
 })
@@ -88,11 +101,9 @@ function resizeChart() {
   chartInstance.value.chart.resize()
 }
 
-const options = ref(props.options)
-
 const datasets = ref({
   totalClicks: {
-    show: false,
+    show: true,
     graphData: {
       label: 'Totalt antall klikk',
       backgroundColor: 'rgba(67, 133, 244, 1)',
@@ -133,34 +144,34 @@ const datasets = ref({
   },
 })
 
+async function fetchData() {
+  const url = new URL(
+    `${props.app_url}/api/integration/${props.integration_id}/callbacks/gscData`,
+  )
+  url.searchParams.append('type', 'interactionData')
+  if (startDate.value !== undefined)
+    url.searchParams.append('startDate', startDate.value)
+  if (endDate.value !== undefined)
+    url.searchParams.append('endDate', endDate.value)
+
+  const res = await fetch(url.toString())
+  const data = await res.json()
+
+  Object.entries(data).forEach(([k, v]) => {
+    datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
+  })
+}
+
 watch(
   () => [
     Object.values(datasets.value).filter((dataset) => dataset.show),
     startDate.value,
     endDate.value,
   ],
-  async (newData, oldData) => {
-    console.log(startDate.value)
-    console.log(endDate.value)
-
-    // Må sette inn dynamisk url - props?
-    const url = new URL(
-      `https://local.kvass.test/api/integration/${props.integration_id}/callbacks/gscData`,
-    )
-    url.searchParams.append('type', 'interactionData')
-    if (startDate.value !== undefined)
-      url.searchParams.append('startDate', startDate.value)
-    if (endDate.value !== undefined)
-      url.searchParams.append('endDate', endDate.value)
-
-    const res = await fetch(url.toString())
-    const data = await res.json()
-    console.log(data)
-
-    Object.entries(data).forEach(([k, v]) => {
-      datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
-    })
+  () => {
+    fetchData()
   },
+  { immediate: true },
 )
 
 const chartData = computed(() => {
@@ -190,27 +201,27 @@ const chartData = computed(() => {
     </div>
 
     <div class="kvass-google-search-console-datachart__settings">
-      <h2>Innstillinger</h2>
+      <h2>{{ t('settings') }}</h2>
       <Flex>
         <Checkbox
           class="k-checkbox"
-          label="Klikk"
+          :label="t('clicks')"
           v-model="datasets.totalClicks.show"
         />
-        <Checkbox label="Visninger" v-model="datasets.totalImpressions.show" />
         <Checkbox
-          label="Klikkfrekvens"
-          v-model="datasets.clickThroughRate.show"
+          :label="t('impressions')"
+          v-model="datasets.totalImpressions.show"
         />
-        <Checkbox label="Plassering" v-model="datasets.avgPosition.show" />
+        <Checkbox :label="t('ctr')" v-model="datasets.clickThroughRate.show" />
+        <Checkbox :label="t('position')" v-model="datasets.avgPosition.show" />
       </Flex>
 
       <div class="kvass-google-search-console-datachart__settings-datepicker">
         <Flex>
-          <FormControl label="Startdato"
+          <FormControl :label="t('startDate')"
             ><Input type="date" v-model="startDate"
           /></FormControl>
-          <FormControl label="Sluttdato"
+          <FormControl :label="t('endDate')"
             ><Input type="date" v-model="endDate"
           /></FormControl>
         </Flex>

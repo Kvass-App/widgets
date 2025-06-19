@@ -1,36 +1,61 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { DataTable, Input, Flex, FormControl, Alert } from '@kvass/ui'
+import { getLabel as getLabelFactory } from '../../utils/index.js'
+
+const props = defineProps({
+  integration_id: {
+    type: String,
+    required: true,
+  },
+  app_url: {
+    type: String,
+    required: true,
+  },
+  labels: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
+const t = getLabelFactory(props.labels, {
+  clicks: 'Klikk',
+  impressions: 'Visninger',
+  ctr: 'Klikkfrekvens',
+  position: 'Posisjon',
+  queryInfo: 'Informasjon om søkefraser',
+  query: 'Søkefrase',
+  startDate: 'Startdato',
+  endDate: 'Sluttdato',
+  noData: 'Ingen data tilgjengelig',
+})
 const query = ref('')
 const columns = ref([
   {
     id: 'clicks',
-    label: 'Klikk',
+    label: t('clicks'),
   },
   {
     id: 'impressions',
-    label: 'Visninger',
+    label: t('impressions'),
   },
   {
     id: 'ctr',
-    label: 'Klikkfrekvens',
+    label: t('ctr'),
   },
   {
     id: 'position',
-    label: 'Posisjon',
+    label: t('position'),
   },
 ])
+
 const queryData = ref([])
 const startDate = ref()
 const endDate = ref()
 
-const props = defineProps({
-  integration_id: { type: String, required: true },
-})
-
 async function fetchQueryData() {
   const url = new URL(
-    `https://local.kvass.test/api/integration/${props.integration_id}/callbacks/gscData`,
+    `${props.app_url}/api/integration/${props.integration_id}/callbacks/gscData`,
   )
 
   if (query.value !== '') {
@@ -52,23 +77,21 @@ async function fetchQueryData() {
   queryData.value = data
 }
 
-onMounted(async () => await fetchQueryData())
-
-watch(query, async () => await fetchQueryData())
+watch(query, async () => await fetchQueryData(), { immediate: true })
 </script>
 
 <template>
   <div class="kvass-google-search-console-querytable__wrapper">
     <div class="kvass-google-search-console-querytable">
-      <h2>Populære søk</h2>
+      <h2>{{ t('queryInfo') }}</h2>
       <Flex>
-        <FormControl label="Query"
+        <FormControl :label="t('query')"
           ><Input type="text" v-model="query" />
         </FormControl>
-        <FormControl label="Startdato"
+        <FormControl :label="t('startDate')"
           ><Input type="date" v-model="startDate" />
         </FormControl>
-        <FormControl label="Sluttdato"
+        <FormControl :label="t('endDate')"
           ><Input type="date" v-model="endDate" />
         </FormControl>
       </Flex>
@@ -83,7 +106,7 @@ watch(query, async () => await fetchQueryData())
           <template #position="{ item }">{{ item.position }}</template>
         </DataTable>
       </FormControl>
-      <Alert v-else variant="warning">Ingen data tilgjengelig</Alert>
+      <Alert v-else variant="warning">{{ t('noData') }}</Alert>
     </div>
   </div>
 </template>
