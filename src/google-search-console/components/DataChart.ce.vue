@@ -58,6 +58,8 @@ ChartJS.register(
 
 const options = ref({
   responsive: true,
+  maintainAspectRatio: true,
+  devicePixelRatio: 1,
   scales: {
     x: {
       type: 'time',
@@ -88,7 +90,7 @@ const options = ref({
   },
 })
 
-onMounted(() => {
+/* onMounted(() => {
   window.addEventListener('resize', resizeChart)
 })
 
@@ -99,7 +101,7 @@ onUnmounted(() => {
 const chartInstance = ref(null)
 function resizeChart() {
   chartInstance.value.chart.resize()
-}
+} */
 
 const datasets = ref({
   totalClicks: {
