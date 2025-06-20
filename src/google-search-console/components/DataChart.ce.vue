@@ -246,7 +246,7 @@ const chartData = computed(() => {
   }
 
   // Default variables
-  --__kvass-google-search-console-datachart-background-color: transparent;
+  --__kvass-google-search-console-datachart-background-color: white;
   --__kvass-google-search-console-datachart-max-width: 100%;
   --__kvass-google-search-console-datachart-size: 25vw;
   --__kvass-google-search-console-datachart-size-min: 400px;
@@ -288,6 +288,9 @@ const chartData = computed(() => {
     align-items: center;
     flex-direction: column;
     position: relative;
+    background-color: white;
+    border-radius: var(--k-ui-rounding);
+    padding: 1rem;
     &-chart {
       $size: clamp(
         var(
@@ -317,8 +320,10 @@ const chartData = computed(() => {
     min-width: 300px;
     gap: 2rem;
 
-    background-color: whitesmoke;
+    background-color: #f8f8f8;
     padding: 2rem;
+    border: 1px solid #eaeaea;
+
     border-radius: var(--k-ui-rounding);
 
     .k-checkbox {

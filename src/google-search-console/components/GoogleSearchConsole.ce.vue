@@ -20,14 +20,17 @@ const props = defineProps({
 </script>
 
 <template>
-  <DataChart
-    :app_url="props.app_url"
-    :integration_id="props.integration_id"
-    :labels="props.labels"
-  />
-  <QueryTable
-    :app_url="props.app_url"
-    :integration_id="props.integration_id"
-    :labels="props.labels"
-  />
+  <div style="background-color: white; padding: 1rem; border-radius: 6px">
+    <h2>Google Search Console</h2>
+    <DataChart
+      :app_url="props.app_url"
+      :integration_id="props.integration_id"
+      :labels="props.labels"
+    />
+    <QueryTable
+      :app_url="props.app_url"
+      :integration_id="props.integration_id"
+      :labels="props.labels"
+    />
+  </div>
 </template>

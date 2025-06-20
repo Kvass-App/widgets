@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { DataTable, Input, Flex, FormControl, Alert } from '@kvass/ui'
+import { DataTable, Input, Flex, FormControl, Alert, Spinner } from '@kvass/ui'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 
 const props = defineProps({
@@ -52,6 +52,7 @@ const columns = ref([
 const queryData = ref([])
 const startDate = ref()
 const endDate = ref()
+const isLoading = ref(false)
 
 async function fetchQueryData() {
   const url = new URL(
@@ -70,7 +71,9 @@ async function fetchQueryData() {
   if (endDate.value !== undefined)
     url.searchParams.append('endDate', endDate.value)
 
+  isLoading.value = true
   const res = await fetch(url.toString())
+  isLoading.value = false
   if (res.status === 400) return
   const data = await res.json()
   if (data === undefined) return
@@ -94,6 +97,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
         <FormControl :label="t('endDate')"
           ><Input type="date" v-model="endDate" />
         </FormControl>
+        <Spinner v-if="isLoading" size="small" />
       </Flex>
       <FormControl
         v-if="queryData.length > 0"
@@ -124,7 +128,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
   }
 
   // Default variables
-  --__kvass-google-search-console-querytable-background-color: whitesmoke;
+  --__kvass-google-search-console-querytable-background-color: #f8f8f8;
   --__kvass-google-search-console-querytable-max-width: 100%;
   --__kvass-google-search-console-querytable-size: 25vw;
   --__kvass-google-search-console-querytable-size-min: 400px;
@@ -166,7 +170,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
     --k-datatable-odd-color: white;
 
     padding: 1rem;
-    background-color: whitesmoke;
+    background-color: #f8f8f8;
     border-radius: var(--k-ui-rounding);
   }
   .k-formcontrol {
