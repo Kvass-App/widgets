@@ -80,6 +80,9 @@ export default defineConfig({
         'google-search-console': fileURLToPath(
           new URL('./src/google-search-console/main.js', import.meta.url),
         ),
+        'gsc-verification-key-form': fileURLToPath(
+          new URL('./src/gsc-verification-key/main.js', import.meta.url),
+        ),
       },
     },
   },
