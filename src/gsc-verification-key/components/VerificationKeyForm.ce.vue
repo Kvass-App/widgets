@@ -16,6 +16,14 @@ const props = defineProps({
     required: true,
     type: String,
   },
+  reference_id: {
+    required: true,
+    type: String,
+  },
+  reference_type: {
+    required: true,
+    type: String,
+  },
   labels: {
     type: Object,
     default: () => ({}),
@@ -45,8 +53,6 @@ function redirect() {
 }
 
 function submit() {
-  console.log(host)
-
   return fetch(
     `${props.app_url}/api/integration/${props.integration_id}/callbacks/addVerificationKey`,
     {
@@ -59,8 +65,7 @@ function submit() {
     },
   ).then(() => {
     posted.value = true
-    emit('input', verification_key.value)
-    /* setInterval(() => {
+    setInterval(() => {
       return fetch(
         `${props.app_url}/api/integration/${props.integration_id}/callbacks/isPageVerified`,
       )
@@ -69,10 +74,12 @@ function submit() {
         })
         .then(({ verified }) => {
           if (verified) {
-            redirect()
+            window.location.href = `${props.app_url}/analytics/${
+              props.reference_id
+            }?type=${props.reference_type.toLowerCase()}`
           }
         })
-    }, 5000) */
+    }, 5000)
   })
 }
 </script>
