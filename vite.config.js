@@ -63,7 +63,9 @@ export default defineConfig({
         'loan-calculator': fileURLToPath(
           new URL('./src/loan-calculator/main.js', import.meta.url),
         ),
-        'kvass-form': fileURLToPath(new URL('./src/form/main.js', import.meta.url)),
+        'kvass-form': fileURLToPath(
+          new URL('./src/form/main.js', import.meta.url),
+        ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
         finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
         directories: fileURLToPath(
@@ -74,6 +76,12 @@ export default defineConfig({
         ),
         'visualization-order-form': fileURLToPath(
           new URL('./src/visualization-order-form/main.js', import.meta.url),
+        ),
+        'google-search-console': fileURLToPath(
+          new URL('./src/google-search-console/main.js', import.meta.url),
+        ),
+        'gsc-verification-key-form': fileURLToPath(
+          new URL('./src/gsc-verification-key/main.js', import.meta.url),
         ),
       },
     },
