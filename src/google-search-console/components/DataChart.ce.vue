@@ -58,7 +58,7 @@ ChartJS.register(
 
 const options = ref({
   responsive: true,
-  maintainAspectRatio: true,
+  maintainAspectRatio: false,
   devicePixelRatio: 1,
   scales: {
     x: {
@@ -186,12 +186,7 @@ const chartData = computed(() => {
 </script>
 
 <template>
-  <Grid
-    class="google-search-console-datachart"
-    columns="1fr min-content"
-    areas="chart chart | settings settings"
-    gap="1rem"
-  >
+  <Flex class="google-search-console-datachart" gap="1rem">
     <div class="kvass-google-search-console-datachart__chart">
       <!-- Vue-ChartJS-komponenten -->
       <Line
@@ -229,22 +224,13 @@ const chartData = computed(() => {
         </Flex>
       </div>
     </div>
-  </Grid>
+  </Flex>
 </template>
 
 <style lang="scss">
 @import url('@kvass/ui/style.css');
 
 .kvass-google-search-console-datachart {
-  &__wrapper {
-    color: var(--kvass-google-search-console-datachart-color, inherit);
-    font-size: var(--kvass-google-search-console-datachart-font-size, inherit);
-    font-family: var(
-      --kvass-google-search-console-datachart-font-family,
-      inherit
-    );
-  }
-
   // Default variables
   --__kvass-google-search-console-datachart-background-color: white;
   --__kvass-google-search-console-datachart-max-width: 100%;
@@ -282,35 +268,23 @@ const chartData = computed(() => {
   h2 {
     margin: 0;
   }
+
   &__chart {
+    flex-grow: 2;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     position: relative;
+    max-width: 100%;
     background-color: white;
     border-radius: var(--k-ui-rounding);
-    padding: 1rem;
     &-chart {
-      $size: clamp(
-        var(
-          (--kvass-google-search-console-datachart-size-min),
-          var(--__kvass-google-search-console-datachart-size-min)
-        ),
-        var(
-          (--kvass-google-search-console-datachart-size),
-          var(--__kvass-google-search-console-datachart-size)
-        ),
-        var(
-          (--kvass-google-search-console-datachart-size-max),
-          var(--__kvass-google-search-console-datachart-size-max)
-        )
-      );
-      width: $size !important;
-      height: $size !important;
+      width: 100%;
     }
   }
   &__settings {
+    flex-grow: 1;
     --k-grid-item-area: settings;
     display: flex;
     flex-direction: column;
@@ -326,6 +300,9 @@ const chartData = computed(() => {
 
     border-radius: var(--k-ui-rounding);
 
+    .k-flex {
+      flex-direction: column;
+    }
     .k-checkbox {
       flex-grow: 1;
     }
