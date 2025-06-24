@@ -151,9 +151,9 @@ async function fetchData() {
     `${props.app_url}/api/integration/${props.integration_id}/callbacks/gscData`,
   )
   url.searchParams.append('type', 'interactionData')
-  if (startDate.value !== undefined)
+  if (startDate.value !== undefined && startDate.value !== '')
     url.searchParams.append('startDate', startDate.value)
-  if (endDate.value !== undefined)
+  if (endDate.value !== undefined && endDate.value !== '')
     url.searchParams.append('endDate', endDate.value)
 
   const res = await fetch(url.toString())
