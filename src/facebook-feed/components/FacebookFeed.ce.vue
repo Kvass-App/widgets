@@ -69,7 +69,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="kvass-facebook-feed">
+  <div class="kvass-facebook-feed" v-if="items.length">
     <h2>{{ header }}</h2>
     <Grid ref="grid" class="kvass-facebook-feed__grid" :columns="columns">
       <Card v-for="item in items" :key="items.indexOf(item)">
