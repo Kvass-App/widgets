@@ -10,9 +10,11 @@ const props = defineProps({
   },
   app_url: {
     type: String,
+    required: true,
   },
   integration_id: {
     type: String,
+    required: true,
   },
   columns: {
     type: Number,
@@ -20,8 +22,14 @@ const props = defineProps({
   },
   header: {
     type: String,
+    required: true,
+  },
+  pageLink: {
+    type: String,
   },
 })
+
+const pageLink = ref(props.pageLink)
 
 const t = getLabelFactory(props.labels, {
   goToPage: 'Gå til siden!',
@@ -51,6 +59,9 @@ onMounted(() => {
     .then((data) => {
       data.forEach((el) => items.value.push(el))
       src.value = `https://connect.facebook.net/${data[0]?.location}/sdk.js#xfbml=1&amp;version=${data[0]?.version}`
+      if (!pageLink.value) {
+        pageLink.value = /^(https?:\/\/.+?)\/posts/.exec(data[0]?.url)?.[1]
+      }
     })
     .then(() => updateParse())
     .then(() => (loading.value = false))
