@@ -105,6 +105,7 @@ function submit() {
             <p>{{ t('confirmationInstructions') }}</p>
             <Button
               is="a"
+              target="_blank"
               href="https://search.google.com/search-console/welcome"
               :label="t('goThere')"
             />
