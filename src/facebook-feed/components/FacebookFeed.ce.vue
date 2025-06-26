@@ -1,5 +1,5 @@
 <script setup>
-import { Grid, Card, Flex, Button } from '@kvass/ui'
+import { Grid, Card, Flex, Button, Skeleton } from '@kvass/ui'
 import { ref, computed, onMounted, useHost, nextTick, watch } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 
@@ -21,39 +21,18 @@ const props = defineProps({
   header: {
     type: String,
   },
-  item_limit: {
-    type: Number,
-    default: 2,
-  },
 })
 
-const t = getLabelFactory(props.labels, {})
-const items = ref([
-  /* {
-    url: 'https://www.facebook.com/facebook/posts/pfbid024E7fTAUVHZC8UAym5XiM9f3ZYGZBqhBr9ZvvyLwSbBXkyzojx6uM9GTy6zZV4D3Ll',
-    width: 300,
-  },
-  {
-    url: 'https://www.facebook.com/facebook/posts/pfbid024E7fTAUVHZC8UAym5XiM9f3ZYGZBqhBr9ZvvyLwSbBXkyzojx6uM9GTy6zZV4D3Ll',
-    width: 300,
-  },
-  {
-    url: 'https://www.facebook.com/facebook/posts/pfbid024E7fTAUVHZC8UAym5XiM9f3ZYGZBqhBr9ZvvyLwSbBXkyzojx6uM9GTy6zZV4D3Ll',
-    width: 300,
-  },
-  {
-    url: 'https://www.facebook.com/facebook/posts/pfbid024E7fTAUVHZC8UAym5XiM9f3ZYGZBqhBr9ZvvyLwSbBXkyzojx6uM9GTy6zZV4D3Ll',
-    width: 300,
-  }, */
-])
+const t = getLabelFactory(props.labels, {
+  goToPage: 'Gå til siden!',
+})
+const items = ref([])
 
 const src = ref('')
-const page = ref(1)
 const host = useHost()
+const loading = ref(true)
 function updateParse() {
   if (typeof FB !== 'undefined') {
-    console.log('int')
-
     FB.init({ version: 'v23.0' })
     FB.XFBML.parse(host.shadowRoot.querySelector('.kvass-facebook-feed'))
   } else {
@@ -67,8 +46,6 @@ onMounted(() => {
     `${props.app_url}/api/integration/${props.integration_id}/callbacks/fetchMedia`,
   )
     .then((res) => {
-      console.log(res)
-
       return res.json()
     })
     .then((data) => {
@@ -76,34 +53,15 @@ onMounted(() => {
       src.value = `https://connect.facebook.net/${data[0]?.location}/sdk.js#xfbml=1&amp;version=${data[0]?.version}`
     })
     .then(() => updateParse())
+    .then(() => (loading.value = false))
 })
-
-const displayItems = computed(() => {
-  console.log(
-    items.value.slice(
-      (page.value - 1) * props.item_limit,
-      page.value * props.item_limit,
-    ),
-  )
-  return items.value.slice(
-    (page.value - 1) * props.item_limit,
-    page.value * props.item_limit,
-  )
-})
-
-watch(
-  () => displayItems.value,
-  () => {
-    nextTick(() => updateParse())
-  },
-)
 </script>
 
 <template>
   <div class="kvass-facebook-feed">
     <h2>{{ header }}</h2>
     <Grid ref="grid" class="kvass-facebook-feed__grid" :columns="columns">
-      <Card v-for="item in displayItems" :key="items.indexOf(item)">
+      <Card v-for="item in items" :key="items.indexOf(item)">
         <div>
           <div id="fb-root"></div>
           <component
@@ -117,15 +75,11 @@ watch(
         </div>
       </Card>
     </Grid>
-    <Flex>
-      <Button @click="page--" :disabled="page == 1"><</Button>
-      <span>{{ page }}</span>
-      <Button
-        @click="page++"
-        :disabled="page == Math.ceil(items.length / props.item_limit)"
-        >></Button
-      >
-    </Flex>
+    <div class="kvass-facebook-feed__redirect">
+      <Button variant="primary" is="a" :href="pageLink" target="_blank">{{
+        t('goToPage')
+      }}</Button>
+    </div>
   </div>
 </template>
 
@@ -174,11 +128,20 @@ watch(
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      aspect-ratio: 5/7;
+      overflow-y: scroll;
     }
 
     .k-card__content {
+      max-height: 95%;
       margin-block: auto;
     }
+  }
+
+  &__redirect {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
   }
 }
 </style>
