@@ -14,7 +14,15 @@ import {
 import 'chartjs-adapter-date-fns'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 import { Line } from 'vue-chartjs'
-import { Flex, FormControl, Checkbox, Grid, Input, DataTable } from '@kvass/ui'
+import {
+  Flex,
+  FormControl,
+  Checkbox,
+  Grid,
+  Input,
+  DataTable,
+  Alert,
+} from '@kvass/ui'
 
 const props = defineProps({
   integration_id: {
@@ -39,6 +47,7 @@ const t = getLabelFactory(props.labels, {
   position: 'Posisjon',
   startDate: 'Startdato',
   endDate: 'Sluttdato',
+  noData: 'Ingen data tilgjengelig',
 })
 
 const startDate = ref()
@@ -58,7 +67,7 @@ ChartJS.register(
 
 const options = ref({
   responsive: true,
-  maintainAspectRatio: false,
+  maintainAspectRatio: true,
   devicePixelRatio: 1,
   scales: {
     x: {
@@ -183,6 +192,12 @@ const chartData = computed(() => {
       .flatMap((dataset) => dataset.graphData),
   }
 })
+
+const noData = computed(() => {
+  return chartData.value.datasets.every((el) => {
+    return el.data.length === 0
+  })
+})
 </script>
 
 <template>
@@ -223,6 +238,7 @@ const chartData = computed(() => {
           /></FormControl>
         </Flex>
       </div>
+      <Alert v-if="noData" variant="warning">{{ t('noData') }}</Alert>
     </div>
   </Flex>
 </template>
