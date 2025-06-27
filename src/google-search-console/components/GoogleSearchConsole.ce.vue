@@ -20,7 +20,14 @@ const props = defineProps({
 </script>
 
 <template>
-  <div style="background-color: white; padding: 1rem; border-radius: 6px">
+  <div
+    style="
+      background-color: white;
+      padding: 1rem;
+      border-radius: 6px;
+      max-width: 2000px;
+    "
+  >
     <h2>Google Search Console</h2>
     <DataChart
       :app_url="props.app_url"

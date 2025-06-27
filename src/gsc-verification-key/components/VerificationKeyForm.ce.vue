@@ -1,8 +1,7 @@
 <script setup>
 import { FormControl, Input, Button, Alert, Spinner, Flex } from '@kvass/ui'
-import { ref, useHost } from 'vue'
+import { ref } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
-const host = useHost()
 const props = defineProps({
   value: {
     type: String,
@@ -24,33 +23,28 @@ const props = defineProps({
     required: true,
     type: String,
   },
+  page_url: {
+    required: true,
+    type: String,
+  },
   labels: {
     type: Object,
     default: () => ({}),
   },
 })
 
-const emit = defineEmits(['input'])
-
 const t = getLabelFactory(props.labels, {
   verificationKey: 'Verification key',
+  urlMessage:
+    'Lim inn denne URLen i Google Search Console, under "Nettadresseprefiks" og velg HTML-tag. Klikk kopier og lim inn hele tagen i feltet under. URL:',
   submit: 'Send inn',
   confirmationInstructions:
     'Du må gå til Google Search Console og klikke bekreft',
-  goThere: 'Gå dit',
+  toGSC: 'Gå til Google Search Console',
 })
 
 const verification_key = ref(props.value)
 const posted = ref(false)
-
-// Sender tag til endepunkt, slik at det faktisk blir lagt inn.
-// Må deretter sende bruker til gsc for å trykke bekreft
-// Må kontinuerlig sende calls til en callback for å sjekke om bekreftet,
-// Når fungerer blir man redirected tilbake
-
-function redirect() {
-  return `${ANALYTICS_DASHBOARD_URL}`
-}
 
 function submit() {
   return fetch(
@@ -82,13 +76,61 @@ function submit() {
     }, 5000)
   })
 }
+
+const copyProgressStyle = ref('width: 100%;')
+const showCopied = ref(false)
+async function copyURL(e) {
+  await navigator.clipboard.writeText(e.srcElement.innerHTML)
+
+  copyProgressStyle.value = 'width: 100%;'
+  setTimeout(() => (copyProgressStyle.value = 'width: 0%;'), 10)
+  showCopied.value = true
+  setTimeout(() => {
+    showCopied.value = false
+  }, 2000)
+}
 </script>
 
 <template>
   <div class="kvass-gsc-verification-key-form__wrapper">
     <div class="kvass-gsc-verification-key-form">
       <form @submit.prevent="submit">
+        <h2>Google Search Console HTML-tag</h2>
         <Flex>
+          <Alert
+            variant="info"
+            class="kvass-gsc-verification-key-form__page-url__wrapper"
+            >{{ t('urlMessage') }}
+            <span>
+              <div
+                class="kvass-gsc-verification-key-form__page-url"
+                @click="copyURL"
+              >
+                {{ props.page_url }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  />
+                </svg>
+              </div>
+            </span>
+          </Alert>
+          <Button
+            variant="secondary"
+            is="a"
+            target="_blank"
+            href="https://search.google.com/search-console/welcome"
+            :label="t('toGSC')"
+          />
           <FormControl :label="t('verificationKey')">
             <Input type="text" v-model="verification_key" />
           </FormControl>
@@ -100,18 +142,31 @@ function submit() {
         </Flex>
       </form>
       <div v-if="posted">
-        <Alert variant="info">
+        <Alert variant="neutral">
           <Flex>
             <p>{{ t('confirmationInstructions') }}</p>
-            <Button
-              is="a"
-              target="_blank"
-              href="https://search.google.com/search-console/welcome"
-              :label="t('goThere')"
-            />
+            <Spinner />
           </Flex>
-          <Spinner />
         </Alert>
+      </div>
+      <div class="kvass-gsc-verification-key-form__toast" v-if="showCopied">
+        <span>{{ props.page_url }}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+        <div
+          :style="copyProgressStyle"
+          class="kvass-gsc-verification-key-form__toast-progress"
+        ></div>
       </div>
     </div>
   </div>
@@ -168,6 +223,53 @@ function submit() {
 
   .k-alert__content > .k-flex {
     flex-direction: row;
+    align-items: center;
+  }
+
+  &__page-url {
+    &__wrapper {
+      .k-alert__content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+    }
+
+    display: flex;
+    height: 20px;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgb(226, 223, 223);
+    }
+  }
+
+  &__toast {
+    display: flex;
+    height: 20px;
+    gap: 0.4rem;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: whitesmoke;
+    border: 1px solid #dbdada;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px #dbdada;
+
+    &-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: rgb(189, 185, 185);
+      transition: width 2s linear;
+    }
   }
 }
 </style>
