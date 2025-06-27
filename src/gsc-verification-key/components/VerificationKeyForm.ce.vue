@@ -1,6 +1,6 @@
 <script setup>
 import { FormControl, Input, Button, Alert, Spinner, Flex } from '@kvass/ui'
-import { ref, useTemplateRef } from 'vue'
+import { ref } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 const props = defineProps({
   value: {
@@ -33,8 +33,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['input'])
-
 const t = getLabelFactory(props.labels, {
   verificationKey: 'Verification key',
   urlMessage:
@@ -47,15 +45,6 @@ const t = getLabelFactory(props.labels, {
 
 const verification_key = ref(props.value)
 const posted = ref(false)
-
-// Sender tag til endepunkt, slik at det faktisk blir lagt inn.
-// Må deretter sende bruker til gsc for å trykke bekreft
-// Må kontinuerlig sende calls til en callback for å sjekke om bekreftet,
-// Når fungerer blir man redirected tilbake
-
-function redirect() {
-  return `${ANALYTICS_DASHBOARD_URL}`
-}
 
 function submit() {
   return fetch(
@@ -106,7 +95,7 @@ async function copyURL(e) {
   <div class="kvass-gsc-verification-key-form__wrapper">
     <div class="kvass-gsc-verification-key-form">
       <form @submit.prevent="submit">
-        <h2>Google Search Console Verification Key</h2>
+        <h2>Google Search Console HTML-tag</h2>
         <Flex>
           <Alert
             variant="info"
