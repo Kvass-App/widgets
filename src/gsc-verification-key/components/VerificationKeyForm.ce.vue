@@ -1,8 +1,7 @@
 <script setup>
 import { FormControl, Input, Button, Alert, Spinner, Flex } from '@kvass/ui'
-import { ref, useHost } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
-const host = useHost()
 const props = defineProps({
   value: {
     type: String,
@@ -39,7 +38,7 @@ const emit = defineEmits(['input'])
 const t = getLabelFactory(props.labels, {
   verificationKey: 'Verification key',
   urlMessage:
-    'Lim inn denne URLen i Google Search Console, under "Nettadresseprefiks" og velg HTML-tag. Klikk kopier og lim inn verification key i feltet under',
+    'Lim inn denne URLen i Google Search Console, under "Nettadresseprefiks" og velg HTML-tag. Klikk kopier og lim inn hele tagen i feltet under. URL:',
   submit: 'Send inn',
   confirmationInstructions:
     'Du må gå til Google Search Console og klikke bekreft',
@@ -89,9 +88,13 @@ function submit() {
   })
 }
 
+const copyProgressStyle = ref('width: 100%;')
 const showCopied = ref(false)
 async function copyURL(e) {
   await navigator.clipboard.writeText(e.srcElement.innerHTML)
+
+  copyProgressStyle.value = 'width: 100%;'
+  setTimeout(() => (copyProgressStyle.value = 'width: 0%;'), 10)
   showCopied.value = true
   setTimeout(() => {
     showCopied.value = false
@@ -105,8 +108,10 @@ async function copyURL(e) {
       <form @submit.prevent="submit">
         <h2>Google Search Console Verification Key</h2>
         <Flex>
-          <Alert class="kvass-gsc-verification-key-form__page-url__wrapper"
-            >{{ t('urlMessage') }}:
+          <Alert
+            variant="info"
+            class="kvass-gsc-verification-key-form__page-url__wrapper"
+            >{{ t('urlMessage') }}
             <span>
               <div
                 class="kvass-gsc-verification-key-form__page-url"
@@ -148,7 +153,7 @@ async function copyURL(e) {
         </Flex>
       </form>
       <div v-if="posted">
-        <Alert variant="info">
+        <Alert variant="neutral">
           <Flex>
             <p>{{ t('confirmationInstructions') }}</p>
             <Spinner />
@@ -169,6 +174,10 @@ async function copyURL(e) {
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
         </svg>
+        <div
+          :style="copyProgressStyle"
+          class="kvass-gsc-verification-key-form__toast-progress"
+        ></div>
       </div>
     </div>
   </div>
@@ -262,6 +271,16 @@ async function copyURL(e) {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 1px 1px #dbdada;
+
+    &-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: rgb(189, 185, 185);
+      transition: width 2s linear;
+    }
   }
 }
 </style>
