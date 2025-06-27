@@ -112,7 +112,7 @@ const datasets = ref({
     graphData: {
       label: t('clicks'),
       backgroundColor: backgroundColors.clicks,
-      borderColor: 'rgba(67, 133, 244, 1)',
+      borderColor: backgroundColors.clicks,
       data: [],
       tension: 0,
     },
@@ -122,7 +122,7 @@ const datasets = ref({
     graphData: {
       label: t('impressions'),
       backgroundColor: backgroundColors.impressions,
-      borderColor: 'rgba(95, 54, 177, 1)',
+      borderColor: backgroundColors.impressions,
       data: [],
       tension: 0,
     },
@@ -132,7 +132,7 @@ const datasets = ref({
     graphData: {
       label: t('ctr'),
       backgroundColor: backgroundColors.ctr,
-      borderColor: 'rgba(3, 137, 123, 1)',
+      borderColor: backgroundColors.ctr,
       data: [],
       tension: 0,
     },
@@ -142,7 +142,7 @@ const datasets = ref({
     graphData: {
       label: t('position'),
       backgroundColor: backgroundColors.position,
-      borderColor: 'rgba(232, 113, 9, 1)',
+      borderColor: backgroundColors.position,
       data: [],
       tension: 0,
     },
