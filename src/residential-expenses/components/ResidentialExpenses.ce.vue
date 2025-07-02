@@ -358,11 +358,10 @@ const getLabel = (key) => {
 @import url('@kvass/ui/style.css');
 
 .kvass-residential-expenses {
-  --white: rgba(255, 255, 255, 0.5);
-  --white-contrast: black;
+  --white: var(--kvass-residential-expenses-white, rgba(255, 255, 255, 0.5));
+  --white-contrast: var(--kvass-residential-expenses-white-contrast, black);
 
   --k-alert-neutral-background: var(--white);
-
   --k-ui-color-primary: var(--secondary);
 
   display: flex;
