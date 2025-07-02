@@ -359,6 +359,8 @@ const getLabel = (key) => {
 
 .kvass-residential-expenses {
   --white: rgba(255, 255, 255, 0.5);
+  --white-contrast: black;
+
   --k-alert-neutral-background: var(--white);
 
   --k-ui-color-primary: var(--secondary);
@@ -447,6 +449,7 @@ const getLabel = (key) => {
       --k-input-padding-y: 8px;
       font-size: 1em;
       background-color: var(--white);
+      color: var(--white-contrast);
 
       &__input {
         width: 0ch;
