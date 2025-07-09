@@ -169,9 +169,13 @@ async function fetchData(type) {
   const res = await fetch(url.toString())
   const data = await res.json()
 
-  Object.entries(data).forEach(([k, v]) => {
-    datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
-  })
+  if (type === 'interactionData') {
+    Object.entries(data).forEach(([k, v]) => {
+      datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
+    })
+  } else if (type === 'totalInteractionData') {
+    totalInteractionData.value = data
+  }
 }
 
 watch(
