@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, onMounted, onUnmounted, ref, computed, watch } from 'vue'
+import { defineProps, ref, computed, watch } from 'vue'
 import {
   Chart as ChartJS,
   Title,
@@ -14,7 +14,16 @@ import {
 import 'chartjs-adapter-date-fns'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 import { Line } from 'vue-chartjs'
-import { Flex, FormControl, Checkbox, Grid, Input, DataTable } from '@kvass/ui'
+import {
+  Flex,
+  FormControl,
+  Card,
+  Checkbox,
+  Input,
+  DataTable,
+  Grid,
+  Alert,
+} from '@kvass/ui'
 
 const props = defineProps({
   integration_id: {
@@ -39,12 +48,12 @@ const t = getLabelFactory(props.labels, {
   position: 'Posisjon',
   startDate: 'Startdato',
   endDate: 'Sluttdato',
+  noData: 'Ingen data tilgjengelig',
 })
 
 const startDate = ref()
 const endDate = ref()
 
-// Registrer nødvendige komponenter fra Chart.js
 ChartJS.register(
   Title,
   Tooltip,
@@ -58,7 +67,7 @@ ChartJS.register(
 
 const options = ref({
   responsive: true,
-  maintainAspectRatio: false,
+  maintainAspectRatio: true,
   devicePixelRatio: 1,
   scales: {
     x: {
@@ -90,67 +99,68 @@ const options = ref({
   },
 })
 
-/* onMounted(() => {
-  window.addEventListener('resize', resizeChart)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', resizeChart)
-})
-
-const chartInstance = ref(null)
-function resizeChart() {
-  chartInstance.value.chart.resize()
-} */
+const backgroundColors = {
+  clicks: 'rgba(67, 133, 244, 1)',
+  impressions: 'rgba(95, 54, 177, 1)',
+  ctr: 'rgba(3, 137, 123, 1)',
+  position: 'rgba(232, 113, 9, 1)',
+}
 
 const datasets = ref({
-  totalClicks: {
+  clicks: {
     show: true,
     graphData: {
-      label: 'Totalt antall klikk',
-      backgroundColor: 'rgba(67, 133, 244, 1)',
-      borderColor: 'rgba(67, 133, 244, 1)',
+      label: t('clicks'),
+      backgroundColor: backgroundColors.clicks,
+      borderColor: backgroundColors.clicks,
       data: [],
       tension: 0,
     },
   },
-  totalImpressions: {
-    show: false,
+  impressions: {
+    show: true,
     graphData: {
-      label: 'Totalt antall visninger',
-      backgroundColor: 'rgba(95, 54, 177, 1)',
-      borderColor: 'rgba(95, 54, 177, 1)',
+      label: t('impressions'),
+      backgroundColor: backgroundColors.impressions,
+      borderColor: backgroundColors.impressions,
       data: [],
       tension: 0,
     },
   },
-  clickThroughRate: {
-    show: false,
+  ctr: {
+    show: true,
     graphData: {
-      label: 'Gjennomsnittlig klikkrate',
-      backgroundColor: 'rgba(3, 137, 123, 1)',
-      borderColor: 'rgba(3, 137, 123, 1)',
+      label: t('ctr'),
+      backgroundColor: backgroundColors.ctr,
+      borderColor: backgroundColors.ctr,
       data: [],
       tension: 0,
     },
   },
-  avgPosition: {
-    show: false,
+  position: {
+    show: true,
     graphData: {
-      label: 'Gjennomsnittlig posisjon i søk',
-      backgroundColor: 'rgba(232, 113, 9, 1)',
-      borderColor: 'rgba(232, 113, 9, 1)',
+      label: t('position'),
+      backgroundColor: backgroundColors.position,
+      borderColor: backgroundColors.position,
       data: [],
       tension: 0,
     },
   },
 })
 
-async function fetchData() {
+const totalInteractionData = ref({
+  clicks: 0,
+  impressions: 0,
+  ctr: 0,
+  position: 0,
+})
+
+async function fetchData(type) {
   const url = new URL(
     `${props.app_url}/api/integration/${props.integration_id}/callbacks/gscData`,
   )
-  url.searchParams.append('type', 'interactionData')
+  url.searchParams.append('type', type)
   if (startDate.value !== undefined && startDate.value !== '')
     url.searchParams.append('startDate', startDate.value)
   if (endDate.value !== undefined && endDate.value !== '')
@@ -159,19 +169,20 @@ async function fetchData() {
   const res = await fetch(url.toString())
   const data = await res.json()
 
-  Object.entries(data).forEach(([k, v]) => {
-    datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
-  })
+  if (type === 'interactionData') {
+    Object.entries(data).forEach(([k, v]) => {
+      datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
+    })
+  } else if (type === 'totalInteractionData') {
+    totalInteractionData.value = data
+  }
 }
 
 watch(
-  () => [
-    Object.values(datasets.value).filter((dataset) => dataset.show),
-    startDate.value,
-    endDate.value,
-  ],
+  () => [startDate.value, endDate.value],
   () => {
-    fetchData()
+    fetchData('interactionData')
+    fetchData('totalInteractionData')
   },
   { immediate: true },
 )
@@ -182,6 +193,12 @@ const chartData = computed(() => {
       .filter((dataset) => dataset.show)
       .flatMap((dataset) => dataset.graphData),
   }
+})
+
+const noData = computed(() => {
+  return chartData.value.datasets.every((el) => {
+    return el.data.length === 0
+  })
 })
 </script>
 
@@ -195,6 +212,23 @@ const chartData = computed(() => {
         class="kvass-google-search-console-datachart__chart-chart"
         ref="chartInstance"
       />
+      <Grid
+        columns="4"
+        class="kvass-google-search-console-datachart__total-data"
+      >
+        <Card
+          v-for="(value, key) in totalInteractionData"
+          :key
+          :style="{ '--total-data-bg-color': backgroundColors[key] }"
+        >
+          <template #header
+            ><h4>{{ t(key) }}</h4></template
+          >
+          <template #default
+            ><h2>{{ value }}</h2></template
+          >
+        </Card>
+      </Grid>
     </div>
 
     <div class="kvass-google-search-console-datachart__settings">
@@ -203,14 +237,14 @@ const chartData = computed(() => {
         <Checkbox
           class="k-checkbox"
           :label="t('clicks')"
-          v-model="datasets.totalClicks.show"
+          v-model="datasets.clicks.show"
         />
         <Checkbox
           :label="t('impressions')"
-          v-model="datasets.totalImpressions.show"
+          v-model="datasets.impressions.show"
         />
-        <Checkbox :label="t('ctr')" v-model="datasets.clickThroughRate.show" />
-        <Checkbox :label="t('position')" v-model="datasets.avgPosition.show" />
+        <Checkbox :label="t('ctr')" v-model="datasets.ctr.show" />
+        <Checkbox :label="t('position')" v-model="datasets.position.show" />
       </Flex>
 
       <div class="kvass-google-search-console-datachart__settings-datepicker">
@@ -223,6 +257,7 @@ const chartData = computed(() => {
           /></FormControl>
         </Flex>
       </div>
+      <Alert v-if="noData" variant="warning">{{ t('noData') }}</Alert>
     </div>
   </Flex>
 </template>
@@ -276,16 +311,26 @@ const chartData = computed(() => {
     align-items: center;
     flex-direction: column;
     position: relative;
-    max-width: 100%;
+
+    width: clamp(200px, 70%, 500px);
+
     background-color: white;
     border-radius: var(--k-ui-rounding);
-    &-chart {
+
+    .kvass-google-search-console-datachart__total-data {
       width: 100%;
+      .k-card {
+        background-color: var(--total-data-bg-color);
+        h2,
+        h4 {
+          margin: 0;
+          color: whitesmoke;
+        }
+      }
     }
   }
   &__settings {
     flex-grow: 1;
-    --k-grid-item-area: settings;
     display: flex;
     flex-direction: column;
     align-content: start;
