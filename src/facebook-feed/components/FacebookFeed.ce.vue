@@ -24,12 +24,12 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  pageLink: {
+  page_link: {
     type: String,
   },
 })
 
-const pageLink = ref(props.pageLink)
+const pageLink = ref(props.page_link)
 
 const t = getLabelFactory(props.labels, {
   goToPage: 'Gå til siden!',
