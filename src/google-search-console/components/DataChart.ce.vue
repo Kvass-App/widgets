@@ -182,13 +182,6 @@ watch(
   () => [startDate.value, endDate.value],
   () => {
     fetchData('interactionData')
-  },
-  { immediate: true },
-)
-
-watch(
-  () => [startDate.value, endDate.value],
-  () => {
     fetchData('totalInteractionData')
   },
   { immediate: true },
