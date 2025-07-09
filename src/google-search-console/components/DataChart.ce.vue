@@ -175,11 +175,7 @@ async function fetchData(type) {
 }
 
 watch(
-  () => [
-    Object.values(datasets.value).filter((dataset) => dataset.show),
-    startDate.value,
-    endDate.value,
-  ],
+  () => [startDate.value, endDate.value],
   () => {
     fetchData('interactionData')
   },
