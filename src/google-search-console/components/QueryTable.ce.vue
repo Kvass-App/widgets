@@ -26,6 +26,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['fetchQueryData'])
+
 const t = getLabelFactory(props.labels, {
   clicks: 'Klikk',
   impressions: 'Visninger',
@@ -62,29 +64,7 @@ const columns = ref([
   },
 ])
 
-const queryData = ref([
-  {
-    query: 'Søkefrase 1',
-    clicks: 100,
-    impressions: 300,
-    ctr: 0.3,
-    position: 1.4,
-  },
-  {
-    query: 'Søkefrase 2',
-    clicks: 100,
-    impressions: 300,
-    ctr: 0.3,
-    position: 1.4,
-  },
-  {
-    query: 'Søkefrase 3',
-    clicks: 100,
-    impressions: 300,
-    ctr: 0.3,
-    position: 1.4,
-  },
-])
+const queryData = ref([])
 const startDate = ref()
 const endDate = ref()
 const isLoading = ref(false)
@@ -111,6 +91,7 @@ async function fetchQueryData() {
   isLoading.value = false
   if (res.status === 400) return
   const data = await res.json()
+  emit('fetchQueryData', data)
   if (data === undefined) return
   queryData.value = data
 }

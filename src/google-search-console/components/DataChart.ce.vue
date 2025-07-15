@@ -40,6 +40,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['fetchInteractionData'])
+
 const t = getLabelFactory(props.labels, {
   settings: 'Innstillinger',
   clicks: 'Klikk',
@@ -181,6 +183,8 @@ async function fetchData(type) {
   } else if (type === 'totalInteractionData') {
     totalInteractionData.value = data
   }
+
+  emit('fetchInteractionData', !noData.value)
 }
 
 watch(
