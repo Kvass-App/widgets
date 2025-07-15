@@ -358,9 +358,10 @@ const getLabel = (key) => {
 @import url('@kvass/ui/style.css');
 
 .kvass-residential-expenses {
-  --white: rgba(255, 255, 255, 0.5);
-  --k-alert-neutral-background: var(--white);
+  --white: var(--kvass-residential-expenses-white, rgba(255, 255, 255, 0.5));
+  --white-contrast: var(--kvass-residential-expenses-white-contrast, black);
 
+  --k-alert-neutral-background: var(--white);
   --k-ui-color-primary: var(--secondary);
 
   display: flex;
@@ -447,6 +448,7 @@ const getLabel = (key) => {
       --k-input-padding-y: 8px;
       font-size: 1em;
       background-color: var(--white);
+      color: var(--white-contrast);
 
       &__input {
         width: 0ch;

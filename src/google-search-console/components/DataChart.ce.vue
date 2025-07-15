@@ -117,7 +117,7 @@ const datasets = ref({
     graphData: {
       label: t('clicks'),
       backgroundColor: backgroundColors.clicks,
-      borderColor: 'rgba(67, 133, 244, 1)',
+      borderColor: backgroundColors.clicks,
       data: [],
       tension: 0,
     },
@@ -127,7 +127,7 @@ const datasets = ref({
     graphData: {
       label: t('impressions'),
       backgroundColor: backgroundColors.impressions,
-      borderColor: 'rgba(95, 54, 177, 1)',
+      borderColor: backgroundColors.impressions,
       data: [],
       tension: 0,
     },
@@ -137,7 +137,7 @@ const datasets = ref({
     graphData: {
       label: t('ctr'),
       backgroundColor: backgroundColors.ctr,
-      borderColor: 'rgba(3, 137, 123, 1)',
+      borderColor: backgroundColors.ctr,
       data: [],
       tension: 0,
     },
@@ -147,7 +147,7 @@ const datasets = ref({
     graphData: {
       label: t('position'),
       backgroundColor: backgroundColors.position,
-      borderColor: 'rgba(232, 113, 9, 1)',
+      borderColor: backgroundColors.position,
       data: [],
       tension: 0,
     },
@@ -174,26 +174,19 @@ async function fetchData(type) {
   const res = await fetch(url.toString())
   const data = await res.json()
 
-  Object.entries(data).forEach(([k, v]) => {
-    datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
-  })
+  if (type === 'interactionData') {
+    Object.entries(data).forEach(([k, v]) => {
+      datasets.value[k].graphData = { ...datasets.value[k].graphData, data: v }
+    })
+  } else if (type === 'totalInteractionData') {
+    totalInteractionData.value = data
+  }
 }
-
-watch(
-  () => [
-    Object.values(datasets.value).filter((dataset) => dataset.show),
-    startDate.value,
-    endDate.value,
-  ],
-  () => {
-    fetchData('interactionData')
-  },
-  { immediate: true },
-)
 
 watch(
   () => [startDate.value, endDate.value],
   () => {
+    fetchData('interactionData')
     fetchData('totalInteractionData')
   },
   { immediate: true },

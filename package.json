@@ -15,7 +15,7 @@
     "@kvass/location-selector": "^1.0.33",
     "@kvass/map": "^1.0.19",
     "@kvass/storage": "^1.1.0",
-    "@kvass/ui": "1.6.57",
+    "@kvass/ui": "1.6.60",
     "@kvass/vue3-flatfinder": "^1.0.81",
     "@vueuse/core": "^10.9.0",
     "chart.js": "^4.4.2",
