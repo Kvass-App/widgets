@@ -124,7 +124,9 @@ async function copyURL(e) {
       <form @submit.prevent="submit">
         <Flex direction="column" align="start">
           <Alert>
-            <Icon icon="fa-pro-regular:circle" />
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" />
+            </span>
             <span>
               {{ t('open') }}
               <a
@@ -135,10 +137,16 @@ async function copyURL(e) {
             </span>
           </Alert>
           <Alert>
-            <Icon icon="fa-pro-regular:circle" /> {{ t('instructionStep2') }}
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" />
+            </span>
+            {{ t('instructionStep2') }}
           </Alert>
           <Alert>
-            <Icon icon="fa-pro-regular:circle" /> {{ t('instructionStep3') }}
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" />
+            </span>
+            {{ t('instructionStep3') }}
           </Alert>
           <ul>
             <li>
@@ -151,13 +159,17 @@ async function copyURL(e) {
               <Icon icon="fa-pro-light:copy" />
             </li>
           </ul>
-          <Alert
-            ><Icon icon="fa-pro-regular:circle" />{{
-              t('instructionStep4')
-            }}</Alert
+          <Alert>
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" />
+            </span>
+            {{ t('instructionStep4') }}</Alert
           >
           <Alert>
-            <Icon icon="fa-pro-regular:circle" />{{ t('instructionStep5') }}
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" />
+            </span>
+            {{ t('instructionStep5') }}
           </Alert>
           <Flex
             direction="row"
@@ -178,28 +190,21 @@ async function copyURL(e) {
             ></Button>
           </Flex>
           <Alert>
-            <Icon icon="fa-pro-regular:circle" />{{ t('instructionStep6') }}
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-regular:circle" /> </span
+            >{{ t('instructionStep6') }}
           </Alert>
           <Alert class="kvass-gsc-verification-key-form__success">
-            <Icon icon="fa-pro-solid:check" />
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Icon icon="fa-pro-solid:check" />
+            </span>
             {{ t('instructionStep7') }}
           </Alert>
         </Flex>
       </form>
       <div class="kvass-gsc-verification-key-form__toast" v-if="showCopied">
         <span>{{ props.page_url }}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-        </svg>
+        <Icon icon="fa-pro-light:copy" />
         <div
           :style="copyProgressStyle"
           class="kvass-gsc-verification-key-form__toast-progress"
@@ -288,11 +293,15 @@ async function copyURL(e) {
 
     &__content {
       display: flex;
-      gap: 1rem;
+      gap: 1.3rem;
       margin-left: 1rem;
       flex-direction: row;
       align-items: center;
     }
+  }
+
+  &__icon-wrapper {
+    display: flex;
   }
 
   a {
