@@ -12,12 +12,6 @@ import { ref } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 import WebFont from 'webfontloader'
 
-WebFont.load({
-  google: {
-    families: ['Lato'],
-  },
-})
-
 const props = defineProps({
   value: {
     type: String,
@@ -225,7 +219,6 @@ async function copyURL(e) {
     background-color: #f8f8f8;
     padding: 30px;
     border-radius: 10px 10px 0 0;
-    font-family: 'Lato';
     h2 {
       margin-top: 0;
     }
@@ -237,7 +230,6 @@ async function copyURL(e) {
   &__wrapper {
     color: var(--kvass-gsc-verification-key-form-color, inherit);
     font-size: var(--kvass-gsc-verification-key-form-font-size, inherit);
-    font-family: var(--kvass-gsc-verification-key-form-font-family, 'Lato');
     max-width: 600px;
 
     box-shadow: 0px 1px 3.62px 0px #00000006;
@@ -256,7 +248,6 @@ async function copyURL(e) {
   --__kvass-gsc-verification-key-form-size-max: 800px;
   --__kvass-gsc-verification-key-form-border: 1px solid #dbdada;
   --__kvass-gsc-verification-key-form-height: 100%;
-  --__kvass-gsc-verification-key-form-font-family: 'Lato';
 
   background-color: var(
     --kvass-gsc-verification-key-form-background-color,
