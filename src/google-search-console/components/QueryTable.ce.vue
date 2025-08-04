@@ -32,11 +32,11 @@ const t = getLabelFactory(props.labels, {
   clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
-  position: 'Rangering i søk',
+  searchPosition: 'Rangering i søk',
   queryInfo: 'Søk på en frase',
   query: 'Søkefrase',
-  startDateQuery: 'Startdato for søkefraser',
-  endDateQuery: 'Sluttdato for søkefraser',
+  startDate: 'Startdato for søkefraser',
+  endDate: 'Sluttdato for søkefraser',
   queryPlaceholder: 'Søk på en frase, for eksempel Rambergveien',
   adjustSearch: 'Tilpass søk',
 })
@@ -60,7 +60,7 @@ const columns = ref([
   },
   {
     id: 'position',
-    label: t('position'),
+    label: t('searchPosition'),
   },
 ])
 
@@ -118,10 +118,10 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
             </Input>
           </FormControl>
           <Flex>
-            <FormControl :label="t('startDateQuery')"
+            <FormControl :label="t('startDate')"
               ><Input type="date" v-model="startDate" placeholder="Velg" />
             </FormControl>
-            <FormControl :label="t('endDateQuery')"
+            <FormControl :label="t('endDate')"
               ><Input type="date" v-model="endDate" />
             </FormControl>
           </Flex>

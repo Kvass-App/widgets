@@ -26,9 +26,11 @@ const props = defineProps({
 })
 
 const t = getLabelFactory(props.labels, {
-  description: 'Her får du en oversikt over status på ditt prosjekt',
+  integrationGSCDashboardDescription:
+    'Her får du en oversikt over status på ditt prosjekt',
   noData:
-    'Kan ikke presentere tall. Det foreligger ingen eksisterende data å vise på nåværende tidspunkt.',
+    'Kan ikke presentere tall. Det foreligger ingen eksisterende data å vise på nåværende tidspunkt',
+  gotoItem: 'Gå til {0}',
 })
 
 const noInteractionData = ref(false)
@@ -53,7 +55,7 @@ console.log(props.page_url)
     <div class="cont">
       <Flex direction="column">
         <h2>Google Search Console</h2>
-        <p>{{ t('description') }}</p>
+        <p>{{ t('integrationGSCDashboardDescription') }}</p>
       </Flex>
 
       <Button
@@ -63,7 +65,8 @@ console.log(props.page_url)
         :href="`https://search.google.com/search-console?resource_id=${encodeURIComponent(
           props.page_url,
         )}`"
-        >Gå til Google Search Console<Icon icon="fa-pro-light:external-link"
+        >{{ t('gotoItem', ['Google Search Console'])
+        }}<Icon icon="fa-pro-light:external-link"
       /></Button>
     </div>
 
