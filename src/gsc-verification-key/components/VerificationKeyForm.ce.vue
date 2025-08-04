@@ -58,10 +58,12 @@ const t = getLabelFactory(props.labels, {
     'Naviger til Google Search Console, og bekreft på samme plass man kopierte HTML-tag.',
   instructionStep7:
     'Når koden er bekreftet blir du sendt tilbake til oversikten.',
+  instructionStep8: 'Verifiserer HTML-tag...',
 })
 
 const verification_key = ref(props.value)
 const posted = ref(false)
+const verificationProgressStyle = ref('width: 0%;')
 
 function submit() {
   return fetch(
@@ -75,7 +77,15 @@ function submit() {
       }),
     },
   ).then(() => {
+    const interval = 5000
     posted.value = true
+    let value = 0
+
+    /* setInterval(() => {
+      value = (value + 1) % 101
+      verificationProgressStyle.value = `width: ${value}%;`
+    }, interval / 100) */
+
     setInterval(() => {
       return fetch(
         `${props.app_url}/api/integration/${props.integration_id}/callbacks/isPageVerified`,
@@ -90,7 +100,7 @@ function submit() {
             }?type=${props.reference_type.toLowerCase()}`
           }
         })
-    }, 5000)
+    }, interval)
   })
 }
 
@@ -119,7 +129,7 @@ async function copyURL(e) {
         <Flex direction="column" align="start">
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              1
             </span>
             <span>
               {{ t('open') }}
@@ -132,13 +142,13 @@ async function copyURL(e) {
           </Alert>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              2
             </span>
             {{ t('instructionStep2') }}
           </Alert>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              3
             </span>
             {{ t('instructionStep3') }}
           </Alert>
@@ -149,19 +159,19 @@ async function copyURL(e) {
                 class="kvass-gsc-verification-key-form__page-url"
                 @click="copyURL"
                 >{{ props.page_url }}
+                <Icon icon="fa-pro-light:copy" />
               </span>
-              <Icon icon="fa-pro-light:copy" />
             </li>
           </ul>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              4
             </span>
             {{ t('instructionStep4') }}</Alert
           >
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              5
             </span>
             {{ t('instructionStep5') }}
           </Alert>
@@ -185,14 +195,25 @@ async function copyURL(e) {
           </Flex>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" /> </span
+              6 </span
             >{{ t('instructionStep6') }}
           </Alert>
-          <Alert class="kvass-gsc-verification-key-form__success">
+          <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-solid:check" />
+              7
             </span>
             {{ t('instructionStep7') }}
+          </Alert>
+          <Alert
+            v-if="posted"
+            variant="info"
+            icon="null"
+            class="kvass-gsc-verification-key-form__verification-progress"
+          >
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Spinner size="small" />
+            </span>
+            {{ t('instructionStep8') }}
           </Alert>
         </Flex>
       </form>
@@ -213,7 +234,6 @@ async function copyURL(e) {
 
 .kvass-gsc-verification-key-form {
   &__header {
-    max-width: 600px;
     box-sizing: border-box;
 
     background-color: #f8f8f8;
@@ -230,15 +250,6 @@ async function copyURL(e) {
   &__wrapper {
     color: var(--kvass-gsc-verification-key-form-color, inherit);
     font-size: var(--kvass-gsc-verification-key-form-font-size, inherit);
-    max-width: 600px;
-
-    box-shadow: 0px 1px 3.62px 0px #00000006;
-
-    box-shadow: 0px 2.75px 10.02px 0px #00000009;
-
-    box-shadow: 0px 6.63px 24.12px 0px #0000000c;
-
-    box-shadow: 0px 22px 80px 0px #00000012;
   }
   // Default variables
   --__kvass-gsc-verification-key-form-background-color: white;
@@ -345,6 +356,32 @@ async function copyURL(e) {
   &__success {
     background-color: #e5f0e6;
     border: none;
+  }
+
+  &__verification-progress {
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background-color: #102b37;
+      transform: translateX(-100%);
+      animation: fill-loop 5s linear infinite;
+    }
+  }
+
+  @keyframes fill-loop {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
   }
 
   &__toast {
