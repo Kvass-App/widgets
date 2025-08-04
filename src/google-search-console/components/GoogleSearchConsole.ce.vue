@@ -6,12 +6,6 @@ import { getLabel as getLabelFactory } from '../../utils/index.js'
 import WebFont from 'webfontloader'
 import { ref } from 'vue'
 
-WebFont.load({
-  google: {
-    families: ['Lato'],
-  },
-})
-
 const props = defineProps({
   integration_id: {
     type: String,
@@ -74,12 +68,10 @@ function isQueryData(e) {
 
 .k-alert {
   margin-bottom: 30px;
-  font-family: 'Lato';
   font-size: 16px;
 }
 
 .cont {
-  font-family: 'Lato';
   h2 {
     margin: 0;
     font-size: 24px;

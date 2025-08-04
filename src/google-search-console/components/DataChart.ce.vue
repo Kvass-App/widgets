@@ -276,7 +276,6 @@ const noData = computed(() => {
 @import url('@kvass/ui/style.css');
 
 .kvass-google-search-console-total-data {
-  font-family: 'Lato';
   padding: 30px 30px 0 30px;
 
   h3 {
@@ -312,7 +311,6 @@ const noData = computed(() => {
 }
 
 .kvass-google-search-console-datachart {
-  font-family: 'Lato';
   // Default variables
   --__kvass-google-search-console-datachart-background-color: white;
   --__kvass-google-search-console-datachart-max-width: 100%;

@@ -148,17 +148,12 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
 @import url('@kvass/ui/style.css');
 .kvass-google-search-console-querytable {
   &__container {
-    font-family: 'Lato';
     padding: 10px 30px 30px;
   }
 
   &__wrapper {
     color: var(--kvass-google-search-console-querytable-color, inherit);
     font-size: var(--kvass-google-search-console-querytable-font-size, inherit);
-    font-family: var(
-      --kvass-google-search-console-querytable-font-family,
-      'Lato'
-    );
   }
 
   // Default variables
