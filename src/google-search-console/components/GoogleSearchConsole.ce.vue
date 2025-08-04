@@ -1,7 +1,7 @@
 <script setup>
 import DataChart from './DataChart.ce.vue'
 import QueryTable from './QueryTable.ce.vue'
-import { Flex, Alert } from '@kvass/ui'
+import { Flex, Alert, Icon, Button } from '@kvass/ui'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 import WebFont from 'webfontloader'
 import { ref } from 'vue'
@@ -12,6 +12,10 @@ const props = defineProps({
     required: true,
   },
   app_url: {
+    type: String,
+    required: true,
+  },
+  page_url: {
     type: String,
     required: true,
   },
@@ -37,6 +41,8 @@ function isInteractionData(e) {
 function isQueryData(e) {
   noQueryData.value = e.length === 0
 }
+
+console.log(props.page_url)
 </script>
 
 <template>
@@ -45,9 +51,22 @@ function isQueryData(e) {
   }}</Alert>
   <div style="background-color: white; border-radius: 10px; max-width: 2000px">
     <div class="cont">
-      <h2>Google Search Console</h2>
-      <p>{{ t('description') }}</p>
+      <Flex direction="column">
+        <h2>Google Search Console</h2>
+        <p>{{ t('description') }}</p>
+      </Flex>
+
+      <Button
+        is="a"
+        variant="primary"
+        target="_blank"
+        :href="`https://search.google.com/search-console?resource_id=${encodeURIComponent(
+          props.page_url,
+        )}`"
+        >Gå til Google Search Console<Icon icon="fa-pro-light:external-link"
+      /></Button>
     </div>
+
     <DataChart
       :app_url="props.app_url"
       :integration_id="props.integration_id"
@@ -72,6 +91,14 @@ function isQueryData(e) {
 }
 
 .cont {
+  padding: 30px;
+  margin: 0;
+  gap: 14px;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  border-bottom: 2px solid #eaeaea;
+
   h2 {
     margin: 0;
     font-size: 24px;
@@ -85,12 +112,11 @@ function isQueryData(e) {
     line-height: 160%;
   }
 
-  padding: 30px;
-  margin: 0;
-  gap: 14px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-bottom: 2px solid #eaeaea;
+  .k-button {
+    display: flex;
+    justify-content: center;
+    margin-left: auto;
+    background-color: var(--k-button-primary-background, #102b37);
+  }
 }
 </style>
