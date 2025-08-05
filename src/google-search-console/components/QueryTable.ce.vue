@@ -189,7 +189,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
     --kvass-google-search-console-querytable-border-radius,
     10px
   );
-  padding: 2rem;
+  padding: 20px;
 
   h2 {
     margin-bottom: 1rem;

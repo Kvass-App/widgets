@@ -146,7 +146,7 @@ const datasets = ref({
   position: {
     show: true,
     graphData: {
-      label: t('position'),
+      label: t('searchPosition'),
       backgroundColor: backgroundColors.position,
       borderColor: backgroundColors.position,
       data: [],
