@@ -124,7 +124,7 @@ async function copyURL(e) {
               1
             </span>
             <span>
-              {{ t('gotoDefault') }}
+              {{ t('gotoItem') }}
               <a
                 target="_blank"
                 href="https://search.google.com/search-console/welcome"

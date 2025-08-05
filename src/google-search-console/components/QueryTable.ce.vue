@@ -60,7 +60,7 @@ const columns = ref([
   },
   {
     id: 'position',
-    label: t('searchPosition'),
+    label: t('position'),
   },
 ])
 

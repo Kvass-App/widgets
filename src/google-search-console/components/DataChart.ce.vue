@@ -254,10 +254,7 @@ const noData = computed(() => {
             v-model="datasets.impressions.show"
           />
           <Checkbox :label="t('ctr')" v-model="datasets.ctr.show" />
-          <Checkbox
-            :label="t('searchPosition')"
-            v-model="datasets.position.show"
-          />
+          <Checkbox :label="t('position')" v-model="datasets.position.show" />
         </Flex>
         <div class="kvass-google-search-console-datachart__settings-datepicker">
           <Flex>
