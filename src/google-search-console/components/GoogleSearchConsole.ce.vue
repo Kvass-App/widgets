@@ -3,7 +3,6 @@ import DataChart from './DataChart.ce.vue'
 import QueryTable from './QueryTable.ce.vue'
 import { Flex, Alert, Icon, Button } from '@kvass/ui'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
-import WebFont from 'webfontloader'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -65,7 +64,7 @@ console.log(props.page_url)
         :href="`https://search.google.com/search-console?resource_id=${encodeURIComponent(
           props.page_url,
         )}`"
-        >{{ t('gotoItem', ['GOogle']) }}<Icon icon="fa-pro-light:external-link"
+        >{{ t('gotoItem') }}<Icon icon="fa-pro-light:external-link"
       /></Button>
     </div>
 

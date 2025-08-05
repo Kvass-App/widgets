@@ -10,7 +10,6 @@ import {
 } from '@kvass/ui'
 import { ref } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
-import WebFont from 'webfontloader'
 
 const props = defineProps({
   value: {
