@@ -43,18 +43,17 @@ const props = defineProps({
 const emit = defineEmits(['fetchInteractionData'])
 
 const t = getLabelFactory(props.labels, {
-  settings: 'Innstillinger',
+  /* settings: 'Innstillinger',
   clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
-  position: 'Rangering i søk',
+  searchPosition: 'Rangering i søk',
   startDate: 'Startdato for oversikt',
   endDate: 'Sluttdato for oversikt',
-  noData: 'Ingen data tilgjengelig',
-  generalOverview: 'Generell oversikt over søket',
-  adjustOverview: 'Tilpass visningsoversikt',
-  chooseWhatIsShown: 'Velg hva som skal vises i oversikten',
-  detaljedOverview: 'Detaljert visningsoversikt',
+  integrationGSCGeneralOverview: 'Generell oversikt over søket',
+  integrationGSCAdjustOverview: 'Tilpass visningsoversikt',
+  integrationGSCChooseFields: 'Velg hva som skal vises i oversikten',
+  integrationGSCDetailedOverview: 'Detaljert visningsoversikt', */
 })
 
 const startDate = ref()
@@ -147,7 +146,7 @@ const datasets = ref({
   position: {
     show: true,
     graphData: {
-      label: t('position'),
+      label: t('searchPosition'),
       backgroundColor: backgroundColors.position,
       borderColor: backgroundColors.position,
       data: [],
@@ -213,7 +212,7 @@ const noData = computed(() => {
 
 <template>
   <div class="kvass-google-search-console-total-data">
-    <h3>{{ t('generalOverview') }}</h3>
+    <h3>{{ t('integrationGSCGeneralOverview') }}</h3>
     <Grid columns="4">
       <Card
         v-for="(value, key) in totalInteractionData"
@@ -231,7 +230,7 @@ const noData = computed(() => {
   </div>
   <Flex class="kvass-google-search-console-datachart">
     <div class="kvass-google-search-console-datachart__chart">
-      <h3>{{ t('detaljedOverview') }}</h3>
+      <h3>{{ t('integrationGSCDetailedOverview') }}</h3>
       <Line
         :data="chartData"
         :options="options"
@@ -241,10 +240,10 @@ const noData = computed(() => {
     </div>
 
     <div class="kvass-google-search-console-datachart__settings-container">
-      <h3>{{ t('adjustOverview') }}</h3>
+      <h3>{{ t('integrationGSCAdjustOverview') }}</h3>
       <div class="kvass-google-search-console-datachart__settings">
         <Flex>
-          <p>{{ t('chooseWhatIsShown') }}</p>
+          <p>{{ t('integrationGSCChooseFields') }}</p>
           <Checkbox
             class="k-checkbox"
             :label="t('clicks')"
@@ -255,7 +254,10 @@ const noData = computed(() => {
             v-model="datasets.impressions.show"
           />
           <Checkbox :label="t('ctr')" v-model="datasets.ctr.show" />
-          <Checkbox :label="t('position')" v-model="datasets.position.show" />
+          <Checkbox
+            :label="t('searchPosition')"
+            v-model="datasets.position.show"
+          />
         </Flex>
         <div class="kvass-google-search-console-datachart__settings-datepicker">
           <Flex>

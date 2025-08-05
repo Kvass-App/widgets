@@ -10,7 +10,6 @@ import {
 } from '@kvass/ui'
 import { ref } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
-import WebFont from 'webfontloader'
 
 const props = defineProps({
   value: {
@@ -44,20 +43,22 @@ const props = defineProps({
 })
 
 const t = getLabelFactory(props.labels, {
-  instructionDescription:
+  /* integrationGSCInstructionDescription:
     'Følg oppskriften for å sette opp Google Search Console',
-  open: 'Åpne',
-  instructionStep2: 'Naviger til "Nettadresseprefiks"',
-  instructionStep3: 'Lim inn URLen til prosjektsiden i Google Search Console.',
-  url: 'URL til prosjektsiden',
-  instructionStep4: 'Velg HTML tag',
-  instructionStep5: 'Lim HTML tagen inn i feltet under',
-  copyCode: 'Lim inn kode',
-  submit: 'Bekreft koden',
-  instructionStep6:
+  gotoItem: 'Åpne',
+  integrationGSCInstructionStep2: 'Naviger til "Nettadresseprefiks"',
+  integrationGSCInstructionStep3:
+    'Lim inn URLen til prosjektsiden i Google Search Console.',
+  integrationGSCPageURL: 'URL til prosjektsiden',
+  integrationGSCInstructionStep4: 'Velg HTML tag',
+  integrationGSCInstructionStep5: 'Lim HTML tagen inn i feltet under',
+  integrationGSCPasteTag: 'Lim inn HTML-tag',
+  confirm: 'Bekreft',
+  integrationGSCInstructionStep6:
     'Naviger til Google Search Console, og bekreft på samme plass man kopierte HTML-tag.',
-  instructionStep7:
+  integrationGSCInstructionStep7:
     'Når koden er bekreftet blir du sendt tilbake til oversikten.',
+  integrationGSCInstructionStep8: 'Verifiserer HTML-tag...', */
 })
 
 const verification_key = ref(props.value)
@@ -76,6 +77,7 @@ function submit() {
     },
   ).then(() => {
     posted.value = true
+
     setInterval(() => {
       return fetch(
         `${props.app_url}/api/integration/${props.integration_id}/callbacks/isPageVerified`,
@@ -111,7 +113,7 @@ async function copyURL(e) {
 <template>
   <div class="kvass-gsc-verification-key-form__header">
     <h2>Google Search Console HTML-tag</h2>
-    <p>{{ t('instructionDescription') }}</p>
+    <p>{{ t('integrationGSCInstructionDescription') }}</p>
   </div>
   <div class="kvass-gsc-verification-key-form__wrapper">
     <div class="kvass-gsc-verification-key-form">
@@ -119,10 +121,10 @@ async function copyURL(e) {
         <Flex direction="column" align="start">
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              1
             </span>
             <span>
-              {{ t('open') }}
+              {{ t('gotoDefault') }}
               <a
                 target="_blank"
                 href="https://search.google.com/search-console/welcome"
@@ -132,38 +134,38 @@ async function copyURL(e) {
           </Alert>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              2
             </span>
-            {{ t('instructionStep2') }}
+            {{ t('integrationGSCInstructionStep2') }}
           </Alert>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              3
             </span>
-            {{ t('instructionStep3') }}
+            {{ t('integrationGSCInstructionStep3') }}
           </Alert>
           <ul>
             <li>
-              {{ t('url') }}:
+              {{ t('integrationGSCPageURL') }}:
               <span
                 class="kvass-gsc-verification-key-form__page-url"
                 @click="copyURL"
                 >{{ props.page_url }}
+                <Icon icon="fa-pro-light:copy" />
               </span>
-              <Icon icon="fa-pro-light:copy" />
             </li>
           </ul>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              4
             </span>
-            {{ t('instructionStep4') }}</Alert
+            {{ t('integrationGSCInstructionStep4') }}</Alert
           >
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" />
+              5
             </span>
-            {{ t('instructionStep5') }}
+            {{ t('integrationGSCInstructionStep5') }}
           </Alert>
           <Flex
             direction="row"
@@ -172,27 +174,38 @@ async function copyURL(e) {
             <FormControl>
               <Input
                 type="text"
-                :placeholder="t('copyCode')"
+                :placeholder="t('integrationGSCPasteTag')"
                 v-model="verification_key"
               />
             </FormControl>
             <Button
               type="submit"
-              :label="t('submit')"
+              :label="t('confirm')"
               :disabled="posted"
               variant="primary"
             ></Button>
           </Flex>
           <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-regular:circle" /> </span
-            >{{ t('instructionStep6') }}
+              6 </span
+            >{{ t('integrationGSCInstructionStep6') }}
           </Alert>
-          <Alert class="kvass-gsc-verification-key-form__success">
+          <Alert>
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
-              <Icon icon="fa-pro-solid:check" />
+              7
             </span>
-            {{ t('instructionStep7') }}
+            {{ t('integrationGSCInstructionStep7') }}
+          </Alert>
+          <Alert
+            v-if="posted"
+            variant="info"
+            icon="null"
+            class="kvass-gsc-verification-key-form__verification-progress"
+          >
+            <span class="kvass-gsc-verification-key-form__icon-wrapper">
+              <Spinner size="small" />
+            </span>
+            {{ t('integrationGSCInstructionStep8') }}
           </Alert>
         </Flex>
       </form>
@@ -213,7 +226,6 @@ async function copyURL(e) {
 
 .kvass-gsc-verification-key-form {
   &__header {
-    max-width: 600px;
     box-sizing: border-box;
 
     background-color: #f8f8f8;
@@ -230,15 +242,6 @@ async function copyURL(e) {
   &__wrapper {
     color: var(--kvass-gsc-verification-key-form-color, inherit);
     font-size: var(--kvass-gsc-verification-key-form-font-size, inherit);
-    max-width: 600px;
-
-    box-shadow: 0px 1px 3.62px 0px #00000006;
-
-    box-shadow: 0px 2.75px 10.02px 0px #00000009;
-
-    box-shadow: 0px 6.63px 24.12px 0px #0000000c;
-
-    box-shadow: 0px 22px 80px 0px #00000012;
   }
   // Default variables
   --__kvass-gsc-verification-key-form-background-color: white;
@@ -345,6 +348,32 @@ async function copyURL(e) {
   &__success {
     background-color: #e5f0e6;
     border: none;
+  }
+
+  &__verification-progress {
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background-color: #102b37;
+      transform: translateX(-100%);
+      animation: fill-loop 5s linear infinite;
+    }
+  }
+
+  @keyframes fill-loop {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
   }
 
   &__toast {
