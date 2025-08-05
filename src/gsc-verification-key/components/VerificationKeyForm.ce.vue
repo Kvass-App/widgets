@@ -101,7 +101,7 @@ function submit() {
 const copyProgressStyle = ref('width: 100%;')
 const showCopied = ref(false)
 async function copyURL(e) {
-  await navigator.clipboard.writeText(e.srcElement.innerText)
+  await navigator.clipboard.writeText(props.page_url)
 
   copyProgressStyle.value = 'width: 100%;'
   setTimeout(() => (copyProgressStyle.value = 'width: 0%;'), 10)
