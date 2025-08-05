@@ -29,7 +29,7 @@ const props = defineProps({
 const emit = defineEmits(['fetchQueryData'])
 
 const t = getLabelFactory(props.labels, {
-  clicks: 'Klikk',
+  /* clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
   searchPosition: 'Rangering i søk',
@@ -38,7 +38,7 @@ const t = getLabelFactory(props.labels, {
   startDate: 'Startdato for søkefraser',
   endDate: 'Sluttdato for søkefraser',
   queryPlaceholder: 'Søk på en frase, for eksempel Rambergveien',
-  adjustSearch: 'Tilpass søk',
+  adjustSearch: 'Tilpass søk', */
 })
 const query = ref('')
 const columns = ref([

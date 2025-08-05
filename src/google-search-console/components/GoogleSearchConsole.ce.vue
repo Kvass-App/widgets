@@ -26,11 +26,11 @@ const props = defineProps({
 })
 
 const t = getLabelFactory(props.labels, {
-  integrationGSCDashboardDescription:
+  /* integrationGSCDashboardDescription:
     'Her får du en oversikt over status på ditt prosjekt',
   noData:
     'Kan ikke presentere tall. Det foreligger ingen eksisterende data å vise på nåværende tidspunkt',
-  gotoItem: 'Gå til {0}',
+  gotoItem: 'Gå til {0}', */
 })
 
 const noInteractionData = ref(false)
@@ -65,8 +65,7 @@ console.log(props.page_url)
         :href="`https://search.google.com/search-console?resource_id=${encodeURIComponent(
           props.page_url,
         )}`"
-        >{{ t('gotoItem', ['Google Search Console'])
-        }}<Icon icon="fa-pro-light:external-link"
+        >{{ t('gotoItem', ['GOogle']) }}<Icon icon="fa-pro-light:external-link"
       /></Button>
     </div>
 

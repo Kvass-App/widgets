@@ -43,7 +43,7 @@ const props = defineProps({
 const emit = defineEmits(['fetchInteractionData'])
 
 const t = getLabelFactory(props.labels, {
-  settings: 'Innstillinger',
+  /* settings: 'Innstillinger',
   clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
@@ -53,7 +53,7 @@ const t = getLabelFactory(props.labels, {
   integrationGSCGeneralOverview: 'Generell oversikt over søket',
   integrationGSCAdjustOverview: 'Tilpass visningsoversikt',
   integrationGSCChooseFields: 'Velg hva som skal vises i oversikten',
-  integrationGSCDetailedOverview: 'Detaljert visningsoversikt',
+  integrationGSCDetailedOverview: 'Detaljert visningsoversikt', */
 })
 
 const startDate = ref()

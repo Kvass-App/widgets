@@ -44,9 +44,9 @@ const props = defineProps({
 })
 
 const t = getLabelFactory(props.labels, {
-  integrationGSCInstructionDescription:
+  /* integrationGSCInstructionDescription:
     'Følg oppskriften for å sette opp Google Search Console',
-  gotoDefault: 'Åpne',
+  gotoItem: 'Åpne',
   integrationGSCInstructionStep2: 'Naviger til "Nettadresseprefiks"',
   integrationGSCInstructionStep3:
     'Lim inn URLen til prosjektsiden i Google Search Console.',
@@ -59,7 +59,7 @@ const t = getLabelFactory(props.labels, {
     'Naviger til Google Search Console, og bekreft på samme plass man kopierte HTML-tag.',
   integrationGSCInstructionStep7:
     'Når koden er bekreftet blir du sendt tilbake til oversikten.',
-  integrationGSCInstructionStep8: 'Verifiserer HTML-tag...',
+  integrationGSCInstructionStep8: 'Verifiserer HTML-tag...', */
 })
 
 const verification_key = ref(props.value)
