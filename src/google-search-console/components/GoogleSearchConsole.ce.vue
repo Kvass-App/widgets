@@ -42,8 +42,6 @@ function isInteractionData(e) {
 function isQueryData(e) {
   noQueryData.value = e.length === 0
 }
-
-console.log(props.page_url)
 </script>
 
 <template>

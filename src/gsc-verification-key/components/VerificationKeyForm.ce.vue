@@ -87,9 +87,11 @@ function submit() {
         })
         .then(({ verified }) => {
           if (verified) {
-            window.location.href = `${props.app_url}/analytics/${
-              props.reference_id
-            }?type=${props.reference_type.toLowerCase()}`
+            window.location.href = `${
+              props.app_url
+            }/form?target=${encodeURIComponent(
+              `${props.app_url}/api/integration/${props.integration_id}/callbacks/dashboard`,
+            )}`
           }
         })
     }, 5000)
@@ -99,7 +101,7 @@ function submit() {
 const copyProgressStyle = ref('width: 100%;')
 const showCopied = ref(false)
 async function copyURL(e) {
-  await navigator.clipboard.writeText(e.srcElement.innerHTML)
+  await navigator.clipboard.writeText(e.srcElement.innerText)
 
   copyProgressStyle.value = 'width: 100%;'
   setTimeout(() => (copyProgressStyle.value = 'width: 0%;'), 10)
