@@ -40,15 +40,20 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['fetchInteractionData'])
+
 const t = getLabelFactory(props.labels, {
-  settings: 'Innstillinger',
+  /* settings: 'Innstillinger',
   clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
-  position: 'Posisjon',
-  startDate: 'Startdato',
-  endDate: 'Sluttdato',
-  noData: 'Ingen data tilgjengelig',
+  searchPosition: 'Rangering i søk',
+  startDate: 'Startdato for oversikt',
+  endDate: 'Sluttdato for oversikt',
+  integrationGSCGeneralOverview: 'Generell oversikt over søket',
+  integrationGSCAdjustOverview: 'Tilpass visningsoversikt',
+  integrationGSCChooseFields: 'Velg hva som skal vises i oversikten',
+  integrationGSCDetailedOverview: 'Detaljert visningsoversikt', */
 })
 
 const startDate = ref()
@@ -68,6 +73,7 @@ ChartJS.register(
 const options = ref({
   responsive: true,
   maintainAspectRatio: true,
+  aspectRatio: 1,
   devicePixelRatio: 1,
   scales: {
     x: {
@@ -176,6 +182,8 @@ async function fetchData(type) {
   } else if (type === 'totalInteractionData') {
     totalInteractionData.value = data
   }
+
+  emit('fetchInteractionData', noData.value)
 }
 
 watch(
@@ -203,61 +211,62 @@ const noData = computed(() => {
 </script>
 
 <template>
-  <Flex class="google-search-console-datachart" gap="1rem">
+  <div class="kvass-google-search-console-total-data">
+    <h3>{{ t('integrationGSCGeneralOverview') }}</h3>
+    <Grid columns="4">
+      <Card
+        v-for="(value, key) in totalInteractionData"
+        :key
+        :style="{ '--total-data-bg-color': backgroundColors[key] }"
+      >
+        <template #header
+          ><h4>{{ t(key) }}</h4></template
+        >
+        <template #default
+          ><h2>{{ value }}</h2></template
+        >
+      </Card>
+    </Grid>
+  </div>
+  <Flex class="kvass-google-search-console-datachart">
     <div class="kvass-google-search-console-datachart__chart">
-      <!-- Vue-ChartJS-komponenten -->
+      <h3>{{ t('integrationGSCDetailedOverview') }}</h3>
       <Line
         :data="chartData"
         :options="options"
         class="kvass-google-search-console-datachart__chart-chart"
         ref="chartInstance"
       />
-      <Grid
-        columns="4"
-        class="kvass-google-search-console-datachart__total-data"
-      >
-        <Card
-          v-for="(value, key) in totalInteractionData"
-          :key
-          :style="{ '--total-data-bg-color': backgroundColors[key] }"
-        >
-          <template #header
-            ><h4>{{ t(key) }}</h4></template
-          >
-          <template #default
-            ><h2>{{ value }}</h2></template
-          >
-        </Card>
-      </Grid>
     </div>
 
-    <div class="kvass-google-search-console-datachart__settings">
-      <h2>{{ t('settings') }}</h2>
-      <Flex>
-        <Checkbox
-          class="k-checkbox"
-          :label="t('clicks')"
-          v-model="datasets.clicks.show"
-        />
-        <Checkbox
-          :label="t('impressions')"
-          v-model="datasets.impressions.show"
-        />
-        <Checkbox :label="t('ctr')" v-model="datasets.ctr.show" />
-        <Checkbox :label="t('position')" v-model="datasets.position.show" />
-      </Flex>
-
-      <div class="kvass-google-search-console-datachart__settings-datepicker">
+    <div class="kvass-google-search-console-datachart__settings-container">
+      <h3>{{ t('integrationGSCAdjustOverview') }}</h3>
+      <div class="kvass-google-search-console-datachart__settings">
         <Flex>
-          <FormControl :label="t('startDate')"
-            ><Input type="date" v-model="startDate"
-          /></FormControl>
-          <FormControl :label="t('endDate')"
-            ><Input type="date" v-model="endDate"
-          /></FormControl>
+          <p>{{ t('integrationGSCChooseFields') }}</p>
+          <Checkbox
+            class="k-checkbox"
+            :label="t('clicks')"
+            v-model="datasets.clicks.show"
+          />
+          <Checkbox
+            :label="t('impressions')"
+            v-model="datasets.impressions.show"
+          />
+          <Checkbox :label="t('ctr')" v-model="datasets.ctr.show" />
+          <Checkbox :label="t('position')" v-model="datasets.position.show" />
         </Flex>
+        <div class="kvass-google-search-console-datachart__settings-datepicker">
+          <Flex>
+            <FormControl :label="t('startDate')"
+              ><Input type="date" v-model="startDate"
+            /></FormControl>
+            <FormControl :label="t('endDate')"
+              ><Input type="date" v-model="endDate"
+            /></FormControl>
+          </Flex>
+        </div>
       </div>
-      <Alert v-if="noData" variant="warning">{{ t('noData') }}</Alert>
     </div>
   </Flex>
 </template>
@@ -265,12 +274,47 @@ const noData = computed(() => {
 <style lang="scss">
 @import url('@kvass/ui/style.css');
 
+.kvass-google-search-console-total-data {
+  padding: 30px 30px 0 30px;
+
+  h3 {
+    margin-top: 0;
+  }
+
+  .k-grid {
+    width: 100%;
+
+    .k-card {
+      background-color: var(--total-data-bg-color);
+
+      h4 {
+        font-size: 20px;
+        color: whitesmoke;
+        margin-block: 13px;
+      }
+      h2 {
+        font-size: 28px;
+        color: whitesmoke;
+        margin: 0;
+      }
+    }
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    height: 1px; /* Høyde på linjen */
+    background-color: #c9c9c9; /* Fargen på linjen */
+    margin-top: 30px;
+  }
+}
+
 .kvass-google-search-console-datachart {
   // Default variables
   --__kvass-google-search-console-datachart-background-color: white;
   --__kvass-google-search-console-datachart-max-width: 100%;
   --__kvass-google-search-console-datachart-size: 25vw;
-  --__kvass-google-search-console-datachart-size-min: 400px;
+  --__kvass-google-search-console-datachart-size-min: 200px;
   --__kvass-google-search-console-datachart-size-max: 800px;
   --__kvass-google-search-console-datachart-border: 1px solid #eaeaea;
   --__kvass-google-search-console-datachart-height: 100%;
@@ -290,67 +334,90 @@ const noData = computed(() => {
     var(--__kvass-google-search-console-datachart-height)
   );
 
-  border: var(
-    --kvass-google-search-console-datachart-border,
-    var(--__kvass-google-search-console-datachart-border)
-  );
-
   border-radius: var(
     --kvass-google-search-console-datachart-border-radius,
     3px
   );
+
+  padding: 0px 30px 0 30px;
 
   h2 {
     margin: 0;
   }
 
   &__chart {
-    flex-grow: 2;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     position: relative;
+    flex-grow: 1;
 
-    width: clamp(200px, 70%, 500px);
+    width: clamp(100px, 50%, 800px);
 
     background-color: white;
     border-radius: var(--k-ui-rounding);
 
-    .kvass-google-search-console-datachart__total-data {
-      width: 100%;
-      .k-card {
-        background-color: var(--total-data-bg-color);
-        h2,
-        h4 {
-          margin: 0;
-          color: whitesmoke;
-        }
-      }
+    h3 {
+      align-self: flex-start;
     }
   }
   &__settings {
-    flex-grow: 1;
+    &-container {
+      flex-grow: 1;
+      justify-self: auto;
+      align-self: start;
+      margin-right: 30px;
+    }
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-content: start;
-    justify-self: auto;
-    align-self: start;
-    min-width: 300px;
+
     gap: 2rem;
 
     background-color: #f8f8f8;
-    padding: 2rem;
-    border: 1px solid #eaeaea;
+    padding-inline: 20px;
+    padding-block: 30px;
+    border: 1px solid #c9c9c9;
 
     border-radius: var(--k-ui-rounding);
 
     .k-flex {
       flex-direction: column;
+      gap: 10px;
     }
-    .k-checkbox {
-      flex-grow: 1;
+
+    --k-checkbox-accent: #102b37;
+    --k-checkbox-size: 16px;
+    p {
+      margin: 0;
+      font-weight: 700;
     }
+
+    &-datepicker {
+      .k-flex {
+        flex-direction: row;
+      }
+
+      .k-formcontrol__label {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      * {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background-color: #c9c9c9;
+    margin-top: 30px;
+    width: 100%;
   }
 }
 </style>

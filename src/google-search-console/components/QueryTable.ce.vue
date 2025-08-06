@@ -1,6 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue'
-import { DataTable, Input, Flex, FormControl, Alert, Spinner } from '@kvass/ui'
+import {
+  DataTable,
+  Input,
+  Flex,
+  FormControl,
+  Alert,
+  Spinner,
+  Icon,
+} from '@kvass/ui'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 
 const props = defineProps({
@@ -18,19 +26,26 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['fetchQueryData'])
+
 const t = getLabelFactory(props.labels, {
-  clicks: 'Klikk',
+  /* clicks: 'Klikk',
   impressions: 'Visninger',
   ctr: 'Klikkfrekvens',
-  position: 'Posisjon',
-  queryInfo: 'Informasjon om søkefraser',
+  searchPosition: 'Rangering i søk',
+  queryInfo: 'Søk på en frase',
   query: 'Søkefrase',
-  startDate: 'Startdato',
-  endDate: 'Sluttdato',
-  noData: 'Ingen data tilgjengelig',
+  startDate: 'Startdato for søkefraser',
+  endDate: 'Sluttdato for søkefraser',
+  queryPlaceholder: 'Søk på en frase, for eksempel Rambergveien',
+  adjustSearch: 'Tilpass søk', */
 })
 const query = ref('')
 const columns = ref([
+  {
+    id: 'query',
+    label: t('query'),
+  },
   {
     id: 'clicks',
     label: t('clicks'),
@@ -76,6 +91,7 @@ async function fetchQueryData() {
   isLoading.value = false
   if (res.status === 400) return
   const data = await res.json()
+  emit('fetchQueryData', data)
   if (data === undefined) return
   queryData.value = data
 }
@@ -84,33 +100,46 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
 </script>
 
 <template>
-  <div class="kvass-google-search-console-querytable__wrapper">
-    <div class="kvass-google-search-console-querytable">
-      <h2>{{ t('queryInfo') }}</h2>
-      <Flex>
-        <FormControl :label="t('query')"
-          ><Input type="text" v-model="query" />
+  <div class="kvass-google-search-console-querytable__container">
+    <h3>{{ t('adjustSearch') }}</h3>
+    <div class="kvass-google-search-console-querytable__wrapper">
+      <div class="kvass-google-search-console-querytable">
+        <Flex>
+          <FormControl
+            class="kvass-google-search-console-querytable__query"
+            :label="t('queryInfo')"
+            ><Input
+              type="text"
+              v-model="query"
+              :placeholder="t('queryPlaceholder')"
+              ><template #prefix>
+                <Icon icon="fa-pro-light:magnifying-glass"></Icon>
+              </template>
+            </Input>
+          </FormControl>
+          <Flex>
+            <FormControl :label="t('startDate')"
+              ><Input type="date" v-model="startDate" placeholder="Velg" />
+            </FormControl>
+            <FormControl :label="t('endDate')"
+              ><Input type="date" v-model="endDate" />
+            </FormControl>
+          </Flex>
+          <Spinner v-if="isLoading" size="small" />
+        </Flex>
+        <FormControl
+          v-if="queryData.length > 0"
+          class="kvass-google-search-console-querytable__table"
+        >
+          <DataTable :columns="columns" :items="queryData">
+            <template #query="{ item }">{{ item.query }}</template>
+            <template #clicks="{ item }">{{ item.clicks }}</template>
+            <template #impressions="{ item }">{{ item.impressions }}</template>
+            <template #ctr="{ item }">{{ item.ctr }}</template>
+            <template #position="{ item }">{{ item.position }}</template>
+          </DataTable>
         </FormControl>
-        <FormControl :label="t('startDate')"
-          ><Input type="date" v-model="startDate" />
-        </FormControl>
-        <FormControl :label="t('endDate')"
-          ><Input type="date" v-model="endDate" />
-        </FormControl>
-        <Spinner v-if="isLoading" size="small" />
-      </Flex>
-      <FormControl
-        v-if="queryData.length > 0"
-        class="kvass-google-search-console-querytable__table"
-      >
-        <DataTable :columns="columns" :items="queryData">
-          <template #clicks="{ item }">{{ item.clicks }}</template>
-          <template #impressions="{ item }">{{ item.impressions }}</template>
-          <template #ctr="{ item }">{{ item.ctr }}</template>
-          <template #position="{ item }">{{ item.position }}</template>
-        </DataTable>
-      </FormControl>
-      <Alert v-else variant="warning">{{ t('noData') }}</Alert>
+      </div>
     </div>
   </div>
 </template>
@@ -118,13 +147,13 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
 <style lang="scss">
 @import url('@kvass/ui/style.css');
 .kvass-google-search-console-querytable {
+  &__container {
+    padding: 10px 30px 30px;
+  }
+
   &__wrapper {
     color: var(--kvass-google-search-console-querytable-color, inherit);
     font-size: var(--kvass-google-search-console-querytable-font-size, inherit);
-    font-family: var(
-      --kvass-google-search-console-querytable-font-family,
-      inherit
-    );
   }
 
   // Default variables
@@ -133,7 +162,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
   --__kvass-google-search-console-querytable-size: 25vw;
   --__kvass-google-search-console-querytable-size-min: 400px;
   --__kvass-google-search-console-querytable-size-max: 800px;
-  --__kvass-google-search-console-querytable-border: 1px solid #eaeaea;
+  --__kvass-google-search-console-querytable-border: 1px solid #c9c9c9;
   --__kvass-google-search-console-querytable-height: 100%;
 
   background-color: var(
@@ -158,18 +187,31 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
 
   border-radius: var(
     --kvass-google-search-console-querytable-border-radius,
-    3px
+    10px
   );
-  padding: 2rem;
+  padding: 20px;
 
   h2 {
     margin-bottom: 1rem;
   }
+
+  &__query {
+    margin-right: auto;
+    flex-grow: 1;
+    .k-input {
+      width: clamp(250px, 100%, 500px);
+      line-height: 2;
+      &__prefix {
+        background-color: white;
+        color: #272727;
+      }
+    }
+  }
+
   &__table {
     --k-grid-item-area: table;
     --k-datatable-odd-color: white;
 
-    padding: 1rem;
     background-color: #f8f8f8;
     border-radius: var(--k-ui-rounding);
   }
@@ -178,9 +220,7 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
   }
   .k-flex {
     margin-bottom: 1rem;
-  }
-  .k-flex > * {
-    flex-grow: 1;
+    align-items: center;
   }
 }
 </style>
