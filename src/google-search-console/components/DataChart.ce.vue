@@ -183,7 +183,7 @@ async function fetchData(type) {
     totalInteractionData.value = data
   }
 
-  emit('fetchInteractionData', !noData.value)
+  emit('fetchInteractionData', noData.value)
 }
 
 watch(
