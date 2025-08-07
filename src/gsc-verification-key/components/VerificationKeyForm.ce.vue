@@ -130,8 +130,11 @@ async function copyURL(e) {
               <a
                 target="_blank"
                 href="https://search.google.com/search-console/welcome"
-                >Google Search Console
-              </a>
+                >Google Search Console<Icon
+                  style="text-decoration: none; margin-left: 2px"
+                  icon="fa-pro-light:external-link"
+                /> </a
+              >. {{ t('integrationGSCSameAccount') }}
             </span>
           </Alert>
           <Alert>
@@ -187,7 +190,7 @@ async function copyURL(e) {
               variant="primary"
             ></Button>
           </Flex>
-          <Alert>
+          <Alert :variant="posted ? 'warning' : undefined">
             <span class="kvass-gsc-verification-key-form__icon-wrapper">
               6 </span
             >{{ t('integrationGSCInstructionStep6') }}
