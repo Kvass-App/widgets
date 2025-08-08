@@ -135,8 +135,12 @@ watch(query, async () => await fetchQueryData(), { immediate: true })
             <template #query="{ item }">{{ item.query }}</template>
             <template #clicks="{ item }">{{ item.clicks }}</template>
             <template #impressions="{ item }">{{ item.impressions }}</template>
-            <template #ctr="{ item }">{{ item.ctr }}</template>
-            <template #position="{ item }">{{ item.position }}</template>
+            <template #ctr="{ item }">{{
+              (item.ctr * 100).toFixed(1) + ' %'
+            }}</template>
+            <template #position="{ item }">{{
+              item.position.toFixed(2)
+            }}</template>
           </DataTable>
         </FormControl>
       </div>

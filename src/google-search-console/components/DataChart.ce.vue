@@ -208,6 +208,16 @@ const noData = computed(() => {
     return el.data.length === 0
   })
 })
+
+function formatValues(key, value) {
+  switch (key) {
+    case 'ctr':
+      return (value * 100).toFixed(1) + ' %'
+    case 'position':
+      return value.toFixed(2)
+  }
+  return value
+}
 </script>
 
 <template>
@@ -223,7 +233,9 @@ const noData = computed(() => {
           ><h4>{{ t(key) }}</h4></template
         >
         <template #default
-          ><h2>{{ value }}</h2></template
+          ><h2>
+            {{ formatValues(key, value) }}
+          </h2></template
         >
       </Card>
     </Grid>
