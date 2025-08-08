@@ -40,7 +40,7 @@ function updateParse() {
 }
 onMounted(() => {
   fetch(
-    `${props.app_url}/api/integration/${props.integration_id}/callbacks/fetchMedia`,
+    `${props.app_url}/api/integration/${props.integration_id}/callbacks/posts`,
   )
     .then((res) => {
       return res.json()
