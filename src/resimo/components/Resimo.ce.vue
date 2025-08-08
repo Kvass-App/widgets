@@ -5,14 +5,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-console.log()
-console.log()
-console.log()
-
-console.log('lastet inn!')
-console.log()
-console.log()
 </script>
 
 <template>
