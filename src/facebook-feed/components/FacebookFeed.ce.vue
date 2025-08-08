@@ -4,10 +4,6 @@ import { ref, computed, onMounted, useHost, nextTick, watch } from 'vue'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 
 const props = defineProps({
-  labels: {
-    type: Object,
-    default: () => ({}),
-  },
   app_url: {
     type: String,
     required: true,
@@ -19,13 +15,6 @@ const props = defineProps({
   columns: {
     type: Number,
     default: 'repeat(auto-fill, minmax(350px, 1fr))',
-  },
-  header: {
-    type: String,
-    required: true,
-  },
-  page_link: {
-    type: String,
   },
 })
 
@@ -70,27 +59,20 @@ onMounted(() => {
 
 <template>
   <div class="kvass-facebook-feed" v-if="items.length">
-    <h2>{{ header }}</h2>
     <Grid ref="grid" class="kvass-facebook-feed__grid" :columns="columns">
-      <Card v-for="item in items" :key="items.indexOf(item)">
-        <div>
-          <div id="fb-root"></div>
-          <component
-            is="script"
-            async
-            defer
-            crossorigin="anonymous"
-            :src
-          ></component>
-          <div class="fb-post" :data-href="item.url" data-width="300"></div>
-        </div>
-      </Card>
+      <div v-for="item in items" :key="items.indexOf(item)">
+        <div id="fb-root"></div>
+        <component
+          is="script"
+          async
+          defer
+          crossorigin="anonymous"
+          :src
+        ></component>
+        <div class="fb-post" :data-href="item.url" data-width="300"></div>
+      </div>
     </Grid>
-    <div class="kvass-facebook-feed__redirect">
-      <Button variant="primary" is="a" :href="pageLink" target="_blank">{{
-        t('goToPage')
-      }}</Button>
-    </div>
+    <div class="kvass-facebook-feed__redirect"></div>
   </div>
 </template>
 
