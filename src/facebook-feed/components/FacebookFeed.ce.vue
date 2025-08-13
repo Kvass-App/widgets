@@ -1,7 +1,6 @@
 <script setup>
-import { Grid, Card, Flex, Button, Skeleton } from '@kvass/ui'
-import { ref, computed, onMounted, useHost, nextTick, watch } from 'vue'
-import { getLabel as getLabelFactory } from '../../utils/index.js'
+import { Grid } from '@kvass/ui'
+import { ref, onMounted, useHost } from 'vue'
 
 const props = defineProps({
   app_url: {
@@ -18,11 +17,6 @@ const props = defineProps({
   },
 })
 
-const pageLink = ref(props.page_link)
-
-const t = getLabelFactory(props.labels, {
-  goToPage: 'Gå til siden!',
-})
 const items = ref([])
 
 const src = ref('')
@@ -48,9 +42,7 @@ onMounted(() => {
     .then((data) => {
       data.forEach((el) => items.value.push(el))
       src.value = `https://connect.facebook.net/${data[0]?.location}/sdk.js#xfbml=1&amp;version=${data[0]?.version}`
-      if (!pageLink.value) {
-        pageLink.value = /^(https?:\/\/.+?)\/posts/.exec(data[0]?.url)?.[1]
-      }
+      console.log('Data: ', data)
     })
     .then(() => updateParse())
     .then(() => (loading.value = false))
@@ -59,7 +51,12 @@ onMounted(() => {
 
 <template>
   <div class="kvass-facebook-feed" v-if="items.length">
-    <Grid ref="grid" class="kvass-facebook-feed__grid" :columns="columns">
+    <Grid
+      ref="grid"
+      class="kvass-facebook-feed__grid"
+      :columns="columns"
+      style="align-items: center"
+    >
       <div v-for="item in items" :key="items.indexOf(item)">
         <div id="fb-root"></div>
         <component
