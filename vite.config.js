@@ -83,6 +83,9 @@ export default defineConfig({
         'gsc-verification-key-form': fileURLToPath(
           new URL('./src/gsc-verification-key/main.js', import.meta.url),
         ),
+        'facebook-feed': fileURLToPath(
+          new URL('./src/facebook-feed/main.js', import.meta.url),
+        ),
       },
     },
   },
