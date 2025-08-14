@@ -186,7 +186,7 @@ async function copyURL(e) {
             <Button
               type="submit"
               :label="t('confirm')"
-              :disabled="posted"
+              :disabled="!verification_key || posted"
               variant="primary"
             ></Button>
           </Flex>
