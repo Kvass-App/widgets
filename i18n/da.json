@@ -9,6 +9,7 @@
   "fa-pro-regular" : "Normale ikoner",
   "fa-pro-solid" : "Ikoner med heldækkende farve",
   "fileDropAreaMessage" : "Træk en fil over eller <b>vælg</b> for at låse op",
+  "fileSizeError" : "filen / filene er for store",
   "fontAssociatedWithSelectedThemeTemplate" : "Font tilknyttet den valgte temaskabelon",
   "fontForBody" : "Skrifttype til tekst",
   "fontForHeading" : "Skrifttype til titel",
@@ -32,7 +33,9 @@
   "secondaryTitle" : "Sekundærtitel",
   "select" : "Vælg",
   "selectIcon" : "Vælg ikon",
+  "selectOrSearchForFont" : "Vælg / søg efter skrifttype",
   "showAll" : "Vis alle",
+  "showAllGoogleFonts" : "Vis alle Google-skrifttyper",
   "somethingWentWrong" : "Noget gik galt",
   "submit" : "Indsend {x}"
 }

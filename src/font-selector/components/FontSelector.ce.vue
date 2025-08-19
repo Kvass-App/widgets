@@ -244,7 +244,7 @@ onMounted(() => {
       }}</span>
     </label>
     <Grid :style="'padding:1rem 0'" columns="1">
-      <FormControl label="Velg / søk etter font">
+      <FormControl :label="Translate('selectOrSearchForFont')">
         <Input v-model="search" @focus="onFocus" @blur="onBlur">
           <template #suffix>
             <Icon @click="triggerSearch" icon="fa-pro-solid:angle-down"></Icon>
@@ -262,7 +262,7 @@ onMounted(() => {
       <Checkbox
         v-if="props.showAllOption"
         v-model="showAllFonts"
-        label="Vis alle Google fonts"
+        :label="Translate('showAllGoogleFonts')"
       />
     </Grid>
     <div

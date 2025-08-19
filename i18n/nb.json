@@ -9,6 +9,7 @@
   "fa-pro-regular" : "Normale ikoner",
   "fa-pro-solid" : "Ikoner med heldekkende farge",
   "fileDropAreaMessage" : "Dra en fil hit eller <b>velg</b> for å laste opp",
+  "fileSizeError" : "filen / filene er for store",
   "fontAssociatedWithSelectedThemeTemplate" : "Font tilknyttet valgt tema mal",
   "fontForBody" : "Skrifttype for mengdetekst",
   "fontForHeading" : "Skrifttype for tittel",
@@ -21,7 +22,7 @@
   "iconsSelectWidgetIconsFound" : "treff",
   "iconsSelectWidgetNoIconsMatchYourSearch" : "Ingen ikoner passer søket ditt.",
   "leadMessage" : "Beskjed",
-  "leadMessageSent" : "Takk for din interesse. Du vil snart bli kontaktet av kundebehandler.",
+  "leadMessageSent" : "Takk for din interesse. Du vil snart bli kontaktet.",
   "leadPrivacy" : "Jeg ønsker å bli kontaktet i samtykke med {0}",
   "loadAllElements" : "Last inn alle",
   "maxSize" : "Maks størrelse",
@@ -33,7 +34,9 @@
   "secondaryTitle" : "Sekundærtittel",
   "select" : "Velg",
   "selectIcon" : "Velg ikon",
+  "selectOrSearchForFont" : "Velg / søk etter font",
   "showAll" : "Vis alle",
+  "showAllGoogleFonts" : "Vis alle Google fonts",
   "somethingWentWrong" : "Noe gikk galt",
   "submit" : "Send inn {x}"
 }
