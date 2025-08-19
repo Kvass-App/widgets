@@ -1,6 +1,6 @@
 <script setup>
 import { Grid } from '@kvass/ui'
-import { ref, onMounted, useHost } from 'vue'
+import { ref, onMounted, nextTick, useHost } from 'vue'
 
 const props = defineProps({
   app_url: {
@@ -18,34 +18,85 @@ const props = defineProps({
 })
 
 const items = ref([])
-
-const src = ref('')
 const host = useHost()
 const loading = ref(true)
-function updateParse() {
-  if (typeof FB !== 'undefined') {
-    FB.init({ version: 'v23.0' })
-    FB.XFBML.parse(host.shadowRoot.querySelector('.kvass-facebook-feed'))
+
+const facebookItems = ref([])
+const instagramItems = ref([])
+
+// Load Facebook SDK
+function loadFacebookSDK(location = 'en_US', version = 'v23.0') {
+  if (!document.getElementById('facebook-jssdk')) {
+    const script = document.createElement('script')
+    script.id = 'facebook-jssdk'
+    script.src = `https://connect.facebook.net/${location}/sdk.js#xfbml=1&version=${version}`
+    script.async = true
+    script.defer = true
+    document.body.appendChild(script)
+
+    script.onload = () => {
+      FB?.XFBML?.parse(host.shadowRoot.querySelector('.kvass-facebook-feed'))
+    }
   } else {
-    setTimeout(() => {
-      updateParse()
-    }, 500)
+    FB?.XFBML?.parse(host.shadowRoot.querySelector('.kvass-facebook-feed'))
   }
 }
-onMounted(() => {
-  fetch(
+
+// Load Instagram Embed Script
+function loadInstagramSDK(location = 'en_US') {
+  if (!document.querySelector('script[src*="platform.instagram.com"]')) {
+    const script = document.createElement('script')
+    script.id = 'instagram-jssdk'
+    script.src = `//platform.instagram.com/${location}/embeds.js`
+    script.async = true
+    document.body.appendChild(script)
+    script.onload = () => {
+      if (window.instgrm?.Embeds?.process) {
+        console.log('loading instagram script 1')
+
+        window.instgrm.Embeds.process(
+          host.shadowRoot.querySelector('.kvass-facebook-feed'),
+        )
+      }
+    }
+  } else {
+    if (window.instgrm?.Embeds?.process) {
+      console.log('loading instagram script 2')
+      window.instgrm.Embeds.process(
+        host.shadowRoot.querySelector('.kvass-facebook-feed'),
+      )
+    }
+  }
+}
+
+onMounted(async () => {
+  const res = await fetch(
     `${props.app_url}/api/integration/${props.integration_id}/callbacks/posts`,
   )
-    .then((res) => {
-      return res.json()
-    })
-    .then((data) => {
-      data.forEach((el) => items.value.push(el))
-      src.value = `https://connect.facebook.net/${data[0]?.location}/sdk.js#xfbml=1&amp;version=${data[0]?.version}`
-      console.log('Data: ', data)
-    })
-    .then(() => updateParse())
-    .then(() => (loading.value = false))
+  const data = await res.json()
+
+  facebookItems.value = data.filter((item) =>
+    item.url?.includes('facebook.com'),
+  )
+  instagramItems.value = data.filter((item) =>
+    item.url?.includes('instagram.com'),
+  )
+
+  // Store all items for general use (optional)
+  items.value = [...facebookItems.value, ...instagramItems.value]
+
+  await nextTick()
+
+  // Load both SDKs
+  if (facebookItems.value.length) {
+    loadFacebookSDK(data[0]?.location, data[0]?.version)
+  }
+
+  if (instagramItems.value.length) {
+    loadInstagramSDK(data[0]?.location)
+  }
+
+  loading.value = false
 })
 </script>
 
@@ -57,16 +108,16 @@ onMounted(() => {
       :columns="columns"
       style="align-items: center"
     >
-      <div v-for="item in items" :key="items.indexOf(item)">
-        <div id="fb-root"></div>
-        <component
-          is="script"
-          async
-          defer
-          crossorigin="anonymous"
-          :src
-        ></component>
-        <div class="fb-post" :data-href="item.url" data-width="300"></div>
+      <div v-for="(item, index) in facebookItems" :key="'fb-' + index">
+        <div
+          class="fb-post"
+          :data-href="item.url"
+          :data-width="item.width || 500"
+        ></div>
+      </div>
+
+      <div v-for="(item, index) in instagramItems" :key="'ig-' + index">
+        <div v-html="item.url"></div>
       </div>
     </Grid>
     <div class="kvass-facebook-feed__redirect"></div>
