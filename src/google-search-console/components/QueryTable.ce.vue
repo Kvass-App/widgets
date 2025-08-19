@@ -1,14 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue'
-import {
-  DataTable,
-  Input,
-  Flex,
-  FormControl,
-  Alert,
-  Spinner,
-  Icon,
-} from '@kvass/ui'
+import { DataTable, Input, Flex, FormControl, Spinner, Icon } from '@kvass/ui'
 import { getLabel as getLabelFactory } from '../../utils/index.js'
 
 const props = defineProps({
@@ -96,7 +88,9 @@ async function fetchQueryData() {
   queryData.value = data
 }
 
-watch(query, async () => await fetchQueryData(), { immediate: true })
+watch([query, startDate, endDate], async () => await fetchQueryData(), {
+  immediate: true,
+})
 </script>
 
 <template>
