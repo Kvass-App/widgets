@@ -83,6 +83,7 @@ export default defineConfig({
         'gsc-verification-key-form': fileURLToPath(
           new URL('./src/gsc-verification-key/main.js', import.meta.url),
         ),
+        resimo: fileURLToPath(new URL('./src/resimo/main.js', import.meta.url)),
       },
     },
   },
