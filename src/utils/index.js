@@ -1,5 +1,10 @@
 import en from '../../i18n/en.json'
 import nb from '../../i18n/nb.json'
+import fr from '../../i18n/fr.json'
+import da from '../../i18n/da.json'
+import sv from '../../i18n/sv.json'
+
+
 import Hash from 'object-hash'
 import { VueComponentUpload as upload } from '@kvass/storage'
 
@@ -53,7 +58,7 @@ function LoadScript(src, options = { type: 'text/javascript' }) {
 
 function Translate(key, plural = 1, options = {}) {
 
-  const messages = { en, nb }
+  const messages = { en, nb, fr, da, sv }
 
   const lang = document.documentElement.getAttribute('lang') || 'nb'
   let value = messages[lang]?.[key] || key
