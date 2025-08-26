@@ -17,6 +17,8 @@ import {
 } from '@kvass/ui'
 import Number from './Fields/Number'
 import Date from './Fields/Date'
+import Header from './Fields/Header'
+
 import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
 
@@ -31,12 +33,16 @@ const componentMap = {
   file: File,
   date: Date,
   privacy: Checkbox,
+  header: Header,
 }
 
 const props = defineProps({
   title: {
     type: String,
     default: 'Contact',
+  },
+  description: {
+    type: String,
   },
   formId: {
     type: String,
@@ -182,12 +188,13 @@ function getFieldOptions(i, key) {
       return base
 
     case 'checkbox':
-      base.options.slot = base.required
-        ? `<span
+      base.options.slot =
+        base.required === 'yes'
+          ? `<span
           >${base.label}
            <span class='kvass-form__checkbox--required'> * </span>
         </span>`
-        : ''
+          : ''
 
       return base
     case 'privacy':
@@ -271,6 +278,16 @@ const formFields = computed(() => {
             ...getFieldOptions({ component: 'privacy' }, 'privacy'),
           },
         ]
+      }
+      if (['header'].includes(i.component)) {
+        return {
+          ...getFieldOptions(i, key),
+          options: {
+            props: {
+              ...(i?.[key] || {}),
+            },
+          },
+        }
       } else {
         return getFieldOptions(i, key)
       }
@@ -384,7 +401,11 @@ onMounted(() => {
 <template>
   <div v-if="formFields.fields?.length" class="kvass-form">
     <div class="kvass-form__wrapper">
-      <h2>{{ props.title }}</h2>
+      <Header
+        :title="props.title"
+        :description="props.description"
+        title-tag="h2"
+      />
       <form class="kvass-form__form" @submit.prevent="submit">
         <Grid columns="2">
           <template v-for="field in formFields.filteredFields">
