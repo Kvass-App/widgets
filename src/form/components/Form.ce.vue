@@ -76,6 +76,10 @@ const props = defineProps({
     type: Number,
     default: 5000,
   },
+  scopes: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const template = ref({})
@@ -339,7 +343,10 @@ function resetForm() {
 
 function submit() {
   if (!formIsValid.value) return
-  const dataToSubmit = data.value
+  const dataToSubmit = {
+    ...data.value,
+    scopes: props.scopes ? JSON.parse(props.scopes) : null,
+  }
 
   promise.value = createFormSubmit(
     props.accountUrl || window.location.origin,
