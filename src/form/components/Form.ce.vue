@@ -345,7 +345,7 @@ function submit() {
   if (!formIsValid.value) return
   const dataToSubmit = {
     ...data.value,
-    scopes: props.scopes ? JSON.parse(props.scopes) : null,
+    scopes: props.scopes?.length ? JSON.parse(props.scopes) : null,
   }
 
   promise.value = createFormSubmit(
