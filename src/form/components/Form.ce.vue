@@ -503,16 +503,12 @@ onMounted(() => {
   @media (max-width: 767px) {
     padding: 1rem;
   }
-  h2 {
-    font-family: var(--kvass-form-title-font-family, var(--secondary-font));
-    letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
-  }
 
   &__checkbox--required {
     color: var(--k-ui-color-danger);
   }
   &__wrapper {
-    max-width: 700px;
+    max-width: var(--kvass-form-max-width, 700px);
     margin-inline: auto;
   }
 

@@ -28,7 +28,10 @@ const props = defineProps({
 <style lang="scss">
 .kvass-form-header {
   &__title {
-    margin: 0;
+    font-weight: var(--kvass-form-title-font-weight, bold);
+    font-family: var(--kvass-form-title-font-family, var(--secondary-font));
+    letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
+    margin: var(--kvass-form-title-margin, 0);
   }
   &__description {
     p:first-child {
