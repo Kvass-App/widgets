@@ -516,6 +516,21 @@ onMounted(() => {
     grid-column-end: span 2;
     max-width: fit-content;
     margin: 2rem auto 0 auto;
+
+    &:disabled {
+      background-color: var(
+        --kvass-form-submit-button-disabled-background,
+        var(--k-ui-color-neutral-light)
+      );
+      color: var(
+        --kvass-form-submit-button-disabled-color,
+        hsl(
+          var(--k-ui-color-neutral-dark-h),
+          var(--k-ui-color-neutral-dark-s),
+          calc(var(--k-ui-color-neutral-dark-l) + 40%)
+        )
+      );
+    }
   }
 
   &__field {
