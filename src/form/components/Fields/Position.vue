@@ -42,36 +42,43 @@ function update(event) {
 </script>
 
 <template>
-  <LocationSelector
-    :value="modelValue"
-    @webcomponent:update="($ev) => update($ev)"
-    :mapbox-api-token="mapboxApiToken"
-    :theme="mapboxTheme"
-    :show-warning="false"
-    :show-selected="false"
-    :reset="false"
-    aspect-ratio="1.3"
-  ></LocationSelector>
-  <Alert
-    v-if="hasPositionsErrors || modelValue?.address"
-    :icon="`fa-pro-solid:${
-      hasPositionsErrors ? 'triangle-exclamation' : 'circle-info'
-    }`"
-    :variant="hasPositionsErrors ? 'danger' : 'info'"
-    class="integration-plot-tip-us__form-alert"
-  >
-    {{
-      modelValue?.address
-        ? `Valgt posisjon: ${modelValue?.address}`
-        : `Posisjonen / adressen du har oppgitt er ikke gyldig. Prøv på nytt!`
-    }}
-  </Alert>
-  <Alert
-    v-if="!modelValue?.address && !hasPositionsErrors"
-    icon="fa-pro-solid:circle-info"
-  >
-    Har du ingen adresse? Flytt markøren på kartet for å sette en ca. posisjon.
-  </Alert>
+  <div class="kvass-form-position">
+    <LocationSelector
+      :value="modelValue"
+      @webcomponent:update="($ev) => update($ev)"
+      :mapbox-api-token="mapboxApiToken"
+      :theme="mapboxTheme"
+      :show-warning="false"
+      :show-selected="false"
+      :reset="false"
+      aspect-ratio="1.3"
+    ></LocationSelector>
+    <Alert
+      v-if="hasPositionsErrors || modelValue?.address"
+      :icon="`fa-pro-solid:${
+        hasPositionsErrors ? 'triangle-exclamation' : 'circle-info'
+      }`"
+      :variant="hasPositionsErrors ? 'danger' : 'info'"
+      class="integration-plot-tip-us__form-alert"
+    >
+      {{
+        modelValue?.address
+          ? `Valgt posisjon: ${modelValue?.address}`
+          : `Posisjonen / adressen du har oppgitt er ikke gyldig. Prøv på nytt!`
+      }}
+    </Alert>
+    <Alert
+      v-if="!modelValue?.address && !hasPositionsErrors"
+      icon="fa-pro-solid:circle-info"
+    >
+      Har du ingen adresse? Flytt markøren på kartet for å sette en ca.
+      posisjon.
+    </Alert>
+  </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.kvass-form-position {
+  margin-bottom: 1rem;
+}
+</style>

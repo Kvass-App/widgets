@@ -620,7 +620,7 @@ onMounted(() => {
 
   &__content {
     display: grid;
-    gap: 1rem;
+    gap: 1rem 3rem;
     grid-template-areas: var(--grid-template-areas);
     grid-template-columns: var(--grid-template-columns);
     @media (max-width: 767px) {
@@ -693,6 +693,7 @@ onMounted(() => {
 
   .k-formcontrol__label {
     text-transform: var(--kvass-form-label-transform);
+    font-weight: bold;
   }
   .k-radiogroup--variant-radio {
     --k-radiogroup-accent: var(--_kvass-form-ui-color);
