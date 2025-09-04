@@ -18,12 +18,15 @@ import {
 import Number from './Fields/Number'
 import Date from './Fields/Date'
 import Header from './Fields/Header'
+import Position from './Fields/Position.vue'
 
 import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
 
 const componentMap = {
   radio: RadioGroup,
+  email: Input,
+  phone: Input,
   'short-text': Input,
   number: Number,
   'long-text': TextArea,
@@ -34,6 +37,7 @@ const componentMap = {
   date: Date,
   privacy: Checkbox,
   header: Header,
+  position: Position,
 }
 
 const props = defineProps({
@@ -52,10 +56,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  submitButtonLabel: {
-    type: String,
-    default: 'Send inn',
-  },
+
   submitButtonTheme: {
     type: String,
     default: 'secondary',
@@ -68,10 +69,7 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  successMessage: {
-    type: String,
-    default: '',
-  },
+
   submitTimeout: {
     type: Number,
     default: 5000,
@@ -79,6 +77,15 @@ const props = defineProps({
   scopes: {
     type: Array,
     default: () => [],
+  },
+  mapboxApiToken: {
+    type: String,
+  },
+  mapboxTheme: {
+    type: String,
+  },
+  settings: {
+    type: String,
   },
 })
 
@@ -94,11 +101,93 @@ const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   'nb',
 )
 
-const hideFormFieldLabelOn = ['checkbox', 'privacy']
+const hideFormFieldLabelOn = ['checkbox', 'privacy', 'position']
 
+function transformKey(key) {
+  if (!key) return
+  return key.replaceAll('.', '-')
+}
 //computed
 const formIsValid = computed(() => {
   return validator.value.passes
+})
+
+const style = computed(() => {
+  let layout = formSettings.value?.layout
+    ? JSON.parse(formSettings.value?.layout)
+    : formFields?.value?.filteredFields.reduce((acc, current, index, array) => {
+        const currentArray = acc.split('|').filter(Boolean)
+        const prev = currentArray[currentArray?.length - 1]
+        const nextValue = array[index + 1]
+
+        let secound = ''
+        let prevValues = prev ? prev.split(' ') : []
+
+        const currentKey = transformKey(current.key)
+        // scipt if used
+        if (prevValues.find((i) => i === currentKey)) return acc
+
+        if (prevValues.length === '2') {
+          secound = currentKey
+        }
+        if (current?.size === 'half') {
+          secound = '1fr'
+        }
+
+        if (nextValue?.size === 'half') {
+          secound = transformKey(nextValue?.key)
+        }
+
+        return (acc = `${acc ? `${acc}|` : ''}${currentKey} ${
+          secound || currentKey
+        }`)
+      }, '')
+
+  let rows = layout.split('|')
+
+  let cols = rows[0]
+    .split(' ')
+    .map((col) => col.trim())
+    .filter(Boolean)
+    .map((col) => {
+      let [, cols = '1fr'] = col.split(':')
+      return cols
+    })
+    .join(' ')
+  let areas = rows
+    .map((row) =>
+      row
+        .split(' ')
+        .map((col) => col.trim())
+        .filter(Boolean)
+        .map((col, index, arr) => {
+          let [key] = col.split(':')
+          return key
+        })
+        .filter(Boolean)
+        .join(' '),
+    )
+    .filter(Boolean)
+    .map((r) => `"${r}"`)
+    .join('\n')
+
+  return {
+    '--grid-template-areas': areas,
+    '--grid-template-columns': cols,
+  }
+})
+const formSettings = computed(() => {
+  const defaultLabels = {
+    submitButtonLabel: 'Send inn',
+    formWidth: '700',
+  }
+
+  const base = JSON.parse(props.settings) || {}
+
+  return {
+    ...defaultLabels,
+    ...base,
+  }
 })
 
 const privacyUrlComp = computed(() => {
@@ -119,6 +208,10 @@ function getValidation(item) {
   switch (item.component) {
     case 'privacy':
       return 'accepted'
+    case 'email':
+      return item.required === 'yes' ? 'required|email' : 'email'
+    case 'phone':
+      return item.required === 'yes' ? 'required|phone' : 'phone'
     case 'number':
       return item.required === 'yes' ? 'numeric|required' : ''
     case 'checkbox':
@@ -201,8 +294,16 @@ function getFieldOptions(i, key) {
           : ''
 
       return base
+
+    case 'position':
+      base.options.props = {
+        mapboxApiToken: props.mapboxApiToken,
+        mapboxTheme: props.mapboxTheme,
+      }
+
+      return base
     case 'privacy':
-      base.options.slot = `<span
+      base.options.slot = `<span  class='kvass-form__privacy'
           >${base.label || t('leadPrivacy', [''])}
           <a  href="${privacyUrlComp.value}" target="_blank">
             ${t(
@@ -406,15 +507,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="formFields.fields?.length" class="kvass-form">
+  <div
+    v-if="formFields.fields?.length"
+    class="kvass-form"
+    :style="`--kvass-form-max-width: ${formSettings?.formWidth}px;`"
+  >
     <div class="kvass-form__wrapper">
       <Header
-        :title="props.title"
+        :title="!formSettings?.['hide-title'] ? props.title : ''"
         :description="props.description"
         title-tag="h2"
+        :center="formSettings?.['center-heading']"
       />
       <form class="kvass-form__form" @submit.prevent="submit">
-        <Grid columns="2">
+        <div class="kvass-form__content" :style="style">
           <template v-for="field in formFields.filteredFields">
             <FormControl
               :class="[
@@ -426,6 +532,7 @@ onMounted(() => {
                   ).includes('required'),
                 },
               ]"
+              :style="{ '--grid-area': transformKey(field?.key) }"
               :label="
                 field?.['hide-label'] ||
                 hideFormFieldLabelOn.includes(field.component)
@@ -451,27 +558,25 @@ onMounted(() => {
               </component>
             </FormControl>
           </template>
-
+        </div>
+        <Grid gap="2rem" class="kvass-form__bottom">
           <Alert
             v-if="submitted || submitError"
-            :class="[
-              'kvass-form__field',
-              { 'kvass-form__field--size-half': false },
-              ,
-            ]"
             :variant="!submitError ? 'info' : 'danger'"
           >
             <div
               v-html="
                 !submitError
-                  ? props.successMessage || `<p>${t('leadMessageSent')}</p>`
+                  ? formSettings?.successMessage ||
+                    `<p>${t('leadMessageSent')}</p>`
                   : `<p>${t('somethingWentWrong')}</p>`
               "
             ></div>
           </Alert>
+
           <Button
             class="kvass-form__submit-button"
-            :label="props.submitButtonLabel"
+            :label="formSettings?.submitButtonLabel"
             :success-label="t('completed')"
             type="submit"
             icon-right="fa-pro-solid:arrow-right"
@@ -492,13 +597,14 @@ onMounted(() => {
   background-color: var(--kvass-form-background, transparent);
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
-
   --_kvass-form-ui-color: var(--kvass-form-ui-color, var(--secondary));
 
   --_kvass-form-ui-contrast-color: var(
     --kvass-form-ui-contrast-color,
     var(--secondary-contrast)
   );
+
+  --_kvass-form-max-width: var(--kvass-form-max-width, 700px);
 
   @media (max-width: 767px) {
     padding: 1rem;
@@ -508,10 +614,24 @@ onMounted(() => {
     color: var(--k-ui-color-danger);
   }
   &__wrapper {
-    max-width: var(--kvass-form-max-width, 700px);
+    max-width: var(--_kvass-form-max-width);
     margin-inline: auto;
   }
 
+  &__content {
+    display: grid;
+    gap: 1rem;
+    grid-template-areas: var(--grid-template-areas);
+    grid-template-columns: var(--grid-template-columns);
+    @media (max-width: 767px) {
+      grid-template-areas: unset;
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__bottom {
+    margin-top: 2rem;
+  }
   &__submit-button {
     grid-column-end: span 2;
     max-width: fit-content;
@@ -531,16 +651,20 @@ onMounted(() => {
         )
       );
     }
+    margin: 0 auto;
+  }
+  &__privacy {
+    font-size: 0.95em;
   }
 
   &__field {
-    grid-column-end: span 2;
-    &--size-half {
-      grid-column-end: span 1;
-      @media (max-width: 767px) {
-        grid-column-end: span 2;
-      }
+    display: flex;
+    flex-direction: column;
+    grid-area: var(--grid-area);
+    @media (max-width: 767px) {
+      grid-area: unset;
     }
+
     &--required .k-formcontrol__label {
       &::after {
         content: '*';
