@@ -23,6 +23,24 @@ import Position from './Fields/Position.vue'
 import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
 
+function flattenToSingleLevel(obj, result = {}) {
+  for (let key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key]
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        flattenToSingleLevel(value, result)
+      } else {
+        result[key] = value
+      }
+    }
+  }
+  return result
+}
+
 const componentMap = {
   radio: RadioGroup,
   email: Input,
@@ -445,7 +463,7 @@ function resetForm() {
 function submit() {
   if (!formIsValid.value) return
   const dataToSubmit = {
-    ...data.value,
+    ...flattenToSingleLevel(data.value),
     scopes: props.scopes?.length ? JSON.parse(props.scopes) : null,
   }
 
