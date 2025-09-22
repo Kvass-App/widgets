@@ -84,14 +84,14 @@ const getStatus = (item: Ad) => {
   }
 
   //@ts-ignore
-  if (
-    isOlderThanXDays(item.createdAt, 180) &&
-    ['ESTATE_BUSINESS_RENT', 'ESTATE_BUSINESS_SALE'].includes(item.type || '')
-  )
-    return {
-      label: 'Utløpt',
-      variant: 'neutral' as const,
-    }
+  // if (
+  //   isOlderThanXDays(item.createdAt, 180) &&
+  //   ['ESTATE_BUSINESS_RENT', 'ESTATE_BUSINESS_SALE'].includes(item.type || '')
+  // )
+  //   return {
+  //     label: 'Utløpt',
+  //     variant: 'neutral' as const,
+  //   }
 
   return {
     label: 'Aktiv',
