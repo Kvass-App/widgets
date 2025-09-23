@@ -12,6 +12,7 @@ import {
   FormControl,
   Icon,
   Button,
+  ButtonGroup,
 } from '@kvass/ui'
 import { Translate, Debounce } from '../../utils/index.js'
 
@@ -50,12 +51,19 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  enableAdobeFont: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const items = ref([])
 const allData = ref([])
 const showAllFonts = ref(false)
 const search = ref('')
+const selectedSource = ref('')
+const type = ref('google')
+
 const openList = ref(false)
 
 const providers = ref(
@@ -77,10 +85,11 @@ const providers = ref(
       : {},
   ]),
 )
+const valueComp = computed(() => {
+  return props.value ? JSON.parse(`${props.value}` || {}) : {}
+})
 
-const selectedFont = ref(
-  props.value ? (JSON.parse(`${props.value}`) || {}).font : '',
-)
+const selectedFont = ref(props.value ? valueComp.value?.font : '')
 
 const hasInputErrors = computed(() => {
   return !allData.value.some((i) => i.label === search.value)
@@ -91,18 +100,20 @@ const selectedProvider = computed(() => {
     p.fonts?.includes(selectedFont.value),
   )?.value
 
-  if (!provider) return 'google'
+  if (!provider) return valueComp.value?.provider || 'google'
 
   return provider
 })
 
 function update(font) {
-  if (!font) return
+  if (!font) font = selectedFont.value
+
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
+        source: selectedSource.value,
         font,
-        provider: selectedProvider.value,
+        provider: type.value?.[0] || selectedProvider.value,
       },
       bubbles: true,
       composed: true,
@@ -126,6 +137,17 @@ function triggerSearch(newValue = '') {
     return i.label.toLowerCase().startsWith(newValue?.toLowerCase())
   })
 }
+watch(type, (newType) => {
+  if (!newType || newType?.[0] === selectedProvider.value) return
+
+  selectedFont.value = null
+})
+watch(selectedSource, (source) => {
+  if (!source) return
+
+  // emit custom event
+  update()
+})
 watch(selectedFont, (newFont) => {
   if (!newFont) return
 
@@ -227,12 +249,15 @@ async function getData() {
 }
 
 onMounted(() => {
+  selectedSource.value = valueComp.value?.source
+  type.value = [selectedProvider.value]
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
-  loadFonts()
-
-  search.value = selectedFont.value || ''
-  update(selectedFont.value)
+  if (selectedProvider.value === 'google') {
+    loadFonts()
+    search.value = selectedFont.value || ''
+    update(selectedFont.value)
+  }
 })
 </script>
 
@@ -243,28 +268,57 @@ onMounted(() => {
         Translate(label)
       }}</span>
     </label>
-    <Grid :style="'padding:1rem 0'" columns="1">
-      <FormControl :label="Translate('selectOrSearchForFont')">
-        <Input v-model="search" @focus="onFocus" @blur="onBlur">
-          <template #suffix>
-            <Icon @click="triggerSearch" icon="fa-pro-solid:angle-down"></Icon>
-          </template>
-        </Input>
-        <div v-if="openList" class="kvass-font-selector__select-list">
-          <Button
-            v-for="item in items"
-            :label="item.label"
-            :icon-right="item.icon"
-            @click="item.action"
-          ></Button>
-        </div>
+
+    <ButtonGroup
+      v-if="enableAdobeFont"
+      v-model="type"
+      :items="[
+        { id: 'google', label: 'Google', icon: 'simple-icons:googlefonts' },
+        { id: 'adobe', label: 'Adobe', icon: 'logos:adobe-icon' },
+      ]"
+    />
+    <div class="kvass-font-selector__content">
+      <FormControl
+        :label="Translate('link')"
+        :help="`Ex: https://use.typekit.net/xxxxxx.css`"
+        v-if="type.includes('adobe')"
+      >
+        <Input v-model="selectedSource"> </Input>
       </FormControl>
-      <Checkbox
-        v-if="props.showAllOption"
-        v-model="showAllFonts"
-        :label="Translate('showAllGoogleFonts')"
-      />
-    </Grid>
+      <FormControl
+        label="Font Family"
+        help="Ex: 'chaparral-pro'"
+        v-if="type.includes('adobe')"
+      >
+        <Input v-model="selectedFont"> </Input>
+      </FormControl>
+      <Grid v-else :style="'padding:1rem 0'" columns="1">
+        <FormControl :label="Translate('selectOrSearchForFont')">
+          <Input v-model="search" @focus="onFocus" @blur="onBlur">
+            <template #suffix>
+              <Icon
+                @click="triggerSearch"
+                icon="fa-pro-solid:angle-down"
+              ></Icon>
+            </template>
+          </Input>
+          <div v-if="openList" class="kvass-font-selector__select-list">
+            <Button
+              v-for="item in items"
+              :label="item.label"
+              :icon-right="item.icon"
+              @click="item.action"
+            ></Button>
+          </div>
+        </FormControl>
+        <Checkbox
+          v-if="props.showAllOption"
+          v-model="showAllFonts"
+          :label="Translate('showAllGoogleFonts')"
+        />
+      </Grid>
+    </div>
+
     <div
       :class="[
         `kvass-font-selector__preview kvass-font-selector__preview--${props.type}`,
@@ -275,7 +329,9 @@ onMounted(() => {
       }}</small>
       <Alert
         v-if="
-          props.disablePreviewOn.includes(selectedFont) || selectedFont === ''
+          type.includes('adobe') ||
+          props.disablePreviewOn.includes(selectedFont) ||
+          selectedFont === ''
         "
         variant="neutral"
       >
@@ -329,6 +385,27 @@ onMounted(() => {
     --kvass-font-selector-max-width,
     var(--__kvass-font-selector-max-width)
   );
+
+  .k-buttongroup {
+    border-color: var(--__kvass-font-selector-border-color);
+    border: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    .k-button {
+      font-size: 1rem !important;
+      border: 1px solid var(--__kvass-font-selector-border-color);
+      border-bottom: none;
+    }
+  }
+  &__content {
+    border: 1px solid var(--__kvass-font-selector-border-color);
+    border-bottom: none;
+    padding: 1rem;
+    .k-formcontrol__help {
+      font-style: italic;
+      font-size: 0.8em;
+    }
+  }
 
   &__preview-label,
   .k-alert {
