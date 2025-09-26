@@ -249,7 +249,7 @@ async function getData() {
 }
 
 onMounted(() => {
-  selectedSource.value = valueComp.value?.source
+  selectedSource.value = valueComp.value?.source || ''
   type.value = [selectedProvider.value]
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
@@ -278,19 +278,15 @@ onMounted(() => {
       ]"
     />
     <div class="kvass-font-selector__content">
-      <FormControl
-        :label="Translate('link')"
-        :help="`Ex: https://use.typekit.net/xxxxxx.css`"
-        v-if="type.includes('adobe')"
-      >
-        <Input v-model="selectedSource"> </Input>
+      <FormControl :label="Translate('link')" v-if="type.includes('adobe')">
+        <Input
+          v-model="selectedSource"
+          placeholder="https://use.typekit.net/xxxxxx.css"
+        >
+        </Input>
       </FormControl>
-      <FormControl
-        label="Font Family"
-        help="Ex: 'chaparral-pro'"
-        v-if="type.includes('adobe')"
-      >
-        <Input v-model="selectedFont"> </Input>
+      <FormControl label="Font Family" v-if="type.includes('adobe')">
+        <Input v-model="selectedFont" placeholder="chaparral-pro"> </Input>
       </FormControl>
       <Grid v-else :style="'padding:1rem 0'" columns="1">
         <FormControl :label="Translate('selectOrSearchForFont')">
@@ -401,6 +397,9 @@ onMounted(() => {
     border: 1px solid var(--__kvass-font-selector-border-color);
     border-bottom: none;
     padding: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
     .k-formcontrol__help {
       font-style: italic;
       font-size: 0.8em;
