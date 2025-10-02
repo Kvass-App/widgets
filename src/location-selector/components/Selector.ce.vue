@@ -107,6 +107,9 @@ watch(
 
 <style lang="scss">
 @import url('@kvass/location-selector/style.css');
+.kvass-location-selector {
+  background-color: transparent;
+}
 
 .kvass-map {
   @media screen and (max-width: 680px) {

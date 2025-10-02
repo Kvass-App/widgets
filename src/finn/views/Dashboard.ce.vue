@@ -76,6 +76,23 @@ const getStatus = (item: Ad) => {
     }
   }
 
+  const isOlderThanXDays = (date, days = 180) => {
+    if (!date) return
+    return (
+      new Date(date) < new Date(new Date().setDate(new Date().getDate() - days))
+    )
+  }
+
+  //@ts-ignore
+  // if (
+  //   isOlderThanXDays(item.createdAt, 180) &&
+  //   ['ESTATE_BUSINESS_RENT', 'ESTATE_BUSINESS_SALE'].includes(item.type || '')
+  // )
+  //   return {
+  //     label: 'Utløpt',
+  //     variant: 'neutral' as const,
+  //   }
+
   return {
     label: 'Aktiv',
     variant: 'success' as const,

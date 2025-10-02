@@ -127,7 +127,7 @@ onMounted(getPosts)
               {{ item.claps }}
             </Flex>
           </Flex>
-          <div v-if="item.title" data-field="title">{{ item.title }}</div>
+          <h3 v-if="item.title" data-field="title">{{ item.title }}</h3>
           <div data-field="content">{{ item.shortContent }}</div>
           <Button
             label="Les mer"
@@ -204,7 +204,7 @@ onMounted(getPosts)
   --k-card-border-radius: var(--border-radius);
   --color: var(--knips-feed-color, var(--text-color));
   --background: var(--knips-feed-background, var(--background-color));
-  --k-card-border-color: rgba(0, 0, 0, 0.05);
+  --k-card-border-color: var(--knips-feed-border-color, rgba(0, 0, 0, 0.05));
   --k-dialog-backdrop-background: rgba(0, 0, 0, 0.8);
 
   color: var(--color);
@@ -221,6 +221,16 @@ onMounted(getPosts)
     }
   }
 
+  .k-grid {
+    grid-template-columns: var(
+      --knips-feed-grid-columns,
+      var(--k-grid-columns)
+    );
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
   .k-card {
     background-color: var(--background, #fff);
     display: flex;
@@ -229,7 +239,12 @@ onMounted(getPosts)
 
   .k-card__header {
     padding: 0;
-    aspect-ratio: 16/9;
+    aspect-ratio: var(--knips-feed-header-aspect-ratio, 16/9);
+    border-radius: var(--knips-feed-header-border-radius, 0px);
+    figure {
+      aspect-ratio: inherit;
+      border-radius: inherit;
+    }
   }
 
   .k-card__content {
@@ -244,7 +259,11 @@ onMounted(getPosts)
   }
 
   [data-field='title'] {
+    margin: 0;
     font-weight: bold;
+    font-size: var(--knips-feed-title-font-size, inherit);
+    line-height: var(--knips-feed-title-line-height, inherit);
+    font-family: var(--knips-feed-title-font-family, inherit);
   }
 
   [data-field='metadata'] {
@@ -266,7 +285,25 @@ onMounted(getPosts)
   }
 
   [data-field='readmore'] {
-    align-self: center;
+    align-self: var(--knips-feed-action-align, center);
+    --k-button-secondary-border: var(
+      --knips-feed-action-border-color,
+      transparent
+    );
+
+    --k-button-secondary-background: var(
+      --knips-feed-action-background,
+      var(--secondary)
+    );
+    --k-button-secondary-text: var(
+      --knips-feed-action-text-color,
+      var(--secondary-contrast)
+    );
+    --k-button-secondary-background-hover: var(
+      --knips-feed-action-background-hover,
+      hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 5%))
+        ;
+    );
   }
 
   [data-field='dialog-content'] {

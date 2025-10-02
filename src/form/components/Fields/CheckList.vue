@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, ref, computed, watch } from 'vue'
-import { Checkbox, Card, Grid, Button, Image, Icon, Flex } from '@kvass/ui'
+import { ref, computed, watch } from 'vue'
+import { Checkbox } from '@kvass/ui'
 
 const props = defineProps({
   modelValue: {

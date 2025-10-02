@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build",
-    "i18n:build": "curl -s0 https://localize.kvass.no/v2/projects/export?filterTag=widgets --header 'x-api-key: tgpak_gfptcodjnrrtcmbvmrygc4dnnvute3diga3dsmbzm42ts' -o i18n.zip && unzip -qo i18n.zip -d i18n && rm i18n.zip"
+    "i18n:build": "curl -s0 https://localize.kvass.no/v2/projects/export?filterTag=widgets --header 'x-api-key: <API_KEY>' -o i18n.zip && unzip -qo i18n.zip -d i18n && rm i18n.zip"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",

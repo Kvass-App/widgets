@@ -9,6 +9,7 @@
   "fa-pro-regular" : "Normala ikoner",
   "fa-pro-solid" : "Ikoner med heltäckande färg",
   "fileDropAreaMessage" : "Dra en fil hit eller <b>välj</b> för att ladda upp",
+  "fileSizeError" : "filen / filerna är för stora",
   "fontAssociatedWithSelectedThemeTemplate" : "Typsnitt kopplat till vald temamall",
   "fontForBody" : "Teckensnitt för brödtext",
   "fontForHeading" : "Teckensnitt för titel",
@@ -23,8 +24,10 @@
   "leadMessage" : "Besked/Information",
   "leadMessageSent" : "Tack för ditt intresse. Du kommer snart att kontaktas av en kundtjänstmedarbetare.",
   "leadPrivacy" : "Jag vill bli kontaktad i enlighet med {0}",
+  "link" : "Länk | Länkar",
   "loadAllElements" : "Ladda alla",
   "name" : "Namn",
+  "nuxtLeadPrivacy" : "Jag vill bli kontaktad i enlighet med  {link}",
   "phone" : "Telefon",
   "phoneValidation" : "Du har inte angett ett giltigt telefonnummer",
   "primaryTitle" : "Huvudtitel",
@@ -32,7 +35,9 @@
   "secondaryTitle" : "Sekundär titel",
   "select" : "Välj",
   "selectIcon" : "Välj ikon",
+  "selectOrSearchForFont" : "älj / sök efter typsnitt",
   "showAll" : "Visa alla",
+  "showAllGoogleFonts" : "Visa alla Google-typsnitt",
   "somethingWentWrong" : "Ett fel inträffade",
   "submit" : "Skicka in {x}"
 }
