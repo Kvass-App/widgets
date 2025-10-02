@@ -358,7 +358,7 @@ const getLabel = (key) => {
 @import url('@kvass/ui/style.css');
 
 .kvass-residential-expenses {
-  --white: var(--kvass-residential-expenses-white, rgba(255, 255, 255, 0.5));
+  --white: var(--kvass-residential-expenses-white, rgba(255, 255, 255, 0.7));
   --white-contrast: var(--kvass-residential-expenses-white-contrast, black);
 
   --k-alert-neutral-background: var(--white);
@@ -515,6 +515,7 @@ const getLabel = (key) => {
   }
 
   .k-alert {
+    color: inherit;
     line-height: 1.42;
 
     &[data-field='deposit'] {
