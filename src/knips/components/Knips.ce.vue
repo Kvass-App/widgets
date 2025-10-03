@@ -302,7 +302,6 @@ onMounted(getPosts)
     --k-button-secondary-background-hover: var(
       --knips-feed-action-background-hover,
       hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 5%))
-        ;
     );
   }
 
