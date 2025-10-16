@@ -33,6 +33,7 @@ const props = defineProps({
 
 const items = ref([])
 const item = ref(null)
+const knipsElement = ref(null)
 const mapItem = (item) => {
   return {
     id: item.id,
@@ -80,6 +81,27 @@ const getPosts = () => {
 const onDialog = (e) => {
   if (!e.isSupported) return window.open(`${e.externalUrl}`)
   item.value = e
+
+  //scroll to current element
+  setTimeout(() => {
+    let navigationHeight = getComputedStyle(
+      document.documentElement,
+    ).getPropertyValue('--k-navigation-nav-height')
+
+    if (!navigationHeight || !knipsElement.value) return
+
+    navigationHeight = navigationHeight.trim().replace(/\D/g, '')
+
+    const y =
+      knipsElement.value.getBoundingClientRect().top +
+      window.pageYOffset -
+      navigationHeight
+
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth',
+    })
+  }, 30)
 }
 
 const onModalClick = (event) => {
@@ -140,7 +162,12 @@ onMounted(getPosts)
         </template>
       </Card>
     </Grid>
-    <div v-if="item" class="knips-feed__modal" @click="onModalClick">
+    <div
+      v-if="item"
+      class="knips-feed__modal"
+      @click="onModalClick"
+      ref="knipsElement"
+    >
       <div class="knips-feed__modal-backdrop"></div>
       <Card appearance="flat">
         <template #header v-if="item">
@@ -240,10 +267,15 @@ onMounted(getPosts)
   .k-card__header {
     padding: 0;
     aspect-ratio: var(--knips-feed-header-aspect-ratio, 16/9);
-    border-radius: var(--knips-feed-header-border-radius, 0px);
-    figure {
-      aspect-ratio: inherit;
-      border-radius: inherit;
+  }
+
+  .knips-feed__items {
+    .k-card__header {
+      border-radius: var(--knips-feed-header-border-radius, 0px);
+      figure {
+        aspect-ratio: inherit;
+        border-radius: inherit;
+      }
     }
   }
 
@@ -286,6 +318,11 @@ onMounted(getPosts)
 
   [data-field='readmore'] {
     align-self: var(--knips-feed-action-align, center);
+  }
+
+  //button color / border adjustments
+  [data-field='close'],
+  [data-field='readmore'] {
     --k-button-secondary-border: var(
       --knips-feed-action-border-color,
       transparent
@@ -302,6 +339,9 @@ onMounted(getPosts)
     --k-button-secondary-background-hover: var(
       --knips-feed-action-background-hover,
       hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 5%))
+    );
+    --k-button-secondary-background-active: var(
+      --k-button-secondary-background-hover
     );
   }
 
