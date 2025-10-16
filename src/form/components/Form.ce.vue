@@ -724,7 +724,7 @@ onMounted(() => {
 
   .k-formcontrol__label {
     text-transform: var(--kvass-form-label-transform);
-    font-weight: bold;
+    font-weight: var(--kvass-form-label-weight, bold);
   }
   .k-radiogroup--variant-radio {
     --k-radiogroup-accent: var(--_kvass-form-ui-color);

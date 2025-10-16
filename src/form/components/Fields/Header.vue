@@ -50,7 +50,7 @@ const props = defineProps({
     font-weight: var(--kvass-form-title-font-weight, revert);
     font-family: var(--kvass-form-title-font-family, var(--secondary-font));
     letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
-    margin: var(--kvass-form-title-margin, 0);
+    margin: var(--kvass-form-title-margin, 0 0 0.75rem 0);
   }
   &__description {
     p:first-child {
