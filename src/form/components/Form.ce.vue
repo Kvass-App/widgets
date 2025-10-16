@@ -217,7 +217,7 @@ const formSettings = computed(() => {
 
   return {
     ...defaultLabels,
-    ...customSettings,
+    ...(customSettings || {}),
   }
 })
 
