@@ -194,17 +194,30 @@ const style = computed(() => {
     '--grid-template-columns': cols,
   }
 })
+
+function kebabToCamel(str) {
+  return str.replace(/-./g, (match) => match[1].toUpperCase())
+}
+
 const formSettings = computed(() => {
   const defaultLabels = {
     submitButtonLabel: 'Send inn',
     formWidth: '700',
   }
 
-  const base = JSON.parse(props.settings) || {}
+  let customSettings = JSON.parse(props.settings)
+
+  if (customSettings) {
+    customSettings = Object.fromEntries(
+      Object.entries(customSettings).map(([key, value]) => {
+        return [kebabToCamel(key), value]
+      }),
+    )
+  }
 
   return {
     ...defaultLabels,
-    ...base,
+    ...customSettings,
   }
 })
 
