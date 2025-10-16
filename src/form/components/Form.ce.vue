@@ -194,17 +194,30 @@ const style = computed(() => {
     '--grid-template-columns': cols,
   }
 })
+
+function kebabToCamel(str) {
+  return str.replace(/-./g, (match) => match[1].toUpperCase())
+}
+
 const formSettings = computed(() => {
   const defaultLabels = {
     submitButtonLabel: 'Send inn',
     formWidth: '700',
   }
 
-  const base = JSON.parse(props.settings) || {}
+  let customSettings = JSON.parse(props.settings)
+
+  if (customSettings) {
+    customSettings = Object.fromEntries(
+      Object.entries(customSettings).map(([key, value]) => {
+        return [kebabToCamel(key), value]
+      }),
+    )
+  }
 
   return {
     ...defaultLabels,
-    ...base,
+    ...(customSettings || {}),
   }
 })
 
@@ -711,7 +724,7 @@ onMounted(() => {
 
   .k-formcontrol__label {
     text-transform: var(--kvass-form-label-transform);
-    font-weight: bold;
+    font-weight: var(--kvass-form-label-weight, bold);
   }
   .k-radiogroup--variant-radio {
     --k-radiogroup-accent: var(--_kvass-form-ui-color);
@@ -744,6 +757,9 @@ onMounted(() => {
       --k-checkbox-accent-contrast: var(--_kvass-form-ui-contrast-color);
       --k-checkbox-border-color: var(--_kvass-form-ui-contrast-color);
       border-color: var(--_kvass-form-ui-contrast-color);
+    }
+    &__label {
+      line-height: normal;
     }
   }
 }
