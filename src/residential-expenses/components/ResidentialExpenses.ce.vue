@@ -75,19 +75,21 @@ const convert = (value, type, base) => {
   }
 }
 
-const currency = (val) => {
+const currency = (val, options = {}) => {
+  const { rounding = (v) => v } = options
   return new Intl.NumberFormat(props.locale, {
     style: 'currency',
     currency: props.currency,
     maximumFractionDigits: 0,
-  }).format(val)
+  }).format(rounding(val))
 }
 
-const currencyShorter = (val) => {
+const currencyShorter = (val, options = {}) => {
+  const { rounding = (v) => v } = options
   return Intl.NumberFormat(props.locale, {
     notation: 'compact',
     maximumSignificantDigits: 6,
-  }).format(val)
+  }).format(rounding(val))
 }
 
 const getDivisor = (n, d = 10) => {
@@ -199,7 +201,7 @@ const getLabel = (key) => {
       <tr>
         <td>{{ getLabel('price') }}</td>
         <td>
-          {{ currency(total) }}
+          {{ currency(total, { rounding: Math.ceil }) }}
         </td>
       </tr>
     </table>
@@ -296,7 +298,9 @@ const getLabel = (key) => {
       <tr v-if="isVisible('jointDept')">
         <td>{{ getLabel('jointDept') }}</td>
         <td>
-          <span data-field="value">{{ currency(jointDept) }}</span>
+          <span data-field="value">{{
+            currency(jointDept, { rounding: Math.ceil })
+          }}</span>
         </td>
       </tr>
     </table>
@@ -313,14 +317,16 @@ const getLabel = (key) => {
           <td>{{ getLabel('jointDeptInterest') }}</td>
           <td>
             <span data-field="value">{{
-              currency(jointDeptInterestCost)
+              currency(jointDeptInterestCost, { rounding: Math.ceil })
             }}</span>
           </td>
         </tr>
         <tr v-if="operatingCosts">
           <td>{{ getLabel('operatingCosts') }}</td>
           <td>
-            <span data-field="value">{{ currency(operatingCosts) }}</span>
+            <span data-field="value">{{
+              currency(operatingCosts, { rounding: Math.ceil })
+            }}</span>
           </td>
         </tr>
       </tbody>
@@ -328,7 +334,9 @@ const getLabel = (key) => {
         <tr>
           <td>{{ getLabel('total') }}</td>
           <td>
-            <span data-field="value">{{ currency(monthlyCosts) }}</span>
+            <span data-field="value">{{
+              currency(monthlyCosts, { rounding: Math.ceil })
+            }}</span>
           </td>
         </tr>
       </tfoot>
@@ -347,7 +355,9 @@ const getLabel = (key) => {
           {{ getLabel('partOwnershipValueLabel') }}
         </td>
         <td>
-          <span data-field="value">{{ currency(partOwnershipDeposit) }}</span>
+          <span data-field="value">{{
+            currency(partOwnershipDeposit, { rounding: Math.ceil })
+          }}</span>
         </td>
       </tr>
     </table>
