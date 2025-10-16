@@ -751,10 +751,7 @@ onMounted(() => {
   .k-checkbox {
     display: grid !important;
     grid-template-columns: 1.3rem 1fr;
-    --k-checkbox-border-color: var(
-      --kvass-form-border-color,
-      var(--_kvass-form-ui-contrast-color)
-    );
+    --k-checkbox-border-color: var(--_kvass-form-ui-color);
     &[data-state='checked']:not([data-disabled]) [data-part='control'] {
       --k-checkbox-accent: var(--_kvass-form-ui-color);
       --k-checkbox-accent-contrast: var(--_kvass-form-ui-contrast-color);
