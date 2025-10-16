@@ -628,7 +628,7 @@ onMounted(() => {
   background-color: var(--kvass-form-background, transparent);
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
-  --_kvass-form-ui-color: var(--kvass-form-ui-color, var(--secondary));
+  --_kvass-form-ui-color: var(--kvass-form-ui-color, currentColor);
 
   --_kvass-form-ui-contrast-color: var(
     --kvass-form-ui-contrast-color,
@@ -757,6 +757,9 @@ onMounted(() => {
       --k-checkbox-accent-contrast: var(--_kvass-form-ui-contrast-color);
       --k-checkbox-border-color: var(--_kvass-form-ui-contrast-color);
       border-color: var(--_kvass-form-ui-contrast-color);
+    }
+    &__label {
+      line-height: normal;
     }
   }
 }
