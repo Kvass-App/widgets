@@ -255,5 +255,9 @@ const markerIcon = reactive({
   @media screen and (max-width: 680px) {
     aspect-ratio: var(--kvass-widgets-map-aspect-ratio-small-device, 1/1.4);
   }
+  .mapboxgl-ctrl-top-right {
+    right: var(--kvass-widgets-map-border-radius-top-right-gap, 0rem);
+    top: var(--kvass-widgets-map-border-radius-top-right-gap, 0rem);
+  }
 }
 </style>
