@@ -416,13 +416,14 @@ onMounted(getPosts)
     display: flex;
     align-items: flex-start;
     justify-content: center;
-
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
     .k-card {
       width: 100%;
       max-width: 75ch;
-      max-height: calc(100vh - 4rem);
+
       margin: 2rem;
-      overflow-y: auto;
+
       position: relative;
     }
 

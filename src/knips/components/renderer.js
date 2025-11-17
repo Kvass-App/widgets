@@ -12,7 +12,15 @@ const SpanStyles = {
 
 const RenderSpans = (block) => {
   if (!block.spans?.length) return block.text
-  return block.spans.flatMap((span) => RenderSpan(span, block))
+
+  let result = block.spans.flatMap((span) => RenderSpan(span, block))
+  //merge strings together to prevent comma splits
+  if (
+    result instanceof Array &&
+    (result || [])?.every((i) => typeof i === 'string')
+  )
+    result = [result.join(' ')]
+  return result
 }
 
 const RenderSpan = (span, block) => {
@@ -110,7 +118,6 @@ const getThumbnail = (item) => {
 }
 
 const ValidateBlocks = (item) => {
-  console.log(item)
   return item.blocks.every((block) => block.type in Blocks)
 }
 
