@@ -66,6 +66,9 @@ export default defineConfig({
         'kvass-form': fileURLToPath(
           new URL('./src/form/main.js', import.meta.url),
         ),
+        'kvass-storyfly': fileURLToPath(
+          new URL('./src/storyfly/main.js', import.meta.url),
+        ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
         finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
         directories: fileURLToPath(
