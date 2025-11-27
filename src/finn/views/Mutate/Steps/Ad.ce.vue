@@ -1896,6 +1896,27 @@ const saveDraft = () => {
                   }"
                 >
                 </Media>
+                <FormControl
+                  v-if="hasField('VIDEO_URL')"
+                  v-bind="validate('VIDEO_URL')"
+                  label="Video URL"
+                  :class="[
+                    'ad__field',
+                    { 'ad__field--edited': isEdited('VIDEO_URL') },
+                  ]"
+                >
+                  <Input v-model="data.VIDEO_URL">
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('VIDEO_URL').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('VIDEO_URL').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
               </template>
             </Expandable>
 
