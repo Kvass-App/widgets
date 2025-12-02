@@ -1,6 +1,6 @@
 <script setup>
-import { ImgComparisonSlider } from '@img-comparison-slider/vue';
-import { computed } from 'vue';
+import { ImgComparisonSlider } from '@img-comparison-slider/vue'
+import { computed } from 'vue'
 
 const defaultOptions = {
   value: 50,
@@ -16,18 +16,26 @@ function createImageObject(imageString) {
   const split = imageString.split(',')
   return {
     url: split[0],
-    description: split[1]
+    description: split[1],
   }
 }
 
 const props = defineProps({
   firstImage: {
     type: String,
-    default: 'https://assets.kvass.no/641c0b087c49867b0b1065ec,Første bilde'
+    default: 'https://assets.kvass.no/641c0b087c49867b0b1065ec,Første bilde',
+  },
+  firstAlt: {
+    type: String,
+    default: '',
   },
   secondImage: {
     type: String,
-    default: 'https://assets.kvass.no/641c0a8c7c49867b0b106570,Andre bilde'
+    default: 'https://assets.kvass.no/641c0a8c7c49867b0b106570,Andre bilde',
+  },
+  secondAlt: {
+    type: String,
+    default: '',
   },
 
   options: {
@@ -51,20 +59,33 @@ const secondImageCaption = computed(() => secondImage.description)
 
 // options
 const options = computed(() => {
-  const entries = props.options.split(',').map(entry => entry.split(':'))
+  const entries = props.options.split(',').map((entry) => entry.split(':'))
   return Object.fromEntries(entries)
 })
 </script>
 
 <template>
   <ImgComparisonSlider
-    :style="`--first-image-caption: ${firstImageCaption}; --second-image-caption: ${secondImageCaption}`" tabindex="0"
-    class="img-comparison-slider" v-bind="{
+    :style="`--first-image-caption: ${firstImageCaption}; --second-image-caption: ${secondImageCaption}`"
+    tabindex="0"
+    class="img-comparison-slider"
+    v-bind="{
       ...defaultOptions,
       ...options,
-    }">
-    <img slot="first" class="img-comparison-slider__image" :src="firstImage.url" />
-    <img slot="second" class="img-comparison-slider__image" :src="secondImage.url" />
+    }"
+  >
+    <img
+      slot="first"
+      class="img-comparison-slider__image"
+      :src="firstImage.url"
+      :alt="firstAlt"
+    />
+    <img
+      slot="second"
+      class="img-comparison-slider__image"
+      :src="secondImage.url"
+      :alt="secondAlt"
+    />
 
     <div slot="handle" class="handle">
       <p class="handle__caption handle__caption--left">
