@@ -1,20 +1,26 @@
 <script setup>
 import { Icon } from '@kvass/ui'
 import { computed } from 'vue'
+import { getFileUrl } from '../utils'
 
 const props = defineProps({
   value: Object,
   icons: Object,
+  proxy: String,
   variant: {
     type: String,
     default: 'default',
   },
 })
 
+const url = computed(() => {
+  return getFileUrl(props.value, props.proxy)
+})
+
 const icon = computed(() => {
   if (props.value.isDirectory) return { is: Icon, icon: props.icons.folder }
   if (props.value.type.startsWith('image/'))
-    return { is: 'img', src: props.value.url }
+    return { is: 'img', src: url.value.toString() }
   return { is: Icon, icon: props.icons[props.value.type] || props.icons.file }
 })
 </script>

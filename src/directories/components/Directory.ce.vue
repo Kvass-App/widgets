@@ -2,6 +2,7 @@
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Item from './Item.vue'
 import { Icon, Button, Input } from '@kvass/ui'
+import { getFileUrl } from '../utils'
 
 const props = defineProps({
   title: String,
@@ -12,6 +13,7 @@ const props = defineProps({
   search: {
     type: Boolean,
   },
+  proxy: String,
   icons: {
     type: Object,
     default: () => ({
@@ -119,7 +121,9 @@ const items = computed(() => {
 
 function onItemClick(item) {
   if (item.isDirectory) return (currentPath.value = item.path)
-  window.open(item.url, '_blank')
+
+  const url = getFileUrl(item, props.proxy)
+  window.open(url.toString(), '_blank')
 }
 
 const back = () =>
@@ -191,6 +195,7 @@ const back = () =>
         :key="item.url"
         :value="item"
         :icons="icons"
+        :proxy="proxy"
         :variant="searchInput.length ? 'breadcrumb' : 'default'"
         @click="() => onItemClick(item)"
       />
