@@ -56,7 +56,7 @@ const icon = computed(() => {
     justify-content: center;
     align-items: center;
 
-    background-color: var(--_k-directory-item-background);
+    background-color: var(--_k-directory-item-icon-background);
     border-radius: var(--_k-directory-border-radius);
   }
 
@@ -91,7 +91,7 @@ const icon = computed(() => {
       grid-area: icon;
       aspect-ratio: 1;
       width: 100%;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
     }
 
     .k-directory-item__label {

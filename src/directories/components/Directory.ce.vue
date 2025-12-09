@@ -10,10 +10,9 @@ const props = defineProps({
     type: String,
     default: '[]',
   },
-  search: {
-    type: Boolean,
-  },
+  search: Boolean,
   proxy: String,
+  layout: String,
   icons: {
     type: Object,
     default: () => ({
@@ -55,9 +54,10 @@ onMounted(() => {
 const layout = ref('list')
 const searchInput = ref('')
 
-const layoutComputed = computed(() =>
-  searchInput.value ? 'list' : layout.value,
-)
+const layoutComputed = computed(() => {
+  if (props.layout) return props.layout
+  return searchInput.value ? 'list' : layout.value
+})
 
 const currentPathSplitted = computed(() => currentPath.value.split('/'))
 
@@ -141,13 +141,15 @@ const back = () =>
           <Icon icon="fa-pro-light:search" />
         </div>
 
-        <Button
-          v-for="l in ['grid', 'list']"
-          @click="layout = l"
-          :disabled="searchInput.length"
-          :icon="`fa-pro-solid:${l}`"
-          variant="primary"
-        />
+        <template v-if="!props.layout">
+          <Button
+            v-for="l in ['grid', 'list']"
+            @click="layout = l"
+            :disabled="searchInput.length"
+            :icon="`fa-pro-solid:${l}`"
+            variant="primary"
+          />
+        </template>
       </div>
     </div>
 
@@ -207,10 +209,36 @@ const back = () =>
 @import url('@kvass/ui/style.css');
 
 .k-directory {
+  --_k-directory-text-color: var(--k-directory-text-color, currentColor);
   --_k-directory-item-background: var(
     --k-directory-item-background,
-    rgb(255 255 255 / 0.05)
+    rgb(0 0 0 / 0.05)
   );
+  --_k-directory-item-background-even: var(
+    --k-directory-item-background-even,
+    rgb(0 0 0 / 0.02)
+  );
+  --_k-directory-item-icon-background: var(
+    --k-directory-item-icon-background,
+    rgb(0 0 0 / 0.02)
+  );
+  --_k-directory-primary-background: var(
+    --k-directory-primary-background,
+    var(--_k-directory-item-background)
+  );
+  --_k-directory-primary-color: var(
+    --k-directory-primary-color,
+    var(--_k-directory-text-color)
+  );
+  --_k-directory-primary-background-hover: var(
+    --k-directory-primary-background-hover,
+    var(--_k-directory-primary-background)
+  );
+  --_k-directory-primary-background-active: var(
+    --k-directory-primary-background-active,
+    var(--_k-directory-primary-background)
+  );
+  --_k-directory-primary: var(--k-directory-item-background, rgb(0 0 0 / 0.05));
   --_k-directory-items-gap: var(--k-directory-items-gap, 1.5rem);
   --_k-directory-item-grid-gap: var(--k-directory-item-grid-gap, 0.5rem);
   --_k-directory-item-list-gap: var(--k-directory-item-list-gap, 1rem);
@@ -222,7 +250,16 @@ const back = () =>
   --_k-directory-title-size: var(--k-directory-title-size, 1.5rem);
   --_k-directory-title-weight: var(--k-directory-title-weight, normal);
 
-  --k-button-primary-background: var(--_k-directory-item-background);
+  --k-button-primary-background: var(--_k-directory-primary-background);
+  --k-button-primary-background-hover: var(
+    --_k-directory-primary-background-hover
+  );
+  --k-button-primary-background-active: var(
+    --_k-directory-primary-background-active
+  );
+  --k-button-primary-text: var(--_k-directory-primary-color);
+
+  color: var(--_k-directory-text-color);
 
   &__header {
     display: flex;
@@ -239,7 +276,7 @@ const back = () =>
 
   &__layout-settings {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
   }
 
   &__breadcrumbs {
@@ -251,7 +288,7 @@ const back = () =>
     margin-bottom: 0.5rem;
 
     svg {
-      color: white;
+      color: var(--k-button-primary-text);
     }
   }
 
@@ -266,8 +303,12 @@ const back = () =>
       display: flex;
       flex-direction: column;
 
-      .k-directory-item:nth-child(even) {
+      .k-directory-item:nth-child(odd) {
         background-color: var(--_k-directory-item-background);
+      }
+
+      .k-directory-item:nth-child(even) {
+        background-color: var(--_k-directory-item-background-even);
       }
     }
   }
