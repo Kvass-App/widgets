@@ -259,6 +259,10 @@ onMounted(getPosts)
     }
   }
   .k-card {
+    border-radius: var(
+      --knips-feed-card-border-radius,
+      var(--k-ui-rounding-lg)
+    );
     background-color: var(--background, #fff);
     display: flex;
     flex-direction: column;
