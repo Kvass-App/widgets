@@ -23,9 +23,17 @@ import Position from './Fields/Position.vue'
 import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
 
-function flattenToSingleLevel(obj, result = {}) {
+function flattenToSingleLevel(
+  obj,
+  result = {},
+  options = { fields: [], exclude: [] },
+) {
+  const { fields = [], exclude = [] } = options
+
   for (let key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    const currentField = fields.find((i) => i.key === key)
+    if (exclude.includes(currentField?.component)) result[key] = obj[key]
+    else if (Object.prototype.hasOwnProperty.call(obj, key)) {
       const value = obj[key]
       if (
         typeof value === 'object' &&
@@ -476,7 +484,14 @@ function resetForm() {
 function submit() {
   if (!formIsValid.value) return
   const dataToSubmit = {
-    ...flattenToSingleLevel(data.value),
+    ...flattenToSingleLevel(
+      data.value,
+      {},
+      {
+        exclude: ['file'],
+        fields: formFields.value?.fields,
+      },
+    ),
     scopes: props.scopes?.length ? JSON.parse(props.scopes) : null,
   }
 
