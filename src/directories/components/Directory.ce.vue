@@ -123,7 +123,14 @@ function onItemClick(item) {
   if (item.isDirectory) return (currentPath.value = item.path)
 
   const url = getFileUrl(item, props.proxy)
-  window.open(url.toString(), '_blank')
+  const link = document.createElement('a')
+  link.href = url.toString()
+  link.download = item.name || ''
+  link.style.position = 'absolute'
+  link.style.left = '-9999px'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 const back = () =>
