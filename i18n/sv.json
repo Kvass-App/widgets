@@ -1,6 +1,7 @@
 {
   "cancel" : "Avbryt",
   "confirm" : "Bekräfta",
+  "copy" : "Kopiera",
   "delete" : "Radera",
   "email" : "E-post",
   "fa-pro-brands" : "Varumärkesikoner",
@@ -10,6 +11,7 @@
   "fa-pro-solid" : "Ikoner med heltäckande färg",
   "fileDropAreaMessage" : "Dra en fil hit eller <b>välj</b> för att ladda upp",
   "fileSizeError" : "filen / filerna är för stora",
+  "fileUpload" : "Filuppladdning",
   "fontAssociatedWithSelectedThemeTemplate" : "Typsnitt kopplat till vald temamall",
   "fontForBody" : "Teckensnitt för brödtext",
   "fontForHeading" : "Teckensnitt för titel",
@@ -39,5 +41,6 @@
   "showAll" : "Visa alla",
   "showAllGoogleFonts" : "Visa alla Google-typsnitt",
   "somethingWentWrong" : "Ett fel inträffade",
-  "submit" : "Skicka in {x}"
+  "submit" : "Skicka in {x}",
+  "uploadFont" : "Ladda upp teckensnitt"
 }

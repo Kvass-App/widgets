@@ -1,6 +1,7 @@
 {
   "cancel" : "Afbryd",
   "confirm" : "Bekræft",
+  "copy" : "Kopier",
   "delete" : "Slet",
   "email" : "E-mail",
   "fa-pro-brands" : "Mærkevareikoner",
@@ -10,6 +11,7 @@
   "fa-pro-solid" : "Ikoner med heldækkende farve",
   "fileDropAreaMessage" : "Træk en fil over eller <b>vælg</b> for at låse op",
   "fileSizeError" : "filen / filene er for store",
+  "fileUpload" : "Filupload",
   "fontAssociatedWithSelectedThemeTemplate" : "Font tilknyttet den valgte temaskabelon",
   "fontForBody" : "Skrifttype til tekst",
   "fontForHeading" : "Skrifttype til titel",
@@ -39,5 +41,6 @@
   "showAll" : "Vis alle",
   "showAllGoogleFonts" : "Vis alle Google-skrifttyper",
   "somethingWentWrong" : "Noget gik galt",
-  "submit" : "Indsend {x}"
+  "submit" : "Indsend {x}",
+  "uploadFont" : "Upload skrifttype"
 }

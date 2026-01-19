@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useCurrentElement } from '@vueuse/core'
 import { getProviders } from '../providers.js'
 import WebFontLoader from 'webfontloader'
+import FontFaces from './FontFaces.ce.vue'
 
 import {
   Alert,
@@ -55,6 +56,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  enableFontUpload: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const items = ref([])
@@ -62,6 +67,8 @@ const allData = ref([])
 const showAllFonts = ref(false)
 const search = ref('')
 const selectedSource = ref('')
+const fontFaces = ref('')
+
 const type = ref('google')
 
 const openList = ref(false)
@@ -106,13 +113,14 @@ const selectedProvider = computed(() => {
 })
 
 function update(font) {
-  if (!font) font = selectedFont.value
+  if (!font) font = selectedFont.value || ''
 
   element.value.dispatchEvent(
     new CustomEvent('webcomponent:update', {
       detail: {
+        fontFaces: fontFaces.value,
         source: selectedSource.value,
-        font,
+        font: font.trim(),
         provider: type.value?.[0] || selectedProvider.value,
       },
       bubbles: true,
@@ -126,31 +134,42 @@ function triggerSearch(newValue = '') {
   if (newValue !== selectedFont.value) {
     openList.value = true
   }
-
   if (!allData.value.length) {
     return getData()
   }
-
   if (typeof newValue !== 'string') return
-
   items.value = allData.value.filter((i) => {
     return i.label.toLowerCase().startsWith(newValue?.toLowerCase())
   })
 }
+
+watch(
+  () => [fontFaces.value, selectedFont.value],
+  () => {
+    if (!type.value.includes('font-faces') || !selectedFont.value) return
+
+    loadFontFaces()
+  },
+  { deep: true },
+)
 watch(type, (newType) => {
   if (!newType || newType?.[0] === selectedProvider.value) return
-
   selectedFont.value = null
-})
-watch(selectedSource, (source) => {
-  if (!source) return
 
-  // emit custom event
-  update()
+  reset()
 })
+
+watch(
+  () => [selectedSource.value, fontFaces.value],
+  (newVal) => {
+    if (!newVal) return
+    // emit custom event
+    update()
+  },
+  { deep: true },
+)
 watch(selectedFont, (newFont) => {
   if (!newFont) return
-
   // emit custom event
   update(newFont)
 })
@@ -175,6 +194,44 @@ function onFocus() {
   }
   openList.value = true
 }
+
+function reset() {
+  fontFaces.value = ''
+  selectedFont.value = ''
+  selectedSource.value = ''
+}
+
+function loadFontFaces() {
+  const value = fontFaces.value
+  if (!value) return
+
+  //load preview of fontFace
+  const fontName = selectedFont.value
+  if (!fontName) return
+
+  value?.forEach((fontface) => {
+    if (!fontface?.value?.url) return
+
+    const font = new FontFace(
+      fontName,
+      `url(${fontface?.value?.url})`,
+
+      {
+        weight: fontFaces.fontWeight,
+        style: 'normal',
+      },
+    )
+
+    font
+      .load()
+      .then((loadedFont) => {
+        document.fonts.add(loadedFont)
+      })
+      .catch((error) => {
+        console.error('Font loading failed:', error)
+      })
+  })
+}
 function loadFonts() {
   // Initialize WebFontLoader
   const config = Object.fromEntries(
@@ -188,7 +245,6 @@ function loadFonts() {
       },
     ]),
   )
-
   WebFontLoader.load(config)
 }
 
@@ -250,6 +306,8 @@ async function getData() {
 
 onMounted(() => {
   selectedSource.value = valueComp.value?.source || ''
+  fontFaces.value = valueComp.value?.fontFaces || ''
+
   type.value = [selectedProvider.value]
   if (!selectedProvider.value) throw new Error('Invalid font provider')
 
@@ -270,12 +328,26 @@ onMounted(() => {
     </label>
 
     <ButtonGroup
-      v-if="enableAdobeFont"
+      class="kvass-font-selector__type"
+      v-if="enableAdobeFont || enableFontUpload"
       v-model="type"
-      :items="[
-        { id: 'google', label: 'Google', icon: 'simple-icons:googlefonts' },
-        { id: 'adobe', label: 'Adobe', icon: 'logos:adobe-icon' },
-      ]"
+      :items="
+        [
+          { id: 'google', label: 'Google', icon: 'simple-icons:googlefonts' },
+          {
+            id: 'adobe',
+            label: 'Adobe',
+            icon: 'logos:adobe-icon',
+            condition: enableAdobeFont,
+          },
+          {
+            id: 'font-faces',
+            label: Translate('fileUpload'),
+            icon: 'material-symbols:upload-rounded',
+            condition: enableFontUpload,
+          },
+        ].filter((i) => (i.condition ? i.condition : true))
+      "
     />
     <div class="kvass-font-selector__content">
       <FormControl :label="Translate('link')" v-if="type.includes('adobe')">
@@ -285,10 +357,27 @@ onMounted(() => {
         >
         </Input>
       </FormControl>
-      <FormControl label="Font Family" v-if="type.includes('adobe')">
-        <Input v-model="selectedFont" placeholder="chaparral-pro"> </Input>
+
+      <FormControl
+        label="Font Family"
+        v-if="['font-faces', 'adobe'].find((i) => i.includes(type))"
+      >
+        <Input
+          v-model="selectedFont"
+          :placeholder="
+            type.includes('adobe') ? 'chaparral-pro' : 'Playfair Display'
+          "
+        >
+        </Input>
       </FormControl>
-      <Grid v-else :style="'padding:1rem 0'" columns="1">
+
+      <FontFaces v-if="type.includes('font-faces')" v-model="fontFaces" />
+
+      <Grid
+        v-if="type.includes('google')"
+        :style="'padding:1rem 0'"
+        columns="1"
+      >
         <FormControl :label="Translate('selectOrSearchForFont')">
           <Input v-model="search" @focus="onFocus" @blur="onBlur">
             <template #suffix>
@@ -323,11 +412,14 @@ onMounted(() => {
       <small class="kvass-font-selector__preview-label">{{
         Translate('fontPreview')
       }}</small>
+
       <Alert
         v-if="
           type.includes('adobe') ||
           props.disablePreviewOn.includes(selectedFont) ||
-          selectedFont === ''
+          (type.includes('google') && selectedFont === '') ||
+          (type.includes('font-faces') &&
+            (!fontFaces?.[0]?.value || selectedFont === ''))
         "
         variant="neutral"
       >
@@ -382,15 +474,17 @@ onMounted(() => {
     var(--__kvass-font-selector-max-width)
   );
 
-  .k-buttongroup {
-    border-color: var(--__kvass-font-selector-border-color);
-    border: none;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    .k-button {
-      font-size: 1rem !important;
-      border: 1px solid var(--__kvass-font-selector-border-color);
-      border-bottom: none;
+  &__type {
+    &.k-buttongroup {
+      border-color: var(--__kvass-font-selector-border-color);
+      border: none;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      .k-button {
+        font-size: 1rem !important;
+        border: 1px solid var(--__kvass-font-selector-border-color);
+        border-bottom: none;
+      }
     }
   }
   &__content {

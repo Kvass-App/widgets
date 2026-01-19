@@ -1,6 +1,7 @@
 {
   "cancel" : "Annuler",
   "confirm" : "Confirmer",
+  "copy" : "Copier",
   "delete" : "Supprimer",
   "email" : "E-mail",
   "fa-pro-brands" : "Icônes de marque",
@@ -10,6 +11,7 @@
   "fa-pro-solid" : "Icônes avec couleur pleine",
   "fileDropAreaMessage" : "Faites glisser un fichier ici ou \n          <b>velg</b> pour télécharger\n        ",
   "fileSizeError" : "le fichier / les fichiers sont trop volumineux",
+  "fileUpload" : "Téléchargement de fichier",
   "fontAssociatedWithSelectedThemeTemplate" : "Police associée au modèle de thème sélectionné",
   "fontForBody" : "Police pour le texte de contenu",
   "fontForHeading" : "Police pour le titre",
@@ -40,5 +42,6 @@
   "showAll" : "Afficher tout",
   "showAllGoogleFonts" : "Afficher toutes les polices Google",
   "somethingWentWrong" : "Quelque chose a mal tourné",
-  "submit" : "Soumettre {x}"
+  "submit" : "Soumettre {x}",
+  "uploadFont" : "Téléverser une police"
 }

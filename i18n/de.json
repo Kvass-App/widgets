@@ -1,6 +1,7 @@
 {
   "cancel" : "Abbrechen",
   "confirm" : "Bestätigen",
+  "copy" : "Kopieren",
   "delete" : "Löschen",
   "email" : "E-Mail",
   "goBack" : "Zurückgehen",
@@ -15,5 +16,6 @@
   "privacy" : "Datenschutzerklärung",
   "select" : "Auswählen",
   "showAll" : "Alle anzeigen",
-  "somethingWentWrong" : "Etwas ist schiefgelaufen"
+  "somethingWentWrong" : "Etwas ist schiefgelaufen",
+  "uploadFont" : "Schriftart hochladen"
 }

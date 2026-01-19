@@ -1,6 +1,7 @@
 {
   "cancel" : "Avbryt",
   "confirm" : "Bekreft",
+  "copy" : "Kopier",
   "delete" : "Slett",
   "email" : "E-post",
   "fa-pro-brands" : "Merkevare ikoner",
@@ -10,6 +11,7 @@
   "fa-pro-solid" : "Ikoner med heldekkende farge",
   "fileDropAreaMessage" : "Dra en fil hit eller <b>velg</b> for å laste opp",
   "fileSizeError" : "filen / filene er for store",
+  "fileUpload" : "Filopplastning",
   "fontAssociatedWithSelectedThemeTemplate" : "Font tilknyttet valgt tema mal",
   "fontForBody" : "Skrifttype for mengdetekst",
   "fontForHeading" : "Skrifttype for tittel",
@@ -40,5 +42,6 @@
   "showAll" : "Vis alle",
   "showAllGoogleFonts" : "Vis alle Google fonts",
   "somethingWentWrong" : "Noe gikk galt",
-  "submit" : "Send inn {x}"
+  "submit" : "Send inn {x}",
+  "uploadFont" : "Last opp skrifttype"
 }
