@@ -451,6 +451,10 @@ const formFields = computed(() => {
   }
 })
 
+const hasLeadFields = computed(() => {
+  const fields = JSON.parse(props.fields)
+  return (fields || [])?.some((i) => i?.component === 'lead')
+})
 watch(
   () => data.value,
   (newValue) => {
@@ -504,6 +508,25 @@ function submit() {
   )
     .then(() => {
       submitted.value = true
+
+      //emit track events to KvassApi if defined
+      if (typeof Kvass !== 'undefined') {
+        if (hasLeadFields?.value) {
+          Kvass.emit('track', {
+            event: 'lead',
+            data: dataToSubmit,
+          })
+        }
+        Kvass.emit('track', {
+          event: 'form',
+          data: dataToSubmit,
+        })
+        Kvass.emit('track', {
+          event: `form:${window?.location?.pathname?.replace('/', '')}`,
+          data: dataToSubmit,
+        })
+      }
+
       setTimeout(() => {
         submitted.value = false
         resetForm()
