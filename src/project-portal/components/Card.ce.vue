@@ -58,8 +58,7 @@
 
 <script setup>
 import Category from './Category.ce.vue'
-import { ref } from 'vue'
-import { computed } from '@vue/reactivity'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   item: {
