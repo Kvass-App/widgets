@@ -11,8 +11,8 @@ import {
   Scroller,
   Skeleton,
 } from '@kvass/ui'
-import { refDebounced, useCurrentElement } from '@vueuse/core'
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { refDebounced } from '@vueuse/core'
+import { computed, onBeforeMount, ref, watch, getCurrentInstance } from 'vue'
 import { useIconApi } from '../composables/useIconApi.js'
 
 import Collection from './Collection.ce.vue'
@@ -81,10 +81,11 @@ function update() {
   selectedIcon.value = selectedIconUnsaved.value
 }
 
-const element = useCurrentElement()
+const instance = getCurrentInstance()
+const element = computed(() => instance?.vnode?.el)
 
 watch(selectedIcon, async (icon) => {
-  if (!icon) return
+  if (!icon || !element?.value) return
 
   // emit custom event
   element.value.dispatchEvent(
