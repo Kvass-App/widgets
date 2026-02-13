@@ -796,5 +796,88 @@ onMounted(() => {
       line-height: normal;
     }
   }
+
+  .k-button {
+    &--variant-primary {
+      border-color: var(--k-button-primary-border, transparent) !important;
+    }
+  }
+
+  /* Buttons from richtext fields */
+  a[data-cta] {
+    font-size: var(--k-button-medium-font-size, 1rem);
+    padding-block: var(
+      --k-button-medium-padding-block,
+      calc(var(--k-ui-spacing) * 0.7)
+    );
+    padding-inline: var(--k-button-medium-padding-inline, var(--k-ui-spacing));
+    border-radius: var(--k-button-border-radius, var(--border-radius));
+    text-decoration: none;
+    display: inline-block;
+    line-height: 1;
+    border: 1px solid transparent;
+  }
+
+  a[data-cta='primary'] {
+    color: var(--k-button-primary-text, white);
+    border-color: var(--k-button-primary-border, transparent);
+    background-color: var(--k-button-primary-background, #3a9acd);
+
+    &:hover {
+      background-color: var(--k-button-primary-background-hover);
+    }
+  }
+
+  a[data-cta='secondary'] {
+    color: var(--k-button-secondary-text, white);
+    border-color: var(--k-button-secondary-border, transparent);
+    background-color: var(--k-button-secondary-background, #3a9acd);
+
+    &:hover {
+      background-color: var(--k-button-secondary-background-hover);
+    }
+  }
+  // Reset
+  :where(a):not(.k-button) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:is(:hover, :focus-visible) {
+      text-decoration-color: initial;
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  :root {
+    --kvass-table-default-table-padding: 0.5rem;
+    --kvass-table-default-table-width: 100%
+      --kvass-table-default-border-collapse: collapse;
+    --kvass-table-default-border: 1px solid var(--kvass-table-default-color);
+    --kvass-table-default-background-color-even: white;
+    --kvass-table-default-background-color-odd: rgb(239, 239, 239);
+    --kvass-table-default-color: black;
+
+    --kvass-table-default-background-color-header: var(--primary-color);
+    --kvass-table-default-color: var(--primary-contrast);
+  }
+
+  .rich-text-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background-color: var(--primary);
+      color: var(--kvass-table-default-color);
+      padding: var(--kvass-table-default-table-padding);
+      border: var(--kvass-table-default-border);
+    }
+
+    td {
+      padding: var(--kvass-table-default-table-padding);
+      border: var(--kvass-table-default-border);
+      background-color: var(--kvass-table-default-background-color-even);
+      color: black;
+    }
+  }
 }
 </style>
