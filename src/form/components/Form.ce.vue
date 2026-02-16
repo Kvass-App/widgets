@@ -61,7 +61,7 @@ const componentMap = {
   checklist: CheckList,
   file: File,
   date: Date,
-  privacy: Checkbox,
+  privacy: 'span',
   header: Header,
   position: Position,
 }
@@ -245,8 +245,6 @@ function updateValue(key, value) {
 
 function getValidation(item) {
   switch (item.component) {
-    case 'privacy':
-      return 'accepted'
     case 'email':
       return item.required === 'yes' ? 'required|email' : 'email'
     case 'phone':
@@ -343,11 +341,9 @@ function getFieldOptions(i, key) {
       return base
     case 'privacy':
       base.options.slot = `<span  class='kvass-form__privacy'
-          >${base.label || t('leadPrivacy', [''])}
+          >${base.label || t('leadPrivacyInfo', [''])}
           <a  href="${privacyUrlComp.value}" target="_blank">
-            ${t(
-              'privacy',
-            ).toLowerCase()} <span class='kvass-form__checkbox--required'> * </span>
+            ${t('privacyPolicyTitle').toLowerCase()} 
           </a>
         </span>`
       return base
@@ -583,10 +579,10 @@ onMounted(() => {
   >
     <div class="kvass-form__wrapper">
       <Header
-        :title="!formSettings?.['hide-title'] ? props.title : ''"
+        :title="!formSettings?.hideTitle ? props.title : ''"
         :description="props.description"
         title-tag="h2"
-        :center="formSettings?.['center-heading']"
+        :center="formSettings?.centerHeading"
       />
       <form class="kvass-form__form" @submit.prevent="submit">
         <div class="kvass-form__content" :style="style">

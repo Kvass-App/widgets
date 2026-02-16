@@ -4,7 +4,6 @@ import fr from '../../i18n/fr.json'
 import da from '../../i18n/da.json'
 import sv from '../../i18n/sv.json'
 
-
 import Hash from 'object-hash'
 import { VueComponentUpload as upload } from '@kvass/storage'
 
@@ -57,7 +56,6 @@ function LoadScript(src, options = { type: 'text/javascript' }) {
 }
 
 function Translate(key, plural = 1, options = {}) {
-
   const messages = { en, nb, fr, da, sv }
 
   const lang = document.documentElement.getAttribute('lang') || 'nb'
@@ -72,8 +70,7 @@ function Translate(key, plural = 1, options = {}) {
     const splitPattern = /\{.*?\}/
     const replaceValues = value.match(splitPattern)
 
-
-    replaceValues.forEach((i, index) => {
+    replaceValues?.forEach((i, index) => {
       value = value.replace(i, options[index])
     })
   }
@@ -218,37 +215,37 @@ const parse = (v) => {
 
 const getLabel =
   (v = {}, d = {}) =>
-    (key) =>
-      parse(v)[key] || d[key] || key
+  (key) =>
+    parse(v)[key] || d[key] || key
 
 const format =
   (type, options = {}) =>
-    (value) => {
-      switch (type) {
-        case 'currency':
-          const { locale, ...rest } = options
-          return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            maximumFractionDigits: 0,
-            ...rest,
-          }).format(value)
-        case 'number':
-          return new Intl.NumberFormat(options.locale).format(value)
-        case 'year':
-        case 'years':
-          return [
-            value,
-            new Intl.RelativeTimeFormat(options.locale)
-              .formatToParts(value, 'year')
-              .at(-1).value,
-          ].join(' ')
-        case 'percent':
-          const { maximumFractionDigits = 0 } = options
-          return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
-        default:
-          return value
-      }
+  (value) => {
+    switch (type) {
+      case 'currency':
+        const { locale, ...rest } = options
+        return new Intl.NumberFormat(locale, {
+          style: 'currency',
+          maximumFractionDigits: 0,
+          ...rest,
+        }).format(value)
+      case 'number':
+        return new Intl.NumberFormat(options.locale).format(value)
+      case 'year':
+      case 'years':
+        return [
+          value,
+          new Intl.RelativeTimeFormat(options.locale)
+            .formatToParts(value, 'year')
+            .at(-1).value,
+        ].join(' ')
+      case 'percent':
+        const { maximumFractionDigits = 0 } = options
+        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+      default:
+        return value
     }
+  }
 
 const getCurrencyInputProps = (options = {}) => {
   const { locale, currency } = options
