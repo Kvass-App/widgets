@@ -16,6 +16,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  key: {
+    type: String,
+    default: 'position',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -34,7 +38,7 @@ function update(event) {
 
   emit('update:modelValue', {
     address: value.formatted,
-    placement: coordinates[0]
+    [props.key]: coordinates[0]
       ? `https://maps.google.com/maps?q=${coordinates[1]},${coordinates[0]}`
       : '',
   })

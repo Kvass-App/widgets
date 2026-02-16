@@ -616,6 +616,7 @@ onMounted(() => {
                 v-model="data[field.key]"
                 @blur="onBlur(field.key)"
                 :label="getLabel(field.key, field.component)"
+                :key="field.key"
               >
                 <template v-if="field?.options?.slot" #default>
                   <span v-html="field?.options?.slot"></span>
