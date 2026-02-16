@@ -579,10 +579,10 @@ onMounted(() => {
   >
     <div class="kvass-form__wrapper">
       <Header
-        :title="!formSettings?.['hide-title'] ? props.title : ''"
+        :title="!formSettings?.hideTitle ? props.title : ''"
         :description="props.description"
         title-tag="h2"
-        :center="formSettings?.['center-heading']"
+        :center="formSettings?.centerHeading"
       />
       <form class="kvass-form__form" @submit.prevent="submit">
         <div class="kvass-form__content" :style="style">
