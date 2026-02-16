@@ -16,7 +16,7 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  key: {
+  fieldKey: {
     type: String,
     default: 'position',
   },
@@ -38,7 +38,7 @@ function update(event) {
 
   emit('update:modelValue', {
     address: value.formatted,
-    [props.key]: coordinates[0]
+    [props.fieldKey]: coordinates[0]
       ? `https://maps.google.com/maps?q=${coordinates[1]},${coordinates[0]}`
       : '',
   })
