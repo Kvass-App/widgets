@@ -103,15 +103,13 @@ const options = computed(() => {
 .img-comparison-slider {
   width: 100%;
   height: 100%;
+  border-radius: var(
+    --img-comparison-slider-border-radius,
+    var(--custom-border-radius, 0)
+  );
 
   --divider-width: 4px;
   --divider-color: black;
-
-  // aspect-ratio: var(--kvass-img-comparison-slider-aspect-ratio, $aspect-ratio);
-  //   aspect-ratio: var(
-  //     --kvass-img-comparison-slider-aspect-ratio,
-  //     $aspect-ratio
-  //   );
 
   &__image {
     width: 100%;
