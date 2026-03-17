@@ -167,7 +167,10 @@ onMounted(() => {
     z-index: 99999;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
-    padding-bottom: env(safe-area-inset-bottom);
+
+    @media screen and (min-width: 680px) {
+      padding: 2rem;
+    }
 
     &--show {
       display: flex;
@@ -176,24 +179,30 @@ onMounted(() => {
 
     &-content {
       position: relative;
-      background: #fff;
       padding: 0;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100vw;
-      height: 100dvh;
+      aspect-ratio: 1;
+      flex-grow: 1;
+      height: 100%;
+
+      @media screen and (min-width: 680px) {
+        height: initial;
+        aspect-ratio: 4 / 3;
+      }
     }
 
     &-close {
       $size: 30px;
       $offset: 30px;
+      $fontSize: 23px;
 
       position: absolute;
       top: 10px;
       right: 10px;
-      font-size: 23px;
+      font-size: $fontSize;
 
       cursor: pointer;
       background: #fff;
@@ -209,11 +218,7 @@ onMounted(() => {
       border: none;
       z-index: 10;
       display: block;
-      line-height: normal;
-      @media screen and (max-width: 680px) {
-        top: calc(#{$size} + #{$offset});
-        right: 12px;
-      }
+      line-height: $fontSize;
     }
 
     iframe {
