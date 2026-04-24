@@ -18,6 +18,7 @@ const API = useAPI(element)
 
 const modelValue = defineModel<Ad>({ default: {} })
 
+const error = ref(false)
 const message = ref('')
 
 const stepper = ref()
@@ -72,13 +73,14 @@ const publish = () => {
       })
 
       response.on('error', (data) => {
+        error.value = true
         stepper.value.goto('error')
       })
 
       response.on('finished', () => {
         response.cancel()
 
-        if (stepper.value.meta.current === 'error') return
+        if (stepper.value.meta.current === 'error' || error.value) return
 
         stepper.value.goto('success')
       })
