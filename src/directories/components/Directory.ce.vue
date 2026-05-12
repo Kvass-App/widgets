@@ -109,11 +109,15 @@ const getFolderContent = (path = '') => {
 const items = computed(() => {
   if (searchInput.value) {
     return value
-      .flatMap((v) => v.files)
-      .map((file) => ({ ...file, fullPath: `${item.path}/${file.name}` }))
-      .filter((item) => new RegExp(searchInput.value, 'i').test(item.fullPath))
       .filter(filterByRole)
-      .forEach((item) => files.push(item))
+      .flatMap((v) =>
+        v.files.filter(filterByRole).map((file) => ({
+          ...file,
+          isDirectory: false,
+          fullPath: v.path ? `${v.path}/${file.name}` : file.name,
+        })),
+      )
+      .filter((item) => new RegExp(searchInput.value, 'i').test(item.fullPath))
   }
 
   return getFolderContent(currentPath.value)
