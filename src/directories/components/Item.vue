@@ -20,16 +20,13 @@ const url = computed(() => {
 const icon = computed(() => {
   if (props.value.isDirectory) return { is: Icon, icon: props.icons.folder }
   if (props.value.type.startsWith('image/'))
-    return { is: 'img', src: url.value.toString() }
+    return { is: 'img', src: url.value.toString(), loading: 'lazy' }
   return { is: Icon, icon: props.icons[props.value.type] || props.icons.file }
 })
 </script>
 
 <template>
-  <div
-    :class="['k-directory-item', `k-directory-item--variant-${variant}`]"
-    v-on="$listeners"
-  >
+  <div :class="['k-directory-item', `k-directory-item--variant-${variant}`]">
     <div class="k-directory-item__icon">
       <component :is="icon.is" v-bind="icon" />
     </div>
