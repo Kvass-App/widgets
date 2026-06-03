@@ -68,6 +68,8 @@ const props = withDefaults(
 </template>
 
 <style lang="scss">
+@import url('@kvass/ui/style.css');
+@import url('@kvass/elements/style.css');
 @import url('@kvass/unit-selector/style.css');
 // https://help.kvass.no/nb/articles/301111-embed-unit-selector
 
