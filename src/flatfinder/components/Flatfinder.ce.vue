@@ -1,74 +1,78 @@
-<script setup>
-import { Flatfinder as FlatfinderComponent } from '@kvass/vue3-flatfinder'
-import { LazyLoad } from '@kvass/ui'
+<script setup lang="ts">
+import { UnitSelector as FlatfinderComponent } from '@kvass/unit-selector'
 
-const props = defineProps({
-  projectUrl: {
-    type: String,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    projectUrl: string
+    projectId: string
+
+    clientUrl?: string
+    draftId?: string
+
+    flatfinderId?: string
+    currentUnitId?: string
+    pathPrefix?: string
+    filterParamsPrefix?: string
+
+    title?: string
+    subtitle?: string
+
+    lazyload?: boolean
+    smallScreenBreakpoint?: number
+
+    layout?: 'top' | 'right' | 'bottom' | 'left'
+    hoverCardLayout?: 'top' | 'right' | 'bottom' | 'left'
+
+    hideTotalPrice?: boolean
+    hideRegisterInterest?: boolean
+    hideIllustrationDisclaimer?: boolean
+    hideFavorites?: boolean
+    hideHelp?: boolean
+    hideFilter?: boolean
+    hideUnitLists?: boolean
+
+    showFloorplan?: boolean
+  }>(),
+  {
+    lazyload: true,
   },
-  projectId: {
-    type: String,
-    required: true,
-  },
-  pathPrefix: {
-    type: String,
-    default: '',
-  },
-  showResidentialList: {
-    type: Boolean,
-    default: false,
-  },
-  relationPlacement: {
-    type: String,
-    default: 'bottom',
-    enums: ['top', 'bottom '],
-  },
-})
+)
 </script>
 
 <template>
-  <LazyLoad>
-    <FlatfinderComponent
-      class="kvass-flatfinder"
-      :project-url="projectUrl"
-      :project-id="projectId"
-      :path-prefix="pathPrefix"
-      :show-residential-list="showResidentialList"
-      :relationPlacement="relationPlacement"
-    />
-  </LazyLoad>
+  <FlatfinderComponent
+    class="kvass-flatfinder"
+    :project-url="projectUrl"
+    :project-id="projectId"
+    :client-url="clientUrl"
+    :draft-id="draftId"
+    :flatfinder-id="flatfinderId"
+    :path-prefix="pathPrefix"
+    :title="title"
+    :subtitle="subtitle"
+    :filter-params-prefix="filterParamsPrefix"
+    :small-screen-breakpoint="smallScreenBreakpoint"
+    :current-unit-id="currentUnitId"
+    :layout="layout"
+    :hover-card-layout="hoverCardLayout"
+    :lazyload="lazyload"
+    :hide-total-price="hideTotalPrice"
+    :hide-register-interest="hideRegisterInterest"
+    :hide-illustration-disclaimer="hideIllustrationDisclaimer"
+    :hide-favorites="hideFavorites"
+    :hide-help="hideHelp"
+    :hide-filter="hideFilter"
+    :hide-unit-lists="hideUnitLists"
+    :show-floorplan="showFloorplan"
+  />
 </template>
 
 <style lang="scss">
-@import url('@kvass/vue3-flatfinder/style.css');
+@import url('@kvass/ui/style.css');
+@import url('@kvass/elements/style.css');
+@import url('@kvass/unit-selector/style.css');
+// https://help.kvass.no/nb/articles/301111-embed-unit-selector
 
 .kvass-flatfinder {
-  // https://help.kvass.no/nb/articles/301111-embed-unit-selector
-  --k-rangeslider-range-background: var(--kvass-flatfinder-filter-background);
-  --k-checkbox-accent: var(--kvass-flatfinder-filter-background);
-  --k-button-secondary-background: var(--kvass-flatfinder-filter-background);
-  --k-button-secondary-text: var(--kvass-flatfinder-filter-contrast);
-  --k-button-secondary-border: var(--kvass-flatfinder-filter-border-color);
-  --k-button-secondary-background-hover: var(
-    --kvass-flatfinder-filter-background-hover,
-    var(--kvass-flatfinder-filter-background)
-  );
-  --k-button-border-radius: var(--kvass-flatfinder-filter-border-radius);
-  font-size: var(--kvass-flatfinder-font-size, 16px);
-
-  .k-datatable {
-    color: var(--kvass-flatfinder-list-color, inherit);
-    &__row {
-      --k-datatable-odd-color: var(--kvass-flatfinder-list-odd-background);
-      &:nth-child(even) .k-datatable__cell {
-        background-color: var(--kvass-flatfinder-list-even-background);
-      }
-    }
-  }
-  .k-checkbox[data-state='checked']:not([data-disabled]) [data-part='control'] {
-    --k-checkbox-accent: var(--kvass-flatfinder-filter-background);
-    --k-checkbox-accent-contrast: var(--kvass-flatfinder-filter-contrast);
-  }
 }
 </style>
