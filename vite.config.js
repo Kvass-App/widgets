@@ -91,5 +91,8 @@ export default defineConfig({
   },
   server: {
     port: 3010,
+    // Vite 5.4+ no longer sends permissive CORS by default; the admin loads these widgets as
+    // cross-origin module scripts, so allow the local Kvass dev origins to read them.
+    cors: { origin: /\.kvass\.test$/ },
   },
 })
