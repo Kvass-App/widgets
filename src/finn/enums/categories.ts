@@ -165,4 +165,21 @@ export default [
     },
     disabledReason: 'Du må ha enheter til leie',
   },
+  {
+    type: 'ESTATE_SALE',
+    label: 'Bolig til salgs i utlandet',
+    sublabel: 'Bolig til salgs i utlandet',
+    group: 'Utland',
+    disabled: (units: Unit[]) => {
+      if (!units.length) return false
+
+      return !units.some((unit) => {
+        return (
+          unit.saleType === 'sale' &&
+          houseBuildingTypes.includes(unit.propertyType.value)
+        )
+      })
+    },
+    disabledReason: 'Du må ha boligtypeenheter til salgs',
+  },
 ] as Category[]

@@ -16,6 +16,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'ESTATE_SALE',
     ],
   },
   {
@@ -27,6 +28,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'ESTATE_SALE',
     ],
   },
   {
@@ -38,6 +40,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'ESTATE_SALE',
     ],
   },
   {
@@ -49,6 +52,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'ESTATE_SALE',
     ],
   },
   { value: 'bedsit', label: 'Hybel', categories: ['ESTATE_RENT'] },
@@ -168,6 +172,7 @@ export default [
       'ESTATE_BUSINESS_SALE',
       'ESTATE_BUSINESS_RENT',
       'ESTATE_RENT',
+      'ESTATE_SALE',
     ],
   },
 ] as Property[]
