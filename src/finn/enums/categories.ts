@@ -181,6 +181,6 @@ export default [
         )
       })
     },
-    disabledReason: 'Du må ha boligtypeenheter til salgs',
+    disabledReason: 'Du må ha boligtypeenheter eller hytteenheter til salgs.',
   },
 ] as Category[]
