@@ -171,7 +171,7 @@ export default [
     sublabel: 'Bolig til salgs i utlandet',
     group: 'Utland',
     disabled: (units: Unit[]) => {
-      if (!units.length) return true
+      if (!units.length) return false
 
       const types = houseBuildingTypes
 
