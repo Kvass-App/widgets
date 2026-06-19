@@ -44,7 +44,6 @@ import Validator from '../../../composeable/Validator'
 import Properties from '../../../enums/PropertyType.ts'
 import OwnershipTypes from '../../../enums/OwnershipTypes.ts'
 import LeisureSituation from '../../../enums/LeisureSituation.ts'
-import AbroadCountries from '../../../enums/AbroadCountries.ts'
 import { energyLabel, energyLabelColor } from '../../../enums/EnergyLabels.ts'
 
 import { type Ad, Facility } from '../../../types/ad'
@@ -632,47 +631,6 @@ const saveDraft = () => {
                       ></Icon>
                     </template>
                   </Input>
-                </FormControl>
-
-                <FormControl
-                  v-if="
-                    modelValue.type === 'LEISURE_SALE' &&
-                    hasField('COUNTRYCODE')
-                  "
-                  v-bind="validate('COUNTRYCODE')"
-                  label="Land"
-                  :class="[
-                    'ad__dropdown',
-                    { 'ad__dropdown--edited': isEdited('COUNTRYCODE') },
-                  ]"
-                >
-                  <Dropdown
-                    :label="
-                      AbroadCountries.find((v) => v.value === data.COUNTRYCODE)
-                        ?.label || 'Velg land...'
-                    "
-                    :items="
-                      AbroadCountries.map((v) => {
-                        return {
-                          ...v,
-                          action: () => {
-                            data.COUNTRYCODE = v.value
-                          },
-                        }
-                      })
-                    "
-                  >
-                    <template #icon-right>
-                      <Icon icon="fa-pro-regular:angle-down" class="k-mr-sm" />
-                      <Icon
-                        :icon="getIsEditedBind('COUNTRYCODE').icon"
-                        v-tooltip="{
-                          content: getIsEditedBind('COUNTRYCODE').label,
-                          container: false,
-                        }"
-                      ></Icon>
-                    </template>
-                  </Dropdown>
                 </FormControl>
               </template>
             </Expandable>
