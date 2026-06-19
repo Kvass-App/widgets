@@ -16,6 +16,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'LEISURE_SALE',
     ],
   },
   {
@@ -27,6 +28,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'LEISURE_SALE',
     ],
   },
   {
@@ -38,6 +40,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'LEISURE_SALE',
     ],
   },
   {
@@ -49,13 +52,14 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_PROJECT_SINGLE',
       'ESTATE_RENT',
+      'LEISURE_SALE',
     ],
   },
   { value: 'bedsit', label: 'Hybel', categories: ['ESTATE_RENT'] },
   {
     value: 'cottage',
     label: 'Hytte',
-    categories: ['ESTATE_PLANNED', 'ESTATE_PROJECT_LEISURE'],
+    categories: ['ESTATE_PLANNED', 'ESTATE_PROJECT_LEISURE', 'LEISURE_SALE'],
     condition: (item) => {
       if (item.type !== 'ESTATE_PLANNED') return true
       return item.fields.IS_LEISURE
@@ -106,6 +110,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_BUSINESS_SALE',
       'ESTATE_BUSINESS_RENT',
+      'LEISURE_SALE',
     ],
     condition: (item) => {
       if (item.type !== 'ESTATE_PLANNED') return true
@@ -168,6 +173,7 @@ export default [
       'ESTATE_BUSINESS_SALE',
       'ESTATE_BUSINESS_RENT',
       'ESTATE_RENT',
+      'LEISURE_SALE',
     ],
   },
 ] as Property[]
