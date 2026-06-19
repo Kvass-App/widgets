@@ -635,10 +635,12 @@ const saveDraft = () => {
                 </FormControl>
 
                 <FormControl
-                  v-if="modelValue.type === 'ESTATE_SALE' && hasField('COUNTRYCODE')"
+                  v-if="
+                    modelValue.type === 'LEISURE_SALE' &&
+                    hasField('COUNTRYCODE')
+                  "
                   v-bind="validate('COUNTRYCODE')"
                   label="Land"
-                  help="Boligen plasseres under «Bolig til salgs i utlandet» på Finn basert på valgt land."
                   :class="[
                     'ad__dropdown',
                     { 'ad__dropdown--edited': isEdited('COUNTRYCODE') },
@@ -661,10 +663,7 @@ const saveDraft = () => {
                     "
                   >
                     <template #icon-right>
-                      <Icon
-                        icon="fa-pro-regular:angle-down"
-                        class="k-mr-sm"
-                      />
+                      <Icon icon="fa-pro-regular:angle-down" class="k-mr-sm" />
                       <Icon
                         :icon="getIsEditedBind('COUNTRYCODE').icon"
                         v-tooltip="{

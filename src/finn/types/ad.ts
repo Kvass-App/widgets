@@ -8,7 +8,7 @@ export type Type =
   | 'ESTATE_BUSINESS_SALE'
   | 'ESTATE_BUSINESS_RENT'
   | 'PLOT_SALE'
-  | 'ESTATE_SALE'
+  | 'LEISURE_SALE'
   | 'ESTATE_RENT'
 
 export type ID = string

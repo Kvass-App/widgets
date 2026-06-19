@@ -1,4 +1,4 @@
-// ISO-3166-1 alpha-2 country codes for "Bolig til salgs i utlandet" (ESTATE_SALE).
+// ISO-3166-1 alpha-2 country codes for "Bolig til salgs i utlandet" (LEISURE_SALE).
 // Mirrors the countries in FINN's "Estate leisure abroad" area-code list.
 export default [
   { value: 'SE', label: 'Sverige' },

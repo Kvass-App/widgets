@@ -166,17 +166,18 @@ export default [
     disabledReason: 'Du må ha enheter til leie',
   },
   {
-    type: 'ESTATE_SALE',
-    label: 'Bolig til salgs i utlandet',
+    type: 'LEISURE_SALE',
+    label: 'Bolig',
     sublabel: 'Bolig til salgs i utlandet',
     group: 'Utland',
     disabled: (units: Unit[]) => {
-      if (!units.length) return false
+      if (!units.length) return true
+
+      const types = houseBuildingTypes
 
       return !units.some((unit) => {
         return (
-          unit.saleType === 'sale' &&
-          houseBuildingTypes.includes(unit.propertyType.value)
+          unit.saleType === 'sale' && types.includes(unit.propertyType.value)
         )
       })
     },
