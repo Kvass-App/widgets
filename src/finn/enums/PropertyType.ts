@@ -110,6 +110,7 @@ export default [
       'ESTATE_PROJECT_LEISURE',
       'ESTATE_BUSINESS_SALE',
       'ESTATE_BUSINESS_RENT',
+      'LEISURE_SALE',
     ],
     condition: (item) => {
       if (item.type !== 'ESTATE_PLANNED') return true
