@@ -131,7 +131,10 @@ const hideFormFieldLabelOn = ['checkbox', 'privacy', 'position']
 
 function transformKey(key) {
   if (!key) return
-  return key.replaceAll('.', '-')
+  const normalized = key.replaceAll('.', '-')
+  // grid-area names are CSS <custom-ident>s and cannot start with a digit.
+
+  return /^[a-z_]/i.test(normalized) ? normalized : `f-${normalized}`
 }
 //computed
 const formIsValid = computed(() => {
@@ -157,7 +160,7 @@ const style = computed(() => {
           secound = currentKey
         }
         if (current?.size === 'half') {
-          secound = '1fr'
+          secound = '.'
         }
 
         if (nextValue?.size === 'half') {
