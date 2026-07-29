@@ -291,6 +291,9 @@ const markerIcon = reactive({
     color: var(--widgets-kvass-map-search-color, black);
     padding: $gap;
     border-radius: var(--kvass-map-border-radius);
+    @media screen and (max-width: 680px) {
+      gap: 1rem;
+    }
   }
   .k-alert--neutral {
     background-color: inherit;
