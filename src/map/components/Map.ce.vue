@@ -1,7 +1,7 @@
 <script setup>
 import { Map as MapComponent } from '@kvass/map'
 import { LocationSelector as Selector } from '@kvass/location-selector'
-import { LazyLoad, Card, Button, Alert } from '@kvass/ui'
+import { LazyLoad, Card, Button, Alert, Icon } from '@kvass/ui'
 import { computed, reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -22,6 +22,7 @@ const props = defineProps({
   search: {
     type: Boolean,
   },
+
   /**
    * The coordinates in the format of 'latitude,longitude'
    */
@@ -55,9 +56,15 @@ const props = defineProps({
     type: String,
   },
 
+  cardTheme: {
+    type: String,
+    enums: ['arrow', 'default'],
+    default: 'default',
+  },
   /**
    * The map zoom level. Lower is more zoomed out
    */
+
   zoom: {
     type: String,
     default: '8',
@@ -77,16 +84,36 @@ const props = defineProps({
 const selected = ref('')
 const match = ref([])
 
+// Markers within this many meters of the selected position count as a match.
+const matchRangeMeters = 50000
+
+// Haversine distance in meters between two [lng, lat] pairs.
+const distance = ([lng1, lat1], [lng2, lat2]) => {
+  const R = 6371000
+  const toRad = (d) => (d * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLng = toRad(lng2 - lng1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(a))
+}
+function navigate(url) {
+  window.location.href = url
+}
+
 watch(
   () => selected.value,
   (val) => {
-    const coordinates = (val?.location?.coordinates || []).map((c) =>
-      Math.round(c),
-    )
-    match.value = markersComp.value?.filter((i) => {
-      const current = i.coordinates
-      return current.every((c) => coordinates.includes(Math.round(c)))
-    })
+    const origin = val?.location?.coordinates
+    if (!origin) {
+      match.value = []
+      return
+    }
+    match.value = (markersComp.value ?? [])
+      .map((i) => ({ ...i, distance: distance(origin, i.coordinates) }))
+      .filter((i) => i.distance <= matchRangeMeters)
+      .sort((a, b) => a.distance - b.distance)
   },
   { deep: true },
 )
@@ -132,6 +159,7 @@ const markerIcon = reactive({
         :aspect-ratio="aspectRatio"
         :center="centerComp"
         :marker-icon="markerIcon"
+        :card-theme="cardTheme"
       />
       <div class="widgets-kvass-map__search-content">
         <div v-if="description" v-html="description"></div>
@@ -149,22 +177,40 @@ const markerIcon = reactive({
 
         <template v-if="selected">
           <Alert :variant="match?.length ? 'neutral' : 'danger'">
-            {{
-              match?.length
-                ? resultMessageComp.success
-                : resultMessageComp.error
-            }}
+            <div
+              v-html="
+                match?.length
+                  ? resultMessageComp.success
+                  : resultMessageComp.error
+              "
+            ></div>
 
-            <div class="widgets-kvass-map__search-result">
+            <div
+              :class="[
+                'widgets-kvass-map__search-result',
+                `widgets-kvass-map__search-result-theme--${cardTheme}`,
+              ]"
+            >
               <Card
                 v-for="item in match"
-                :thumbnail="item.content.thumbnail"
+                :thumbnail="cardTheme !== 'arrow' ? item.content.thumbnail : ''"
                 variant="default"
+                @click="navigate(item.content?.action)"
               >
                 <template #default>
-                  <div v-html="item.content?.description"></div>
+                  <div
+                    v-html="
+                      cardTheme === 'arrow'
+                        ? item.content?.actionLabel
+                        : item.content?.description
+                    "
+                  ></div>
+                  <Icon
+                    v-if="cardTheme === 'arrow'"
+                    icon="fa-pro-regular:arrow-right"
+                  />
                 </template>
-                <template #actions>
+                <template v-if="cardTheme !== 'arrow'" #actions>
                   <Button
                     :label="item.content?.actionLabel"
                     icon-right="fa-pro-light:angle-right"
@@ -198,39 +244,42 @@ const markerIcon = reactive({
 @import url('@kvass/location-selector/style.css');
 
 .widgets-kvass-map__search {
+  min-height: 60vh;
+  $gap: 1.5rem;
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 2rem;
+  gap: $gap;
 
-  --kvass-location-selector-background: transparent;
-  --kvass-map-popup-gap: 0;
-  --kvass-map-popup-image-width: 50px;
-  --kvass-map-popup-image-aspect-ratio: 16/7;
-  --kvass-map-popup-padding: 10px 10px 15px;
-  --kvass-map-popup-width: 150px;
-  --kvass-map-popup-image-size: contain;
+  --kvass-widgets-map-aspect-ratio: auto;
+  --kvass-map-border-radius: 3px;
 
   @media screen and (max-width: 680px) {
     grid-template-columns: 1fr;
   }
   .k-card {
+    cursor: pointer;
+    background-color: inherit;
+
     --k-card-spacing: 1rem;
     padding: var(--k-card-spacing);
-
     --k-card-header-background: #fbfbfb;
+    :hover {
+      opacity: 0.8;
+    }
 
     &__content {
       padding: 0.5rem;
-      color: var(--widgets-kvass-map-search-card-color, black);
+      color: inherit;
       text-align: center;
+      h2,
+      h3 {
+        margin: 0;
+      }
     }
 
     &__thumbnail figure {
       height: 70px;
-
       --k-image-size: contain !important;
-    }
-    &__actions {
     }
   }
 
@@ -238,12 +287,47 @@ const markerIcon = reactive({
     display: flex;
     gap: 1rem;
     flex-direction: column;
+    background-color: var(--widgets-kvass-map-search-background-color, white);
+    color: var(--widgets-kvass-map-search-color, black);
+    padding: $gap;
+    border-radius: var(--kvass-map-border-radius);
+  }
+  .k-alert--neutral {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    padding: 0;
   }
   &-result {
     margin-top: 1rem;
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
+    &-theme {
+      &--default {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        .k-card {
+          border: 1px solid currentColor;
+        }
+      }
+      &--arrow {
+        display: flex;
+        flex-direction: column;
+        gap: 0rem;
+        .k-card {
+          padding: 1rem 0 0 0;
+          border-radius: 0;
+          border-bottom: 1px solid currentColor;
+
+          &__content {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+          }
+        }
+      }
+    }
   }
 }
 
