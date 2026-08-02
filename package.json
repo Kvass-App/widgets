@@ -13,7 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@img-comparison-slider/vue": "^8.0.0",
     "@kvass/elements": "^2.0.1",
-    "@kvass/location-selector": "^1.0.38",
+    "@kvass/location-selector": "^1.0.39",
     "@kvass/map": "^1.0.21",
     "@kvass/storage": "^1.1.0",
     "@kvass/ui": "^2.1.0",
