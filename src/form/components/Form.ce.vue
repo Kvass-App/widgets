@@ -496,6 +496,7 @@ function submit() {
       },
     ),
     scopes: props.scopes?.length ? JSON.parse(props.scopes) : null,
+    referrer: window.location.href,
   }
 
   promise.value = createFormSubmit(
