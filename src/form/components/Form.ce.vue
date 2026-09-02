@@ -19,6 +19,8 @@ import Number from './Fields/Number'
 import Date from './Fields/Date'
 import Header from './Fields/Header'
 import Position from './Fields/Position.vue'
+import Postcode from './Fields/Postcode.vue'
+import Postplace from './Fields/Postplace.vue'
 
 import CheckList from './Fields/CheckList'
 import { Query } from 'mingo'
@@ -64,9 +66,17 @@ const componentMap = {
   privacy: 'span',
   header: Header,
   position: Position,
+  postcode: Postcode,
+  postplace: Postplace,
 }
 
 const props = defineProps({
+  pageId: {
+    type: String,
+  },
+  pageTitle: {
+    type: String,
+  },
   title: {
     type: String,
     default: 'Contact',
@@ -203,6 +213,15 @@ const style = computed(() => {
   return {
     '--grid-template-areas': areas,
     '--grid-template-columns': cols,
+    '--kvass-form-margin-block': formSettings.value?.marginBlock
+      ? `${formSettings.value?.marginBlock}px`
+      : '1rem',
+    '--kvass-form-margin-inline': formSettings.value?.marginInline
+      ? `${formSettings.value?.marginInline}px`
+      : '1rem',
+    '--kvass-form-font-size': formSettings.value?.fontSize
+      ? `${formSettings.value?.fontSize}px`
+      : 'inherit',
   }
 })
 
@@ -314,7 +333,6 @@ function getFieldOptions(i, key) {
         'drop-message': t('fileDropAreaMessage'),
         'disable-preview': true,
         rename: false,
-
         multiple: false,
         required: false,
         labels: {
@@ -431,6 +449,35 @@ const formFields = computed(() => {
             },
           },
         }
+      }
+      if (['postcode'].includes(i.component)) {
+        return [
+          {
+            key: i.key,
+            component: 'postcode',
+            label: i.label,
+            options: {
+              validation: ['required', 'postcode'],
+              props: {
+                placeholder: i?.placeholder,
+                type: 'number',
+              },
+            },
+          },
+          i.postplace?.include
+            ? {
+                key: i.postplace?.key || 'postplace',
+                component: 'postplace',
+                label: i.postplace?.label,
+                options: {
+                  props: {
+                    placeholder: i.postplace?.placeholder,
+                    parentKey: i.key,
+                  },
+                },
+              }
+            : null,
+        ].filter(Boolean)
       } else {
         return getFieldOptions(i, key)
       }
@@ -621,6 +668,7 @@ onMounted(() => {
                 @blur="onBlur(field.key)"
                 :label="getLabel(field.key, field.component)"
                 :field-key="field.key"
+                :data="data"
               >
                 <template v-if="field?.options?.slot" #default>
                   <span v-html="field?.options?.slot"></span>
@@ -664,6 +712,7 @@ onMounted(() => {
 @import url('@kvass/ui/style.css');
 
 .kvass-form {
+  font-size: var(--kvass-form-font-size);
   background-color: var(--kvass-form-background, transparent);
   padding: var(--kvass-form-padding, 1rem);
   color: var(--kvass-form-text-color, currentColor);
@@ -690,7 +739,8 @@ onMounted(() => {
 
   &__content {
     display: grid;
-    gap: 1rem 3rem;
+    gap: #{var(--kvass-form-margin-block, 1rem)
+      var(--kvass-form-margin-inline, 1rem)};
     grid-template-areas: var(--grid-template-areas);
     grid-template-columns: var(--grid-template-columns);
     @media (max-width: 767px) {
@@ -764,6 +814,17 @@ onMounted(() => {
   .k-formcontrol__label {
     text-transform: var(--kvass-form-label-transform);
     font-weight: var(--kvass-form-label-weight, bold);
+  }
+
+  .k-input {
+    --k-input-padding-x: var(--kvass-form-padding-inline, 0.75rem);
+    --k-input-padding-y: var(--kvass-form-padding-block, 0);
+    min-height: 44px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
   }
   .k-radiogroup--variant-radio {
     --k-radiogroup-accent: var(--_kvass-form-ui-color);

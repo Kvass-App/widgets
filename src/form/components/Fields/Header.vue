@@ -52,6 +52,16 @@ const props = defineProps({
     letter-spacing: var(--kvass-form-title-letter-spacing, inherit);
     margin: var(--kvass-form-title-margin, 0 0 0.75rem 0);
   }
+  h2,
+  h3 {
+    font-family: var(--kvass-form-title-font-family, var(--secondary-font));
+  }
+
+  h3 {
+    font-size: var(--kvass-form-h3-font-size, revert);
+    font-weight: var(--kvass-form-h3-font-weight, revert);
+    margin-block: var(--kvass-form-margin-block, 1rem);
+  }
   &__description {
     p:first-child {
       margin-top: 0.25em;

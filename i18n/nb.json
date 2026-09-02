@@ -34,6 +34,7 @@
   "nuxtLeadPrivacy" : "Jeg ønsker å bli kontaktet i samtykke med  {link}",
   "phone" : "Telefon",
   "phoneValidation" : "Du har ikke tastet inn et gyldig telefonnummer",
+  "postcodeValidation" : "Du har ikke tastet inn et gyldig postnummer",
   "primaryTitle" : "Hovedtittel",
   "privacy" : "Personvernerklæringen",
   "privacyPolicyTitle" : "Personvernerklæring",

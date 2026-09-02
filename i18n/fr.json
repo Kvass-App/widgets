@@ -34,6 +34,7 @@
   "nuxtLeadPrivacy" : "Je souhaite être contacté en accord avec  {link}",
   "phone" : "Téléphone",
   "phoneValidation" : "Le numéro de téléphone saisi n’est pas valide",
+  "postcodeValidation" : "Vous n'avez pas saisi un code postal valide",
   "primaryTitle" : "Titre principal",
   "privacy" : "Déclaration de confidentialité",
   "privacyPolicyTitle" : "Politique de confidentialité",

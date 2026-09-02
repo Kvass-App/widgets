@@ -34,6 +34,7 @@
   "nuxtLeadPrivacy" : "I wish to be contacted with the consent of {link}",
   "phone" : "Phone",
   "phoneValidation" : "You have not entered a valid phone number",
+  "postcodeValidation" : "You have not entered a valid postal code",
   "primaryTitle" : "Main title",
   "privacy" : "Privacy policy",
   "privacyPolicyTitle" : "Privacy policy",

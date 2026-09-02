@@ -34,6 +34,7 @@
   "nuxtLeadPrivacy" : "Jag vill bli kontaktad i enlighet med  {link}",
   "phone" : "Telefon",
   "phoneValidation" : "Du har inte angett ett giltigt telefonnummer",
+  "postcodeValidation" : "Du har inte angett ett giltigt postnummer",
   "primaryTitle" : "Huvudtitel",
   "privacy" : "Dataskyddsförordningen",
   "privacyPolicyTitle" : "Sekretesspolicy",

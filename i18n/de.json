@@ -14,6 +14,7 @@
   "nuxtLeadPrivacy" : "Ich stimme der {link} zu",
   "phone" : "Telefon",
   "phoneValidation" : "Sie haben keine gültige Telefonnummer eingegeben",
+  "postcodeValidation" : "Sie haben keine gültige Postleitzahl eingegeben",
   "privacy" : "Datenschutzerklärung",
   "privacyPolicyTitle" : "Datenschutzerklärung",
   "select" : "Auswählen",
