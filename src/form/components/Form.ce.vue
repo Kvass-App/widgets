@@ -275,6 +275,8 @@ function getValidation(item) {
       return item.required === 'yes' ? 'numeric|required' : ''
     case 'checkbox':
       return item.required === 'yes' ? 'accepted' : ''
+    case 'postcode':
+      return item.required === 'yes' ? ['required', 'postcode'] : ['postcode']
     default:
       return item.required === 'yes' ? 'required' : ''
   }
@@ -457,7 +459,6 @@ const formFields = computed(() => {
             component: 'postcode',
             label: i.label,
             options: {
-              validation: ['required', 'postcode'],
               props: {
                 placeholder: i?.placeholder,
                 type: 'number',
