@@ -453,13 +453,14 @@ const formFields = computed(() => {
         }
       }
       if (['postcode'].includes(i.component)) {
+        const base = getFieldOptions(i, key)
         return [
           {
-            key: i.key,
-            component: 'postcode',
-            label: i.label,
+            ...base,
             options: {
+              ...base.options,
               props: {
+                ...base.options?.props,
                 placeholder: i?.placeholder,
                 type: 'number',
               },
