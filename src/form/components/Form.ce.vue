@@ -387,11 +387,12 @@ const formFields = computed(() => {
           'hide-label': i?.['hide-label'],
         }
         const placeholder = i['lead-placeholder']
+        const label = i['lead-label']
         return [
           {
             key: 'contact.name',
             component: 'short-text',
-            label: t('name'),
+            label: label?.name || t('name'),
 
             options: {
               validation: 'required',
@@ -404,7 +405,7 @@ const formFields = computed(() => {
           {
             key: 'contact.email',
             component: 'short-text',
-            label: t('email'),
+            label: label?.email || t('email'),
             options: {
               validation: 'required|email',
               props: {
@@ -416,7 +417,7 @@ const formFields = computed(() => {
           {
             key: 'contact.phone',
             component: 'short-text',
-            label: t('phone'),
+            label: label?.phone || t('phone'),
             options: {
               validation: 'required|phone',
               props: {
@@ -428,7 +429,7 @@ const formFields = computed(() => {
           {
             key: 'comment',
             component: 'long-text',
-            label: t('leadMessage'),
+            label: label?.comment || t('leadMessage'),
             options: {
               props: {
                 rows: '6',
@@ -749,6 +750,9 @@ onMounted(() => {
       grid-template-areas: unset;
       grid-template-columns: 1fr;
     }
+  }
+  &__form {
+    font-size: var(--kvass-form-form-font-size);
   }
 
   &__bottom {
