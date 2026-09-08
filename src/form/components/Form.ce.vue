@@ -773,7 +773,7 @@ onMounted(() => {
         )
       );
     }
-    margin: 0 auto;
+    margin: var(--kvass-form-submit-button-margin, 0 auto);
   }
   &__privacy {
     font-size: 0.95em;
