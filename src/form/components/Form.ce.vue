@@ -233,6 +233,7 @@ const formSettings = computed(() => {
   const defaultLabels = {
     submitButtonLabel: 'Send inn',
     formWidth: '700',
+    contentLayout: 'vertical',
   }
 
   let customSettings = JSON.parse(props.settings)
@@ -629,7 +630,12 @@ onMounted(() => {
     class="kvass-form"
     :style="`--kvass-form-max-width: ${formSettings?.formWidth}px;`"
   >
-    <div class="kvass-form__wrapper">
+    <div
+      :class="[
+        'kvass-form__wrapper',
+        `kvass-form__wrapper--layout-${formSettings?.contentLayout}`,
+      ]"
+    >
       <Header
         :title="!formSettings?.hideTitle ? props.title : ''"
         :description="props.description"
@@ -736,6 +742,18 @@ onMounted(() => {
   &__wrapper {
     max-width: var(--_kvass-form-max-width);
     margin-inline: auto;
+
+    &--layout-horizontal {
+      display: grid;
+      grid-template-columns: var(--kvass-form-layout-columns, 1fr 1fr);
+      column-gap: var(--kvass-form-layout-gap, 3rem);
+      row-gap: 1rem;
+      align-items: start;
+
+      @media (max-width: 767px) {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 
   &__content {
