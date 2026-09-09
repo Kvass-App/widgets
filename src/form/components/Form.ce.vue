@@ -137,7 +137,7 @@ const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   'nb',
 )
 
-const hideFormFieldLabelOn = ['checkbox', 'privacy', 'position']
+const hideFormFieldLabelOn = ['checkbox', 'privacy']
 
 function transformKey(key) {
   if (!key) return
