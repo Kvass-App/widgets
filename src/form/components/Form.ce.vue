@@ -232,8 +232,10 @@ function kebabToCamel(str) {
 const formSettings = computed(() => {
   const defaultLabels = {
     submitButtonLabel: 'Send inn',
+    restartButtonLabel: t('goBack'),
     formWidth: '700',
     contentLayout: 'vertical',
+    successBehavior: 'keepForm',
   }
 
   let customSettings = JSON.parse(props.settings)
@@ -251,6 +253,10 @@ const formSettings = computed(() => {
     ...(customSettings || {}),
   }
 })
+
+const replacesForm = computed(
+  () => formSettings.value?.successBehavior === 'replaceForm',
+)
 
 const privacyUrlComp = computed(() => {
   const base = `/legal/privacy`
@@ -535,6 +541,7 @@ function resetForm() {
 
 function submit() {
   if (!formIsValid.value) return
+  submitError.value = false
   const dataToSubmit = {
     ...flattenToSingleLevel(
       data.value,
@@ -576,16 +583,24 @@ function submit() {
         })
       }
 
-      setTimeout(() => {
-        submitted.value = false
-        resetForm()
-      }, props.submitTimeout)
+      if (!replacesForm.value) {
+        setTimeout(() => {
+          submitted.value = false
+          resetForm()
+        }, props.submitTimeout)
+      }
     })
     .catch((err) => {
       console.log(err)
       submitError.value = true
-      return setTimeout(() => (submitted.value = false), props.submitTimeout)
+      return setTimeout(() => (submitError.value = false), props.submitTimeout)
     })
+}
+
+function restart() {
+  submitted.value = false
+  submitError.value = false
+  resetForm()
 }
 
 function isFieldVisible(field) {
@@ -642,7 +657,27 @@ onMounted(() => {
         title-tag="h2"
         :center="formSettings?.centerHeading"
       />
-      <form class="kvass-form__form" @submit.prevent="submit">
+      <Grid
+        v-if="submitted && replacesForm"
+        gap="2rem"
+        class="kvass-form__success"
+      >
+        <Alert variant="info">
+          <div
+            v-html="
+              formSettings?.successMessage || `<p>${t('leadMessageSent')}</p>`
+            "
+          ></div>
+        </Alert>
+        <Button
+          class="kvass-form__restart-button"
+          :label="formSettings?.restartButtonLabel"
+          icon-left="fa-pro-solid:arrow-left"
+          :variant="submitButtonTheme"
+          @click="restart"
+        />
+      </Grid>
+      <form v-else class="kvass-form__form" @submit.prevent="submit">
         <div class="kvass-form__content" :style="style">
           <template v-for="field in formFields.filteredFields">
             <FormControl
@@ -770,6 +805,10 @@ onMounted(() => {
 
   &__bottom {
     margin-top: 2rem;
+  }
+  &__restart-button {
+    max-width: fit-content;
+    margin-inline: auto;
   }
   &__submit-button {
     grid-column-end: span 2;

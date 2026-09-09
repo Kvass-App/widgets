@@ -41,12 +41,17 @@ watch(
   },
   {
     deep: true,
+    immediate: true,
   },
 )
 </script>
 
 <template>
-  <Input :placeholder="placeholder" :disabled="true" :value="postplace" />
+  <Input
+    :placeholder="placeholder"
+    :disabled="true"
+    :model-value="postplace ?? ''"
+  />
 </template>
 
 <style lang="scss"></style>
