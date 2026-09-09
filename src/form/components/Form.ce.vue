@@ -448,7 +448,8 @@ const formFields = computed(() => {
           ...getFieldOptions(i, key),
           options: {
             props: {
-              ...(i?.[key] || {}),
+              ...(i?.header || {}),
+              titleTag: 'h3',
             },
           },
         }
