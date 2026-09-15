@@ -21,4 +21,24 @@ function createFormSubmit(url, formId, data) {
   })
 }
 
-export { createFormSubmit }
+function submitToEndpoint(url, payload, options = {}) {
+  const { timeout = 15000 } = options
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeout)
+
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    signal: controller.signal,
+  })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Submit endpoint failed, statusCode: ${res?.status}`)
+      return res.json().catch(() => ({}))
+    })
+    .finally(() => clearTimeout(timer))
+}
+
+export { createFormSubmit, submitToEndpoint }

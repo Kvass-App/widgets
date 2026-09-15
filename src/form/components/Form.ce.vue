@@ -1,7 +1,7 @@
 <script setup>
 import { Slugify, Translate } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
-import { createFormSubmit } from '../api'
+import { createFormSubmit, submitToEndpoint } from '../api'
 import useValidator from '../../composables/useValidator.js'
 import {
   Grid,
@@ -130,6 +130,7 @@ const data = ref({})
 const submitError = ref(false)
 const promise = ref(null)
 const submitted = ref(false)
+const endpointResponse = ref(null)
 const visited = ref([])
 const t = (i, options) => Translate(i, 1, options)
 const { validator, onChange, getFieldError, isFieldValid } = useValidator(
@@ -256,6 +257,25 @@ const formSettings = computed(() => {
 
 const replacesForm = computed(
   () => formSettings.value?.successBehavior === 'replaceForm',
+)
+
+const headerComp = computed(() => ({
+  title:
+    endpointResponse.value?.title ??
+    (!formSettings.value?.hideTitle ? props.title : ''),
+  description: endpointResponse.value?.description ?? props.description,
+}))
+
+const endpointMessage = computed(() => endpointResponse.value?.successMessage)
+
+const successIsCustom = computed(
+  () => endpointMessage.value !== undefined && endpointMessage.value !== null,
+)
+
+const successMessageComp = computed(() =>
+  successIsCustom.value
+    ? endpointMessage.value
+    : formSettings.value?.successMessage || `<p>${t('leadMessageSent')}</p>`,
 )
 
 const privacyUrlComp = computed(() => {
@@ -466,6 +486,7 @@ const formFields = computed(() => {
             component: 'postcode',
             label: i.label,
             options: {
+              validation: getValidation(i),
               props: {
                 placeholder: i?.placeholder,
                 type: 'number',
@@ -555,13 +576,27 @@ function submit() {
     referrer: window.location.href,
   }
 
-  promise.value = createFormSubmit(
-    props.accountUrl || window.location.origin,
-    props.formId,
-    {
-      ...dataToSubmit,
-    },
-  )
+  const endpoint = formSettings.value?.submitEndpoint
+
+  const request = endpoint
+    ? submitToEndpoint(endpoint, {
+        formId: props.formId,
+        pageId: props.pageId,
+        pageTitle: props.pageTitle,
+        referrer: window.location.href,
+        data: dataToSubmit,
+      }).then((res) => {
+        endpointResponse.value = res || null
+      })
+    : createFormSubmit(
+        props.accountUrl || window.location.origin,
+        props.formId,
+        {
+          ...dataToSubmit,
+        },
+      )
+
+  promise.value = request
     .then(() => {
       submitted.value = true
 
@@ -586,6 +621,7 @@ function submit() {
       if (!replacesForm.value) {
         setTimeout(() => {
           submitted.value = false
+          endpointResponse.value = null
           resetForm()
         }, props.submitTimeout)
       }
@@ -600,6 +636,7 @@ function submit() {
 function restart() {
   submitted.value = false
   submitError.value = false
+  endpointResponse.value = null
   resetForm()
 }
 
@@ -652,8 +689,8 @@ onMounted(() => {
       ]"
     >
       <Header
-        :title="!formSettings?.hideTitle ? props.title : ''"
-        :description="props.description"
+        :title="headerComp.title"
+        :description="headerComp.description"
         title-tag="h2"
         :center="formSettings?.centerHeading"
       />
@@ -662,12 +699,14 @@ onMounted(() => {
         gap="2rem"
         class="kvass-form__success"
       >
-        <Alert variant="info">
-          <div
-            v-html="
-              formSettings?.successMessage || `<p>${t('leadMessageSent')}</p>`
-            "
-          ></div>
+        <div
+          v-if="successIsCustom"
+          v-show="successMessageComp"
+          class="kvass-form__success-content"
+          v-html="successMessageComp"
+        ></div>
+        <Alert v-else variant="info">
+          <div v-html="successMessageComp"></div>
         </Alert>
         <Button
           class="kvass-form__restart-button"
@@ -720,15 +759,20 @@ onMounted(() => {
           </template>
         </div>
         <Grid gap="2rem" class="kvass-form__bottom">
+          <div
+            v-if="submitted && !submitError && successIsCustom"
+            v-show="successMessageComp"
+            class="kvass-form__success-content"
+            v-html="successMessageComp"
+          ></div>
           <Alert
-            v-if="submitted || submitError"
+            v-else-if="submitted || submitError"
             :variant="!submitError ? 'info' : 'danger'"
           >
             <div
               v-html="
                 !submitError
-                  ? formSettings?.successMessage ||
-                    `<p>${t('leadMessageSent')}</p>`
+                  ? successMessageComp
                   : `<p>${t('somethingWentWrong')}</p>`
               "
             ></div>
