@@ -1,17 +1,24 @@
 <script setup>
 import { computed } from 'vue'
+import { Translate } from '../../../utils'
 import LocationSelector from '../../../location-selector/components/Selector.ce.vue'
 import { Alert } from '@kvass/ui'
+const t = (i, options) => Translate(i, 1, options)
 
 const props = defineProps({
   mapboxApiToken: {
     type: String,
     required: true,
   },
-  mapboxTheme: {
+  mapboxThemePrefix: {
     type: String,
     required: true,
   },
+  theme: {
+    type: String,
+    required: true,
+  },
+
   modelValue: {
     type: String,
     default: '',
@@ -23,6 +30,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+const themeMap = {
+  dark: 'cmkcjdwf000uk01r3fz9oa78y',
+  standard: 'cmkcjf2b300si01s97o78gwpi',
+  light: 'cmkcj9k1a000q01r2d9ffb4el',
+}
 
 const hasPositionsErrors = computed(() => {
   if (!props.modelValue?.placement) return false
@@ -43,6 +56,12 @@ function update(event) {
       : '',
   })
 }
+
+const mapboxTheme = computed(() => {
+  const prefix = props.mapboxThemePrefix.split('/').slice(0, -1).join('/')
+  const theme = themeMap?.[props.theme]
+  return prefix && theme ? `${prefix}/${theme}` : props.mapboxThemePrefix
+})
 </script>
 
 <template>
@@ -67,22 +86,30 @@ function update(event) {
     >
       {{
         modelValue?.address
-          ? `Valgt posisjon: ${modelValue?.address}`
-          : `Posisjonen / adressen du har oppgitt er ikke gyldig. Prøv på nytt!`
+          ? `${t('selectedPosition')}: ${modelValue?.address}`
+          : `${t('positionError')}`
       }}
     </Alert>
     <Alert
       v-if="!modelValue?.address && !hasPositionsErrors"
       icon="fa-pro-solid:circle-info"
     >
-      Har du ingen adresse? Flytt markøren på kartet for å sette en ca.
-      posisjon.
+      {{ t('autocompleteAddressAlert') }}
     </Alert>
   </div>
 </template>
 
 <style lang="scss">
 .kvass-form-position {
-  margin-bottom: 1rem;
+  --kvass-location-selector-primary-color: var(
+    --kvass-form-pin-color,
+    var(--kvass-map-primary-color, inherit)
+  );
+  circle {
+    fill: var(
+      --kvass-form-pin-contrast-color,
+      var(--kvass-map-primary-contrast-color, white)
+    );
+  }
 }
 </style>

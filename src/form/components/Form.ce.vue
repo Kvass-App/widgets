@@ -137,7 +137,7 @@ const { validator, onChange, getFieldError, isFieldValid } = useValidator(
   'nb',
 )
 
-const hideFormFieldLabelOn = ['checkbox', 'privacy', 'position']
+const hideFormFieldLabelOn = ['checkbox', 'privacy']
 
 function transformKey(key) {
   if (!key) return
@@ -358,7 +358,8 @@ function getFieldOptions(i, key) {
     case 'position':
       base.options.props = {
         mapboxApiToken: props.mapboxApiToken,
-        mapboxTheme: props.mapboxTheme,
+        mapboxThemePrefix: props.mapboxTheme,
+        theme: base?.['position-theme'],
       }
 
       return base
