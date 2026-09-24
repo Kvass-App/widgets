@@ -1,7 +1,7 @@
 <script setup>
 import { Slugify, Translate } from '../../utils'
 import { onMounted, ref, watch, computed } from 'vue'
-import { createFormSubmit } from '../api'
+import { createFormSubmit, submitToEndpoint } from '../api'
 import useValidator from '../../composables/useValidator.js'
 import {
   Grid,
@@ -130,6 +130,7 @@ const data = ref({})
 const submitError = ref(false)
 const promise = ref(null)
 const submitted = ref(false)
+const endpointResponse = ref(null)
 const visited = ref([])
 const t = (i, options) => Translate(i, 1, options)
 const { validator, onChange, getFieldError, isFieldValid } = useValidator(
@@ -213,6 +214,7 @@ const style = computed(() => {
   return {
     '--grid-template-areas': areas,
     '--grid-template-columns': cols,
+
     '--kvass-form-margin-block': formSettings.value?.marginBlock
       ? `${formSettings.value?.marginBlock}px`
       : '1rem',
@@ -232,7 +234,11 @@ function kebabToCamel(str) {
 const formSettings = computed(() => {
   const defaultLabels = {
     submitButtonLabel: 'Send inn',
+    restartButtonLabel: t('goBack'),
     formWidth: '700',
+    contentLayout: 'vertical',
+    successBehavior: 'keepForm',
+    formPlacement: 'center',
   }
 
   let customSettings = JSON.parse(props.settings)
@@ -250,6 +256,31 @@ const formSettings = computed(() => {
     ...(customSettings || {}),
   }
 })
+
+const replacesForm = computed(
+  () => formSettings.value?.successBehavior === 'replaceForm',
+)
+
+const headerComp = computed(() => ({
+  title:
+    endpointResponse.value?.title ??
+    (!formSettings.value?.hideTitle ? props.title : ''),
+  description: (
+    endpointResponse.value?.description ?? props.description
+  )?.replace(/{{\s*pageTitle\s*}}/g, props.pageTitle ?? ''),
+}))
+
+const endpointMessage = computed(() => endpointResponse.value?.successMessage)
+
+const successIsCustom = computed(
+  () => endpointMessage.value !== undefined && endpointMessage.value !== null,
+)
+
+const successMessageComp = computed(() =>
+  successIsCustom.value
+    ? endpointMessage.value
+    : formSettings.value?.successMessage || `<p>${t('leadMessageSent')}</p>`,
+)
 
 const privacyUrlComp = computed(() => {
   const base = `/legal/privacy`
@@ -386,15 +417,17 @@ const formFields = computed(() => {
         const base = {
           size: i.size,
           'hide-label': i?.['hide-label'],
+          fontSize: i?.fontSize,
+          fontWeight: i?.fontWeight,
         }
         const placeholder = i['lead-placeholder']
         const label = i['lead-label']
+
         return [
           {
             key: 'contact.name',
             component: 'short-text',
             label: label?.name || t('name'),
-
             options: {
               validation: 'required',
               props: {
@@ -461,6 +494,7 @@ const formFields = computed(() => {
           {
             ...base,
             options: {
+              validation: getValidation(i),
               ...base.options,
               props: {
                 ...base.options?.props,
@@ -538,6 +572,7 @@ function resetForm() {
 
 function submit() {
   if (!formIsValid.value) return
+  submitError.value = false
   const dataToSubmit = {
     ...flattenToSingleLevel(
       data.value,
@@ -551,13 +586,27 @@ function submit() {
     referrer: window.location.href,
   }
 
-  promise.value = createFormSubmit(
-    props.accountUrl || window.location.origin,
-    props.formId,
-    {
-      ...dataToSubmit,
-    },
-  )
+  const endpoint = formSettings.value?.submitEndpoint
+
+  const request = endpoint
+    ? submitToEndpoint(endpoint, {
+        formId: props.formId,
+        pageId: props.pageId,
+        pageTitle: props.pageTitle,
+        referrer: window.location.href,
+        data: dataToSubmit,
+      }).then((res) => {
+        endpointResponse.value = res || null
+      })
+    : createFormSubmit(
+        props.accountUrl || window.location.origin,
+        props.formId,
+        {
+          ...dataToSubmit,
+        },
+      )
+
+  promise.value = request
     .then(() => {
       submitted.value = true
 
@@ -579,16 +628,26 @@ function submit() {
         })
       }
 
-      setTimeout(() => {
-        submitted.value = false
-        resetForm()
-      }, props.submitTimeout)
+      if (!replacesForm.value) {
+        setTimeout(() => {
+          submitted.value = false
+          endpointResponse.value = null
+          resetForm()
+        }, props.submitTimeout)
+      }
     })
     .catch((err) => {
       console.log(err)
       submitError.value = true
-      return setTimeout(() => (submitted.value = false), props.submitTimeout)
+      return setTimeout(() => (submitError.value = false), props.submitTimeout)
     })
+}
+
+function restart() {
+  submitted.value = false
+  submitError.value = false
+  endpointResponse.value = null
+  resetForm()
 }
 
 function isFieldVisible(field) {
@@ -633,39 +692,90 @@ onMounted(() => {
     class="kvass-form"
     :style="`--kvass-form-max-width: ${formSettings?.formWidth}px;`"
   >
-    <div class="kvass-form__wrapper">
-      <Header
-        :title="!formSettings?.hideTitle ? props.title : ''"
-        :description="props.description"
-        title-tag="h2"
-        :center="formSettings?.centerHeading"
-      />
-      <form class="kvass-form__form" @submit.prevent="submit">
+    <div
+      :class="[
+        'kvass-form__wrapper',
+        `kvass-form__wrapper--layout-${formSettings?.contentLayout}`,
+        `kvass-form__wrapper--placement-${formSettings?.formPlacement}`,
+      ]"
+    >
+      <div class="kvass-form__header">
+        <Header
+          :title="headerComp.title"
+          :description="headerComp.description"
+          title-tag="h2"
+          :center="formSettings?.centerHeading"
+        />
+        <Button
+          v-if="formSettings?.contentLayout === 'horizontal' && successIsCustom"
+          class="kvass-form__restart-button"
+          :label="formSettings?.restartButtonLabel"
+          icon-left="fa-pro-solid:arrow-left"
+          :variant="submitButtonTheme"
+          @click="restart"
+        />
+      </div>
+
+      <Grid
+        v-if="submitted && replacesForm"
+        gap="2rem"
+        class="kvass-form__success"
+      >
+        <div
+          v-if="successIsCustom"
+          v-show="successMessageComp"
+          class="kvass-form__success-content"
+          v-html="successMessageComp"
+        ></div>
+
+        <Alert v-else variant="info">
+          <div v-html="successMessageComp"></div>
+        </Alert>
+
+        <Button
+          v-if="formSettings?.contentLayout === 'vertical'"
+          class="kvass-form__restart-button"
+          :label="formSettings?.restartButtonLabel"
+          icon-left="fa-pro-solid:arrow-left"
+          :variant="submitButtonTheme"
+          @click="restart"
+        />
+      </Grid>
+      <form v-else class="kvass-form__form" @submit.prevent="submit">
         <div class="kvass-form__content" :style="style">
           <template v-for="field in formFields.filteredFields">
             <FormControl
+              :style="`--grid-area: ${transformKey(field?.key)};`"
               :class="[
                 'kvass-form__field',
                 { 'kvass-form__field--size-half': field.size === 'half' },
+                {
+                  'kvass-form__has-custom-label-size': Boolean(field.fontSize),
+                },
                 {
                   'kvass-form__field--required': (
                     field.options?.validation || ''
                   ).includes('required'),
                 },
               ]"
-              :style="{ '--grid-area': transformKey(field?.key) }"
-              :label="
-                field?.['hide-label'] ||
-                hideFormFieldLabelOn.includes(field.component)
-                  ? ''
-                  : field.label
-              "
               :error="
                 !isFieldValid(field.key) && visited.includes(field.key)
                   ? getFieldError(field.key)
                   : ''
               "
             >
+              <template #label>
+                <label
+                  :style="`${field.fontSize ? `font-size:${field.fontSize}px;` : ''} ${field.fontWeight ? `font-weight:${field.fontWeight};` : ''}`"
+                  v-if="
+                    !(
+                      field?.['hide-label'] ||
+                      hideFormFieldLabelOn.includes(field.component)
+                    )
+                  "
+                  >{{ field.label }}</label
+                >
+              </template>
               <component
                 :is="componentMap[field.component]"
                 v-bind="field.options?.props"
@@ -683,15 +793,20 @@ onMounted(() => {
           </template>
         </div>
         <Grid gap="2rem" class="kvass-form__bottom">
+          <div
+            v-if="submitted && !submitError && successIsCustom"
+            v-show="successMessageComp"
+            class="kvass-form__success-content"
+            v-html="successMessageComp"
+          ></div>
           <Alert
-            v-if="submitted || submitError"
+            v-else-if="submitted || submitError"
             :variant="!submitError ? 'info' : 'danger'"
           >
             <div
               v-html="
                 !submitError
-                  ? formSettings?.successMessage ||
-                    `<p>${t('leadMessageSent')}</p>`
+                  ? successMessageComp
                   : `<p>${t('somethingWentWrong')}</p>`
               "
             ></div>
@@ -740,6 +855,32 @@ onMounted(() => {
   &__wrapper {
     max-width: var(--_kvass-form-max-width);
     margin-inline: auto;
+
+    &--placement-left {
+      margin-inline: 0 auto;
+    }
+
+    &--layout {
+      &-vertical {
+        .kvass-form__success-content {
+          margin-top: 1rem;
+        }
+      }
+      &-horizontal {
+        display: grid;
+        grid-template-columns: var(--kvass-form-layout-columns, 1fr 1fr);
+        column-gap: var(--kvass-form-layout-gap, 5rem);
+        row-gap: 1rem;
+        align-items: start;
+
+        :nth-child(1 of h1, h2, h3) {
+          margin-top: 0;
+        }
+        @media (max-width: 767px) {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
   }
 
   &__content {
@@ -753,11 +894,17 @@ onMounted(() => {
       grid-template-columns: 1fr;
     }
   }
-  &__form {
+
+  &__field {
     font-size: var(--kvass-form-form-font-size);
   }
 
   &__bottom {
+    margin-top: 2rem;
+  }
+  &__restart-button {
+    max-width: fit-content;
+    margin-inline: auto;
     margin-top: 2rem;
   }
   &__submit-button {

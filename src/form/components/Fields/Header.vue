@@ -57,6 +57,11 @@ const props = defineProps({
     font-family: var(--kvass-form-title-font-family, var(--secondary-font));
   }
 
+  h2 {
+    font-size: var(--kvass-form-h2-font-size, revert);
+    font-weight: var(--kvass-form-h2-font-weight, revert);
+    margin-block: var(--kvass-form-margin-block, 1rem);
+  }
   h3 {
     font-size: var(--kvass-form-h3-font-size, revert);
     font-weight: var(--kvass-form-h3-font-weight, revert);

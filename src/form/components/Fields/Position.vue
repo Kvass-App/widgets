@@ -58,7 +58,7 @@ function update(event) {
 }
 
 const mapboxTheme = computed(() => {
-  const prefix = props.mapboxThemePrefix.split('/').slice(0, -1).join('/')
+  const prefix = props.mapboxThemePrefix?.split('/').slice(0, -1).join('/')
   const theme = themeMap?.[props.theme]
   return prefix && theme ? `${prefix}/${theme}` : props.mapboxThemePrefix
 })
