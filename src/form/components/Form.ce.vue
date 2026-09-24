@@ -214,6 +214,7 @@ const style = computed(() => {
   return {
     '--grid-template-areas': areas,
     '--grid-template-columns': cols,
+
     '--kvass-form-margin-block': formSettings.value?.marginBlock
       ? `${formSettings.value?.marginBlock}px`
       : '1rem',
@@ -237,6 +238,7 @@ const formSettings = computed(() => {
     formWidth: '700',
     contentLayout: 'vertical',
     successBehavior: 'keepForm',
+    formPlacement: 'center',
   }
 
   let customSettings = JSON.parse(props.settings)
@@ -263,7 +265,9 @@ const headerComp = computed(() => ({
   title:
     endpointResponse.value?.title ??
     (!formSettings.value?.hideTitle ? props.title : ''),
-  description: endpointResponse.value?.description ?? props.description,
+  description: (
+    endpointResponse.value?.description ?? props.description
+  )?.replace(/{{\s*pageTitle\s*}}/g, props.pageTitle ?? ''),
 }))
 
 const endpointMessage = computed(() => endpointResponse.value?.successMessage)
@@ -385,7 +389,8 @@ function getFieldOptions(i, key) {
     case 'position':
       base.options.props = {
         mapboxApiToken: props.mapboxApiToken,
-        mapboxTheme: props.mapboxTheme,
+        mapboxThemePrefix: props.mapboxTheme,
+        theme: base?.['position-theme'],
       }
 
       return base
@@ -412,14 +417,17 @@ const formFields = computed(() => {
         const base = {
           size: i.size,
           'hide-label': i?.['hide-label'],
+          fontSize: i?.fontSize,
+          fontWeight: i?.fontWeight,
         }
         const placeholder = i['lead-placeholder']
+        const label = i['lead-label']
+
         return [
           {
             key: 'contact.name',
             component: 'short-text',
-            label: t('name'),
-
+            label: label?.name || t('name'),
             options: {
               validation: 'required',
               props: {
@@ -431,7 +439,7 @@ const formFields = computed(() => {
           {
             key: 'contact.email',
             component: 'short-text',
-            label: t('email'),
+            label: label?.email || t('email'),
             options: {
               validation: 'required|email',
               props: {
@@ -443,7 +451,7 @@ const formFields = computed(() => {
           {
             key: 'contact.phone',
             component: 'short-text',
-            label: t('phone'),
+            label: label?.phone || t('phone'),
             options: {
               validation: 'required|phone',
               props: {
@@ -455,7 +463,7 @@ const formFields = computed(() => {
           {
             key: 'comment',
             component: 'long-text',
-            label: t('leadMessage'),
+            label: label?.comment || t('leadMessage'),
             options: {
               props: {
                 rows: '6',
@@ -474,20 +482,22 @@ const formFields = computed(() => {
           ...getFieldOptions(i, key),
           options: {
             props: {
-              ...(i?.[key] || {}),
+              ...(i?.header || {}),
+              titleTag: 'h3',
             },
           },
         }
       }
       if (['postcode'].includes(i.component)) {
+        const base = getFieldOptions(i, key)
         return [
           {
-            key: i.key,
-            component: 'postcode',
-            label: i.label,
+            ...base,
             options: {
               validation: getValidation(i),
+              ...base.options,
               props: {
+                ...base.options?.props,
                 placeholder: i?.placeholder,
                 type: 'number',
               },
@@ -686,14 +696,26 @@ onMounted(() => {
       :class="[
         'kvass-form__wrapper',
         `kvass-form__wrapper--layout-${formSettings?.contentLayout}`,
+        `kvass-form__wrapper--placement-${formSettings?.formPlacement}`,
       ]"
     >
-      <Header
-        :title="headerComp.title"
-        :description="headerComp.description"
-        title-tag="h2"
-        :center="formSettings?.centerHeading"
-      />
+      <div class="kvass-form__header">
+        <Header
+          :title="headerComp.title"
+          :description="headerComp.description"
+          title-tag="h2"
+          :center="formSettings?.centerHeading"
+        />
+        <Button
+          v-if="formSettings?.contentLayout === 'horizontal' && successIsCustom"
+          class="kvass-form__restart-button"
+          :label="formSettings?.restartButtonLabel"
+          icon-left="fa-pro-solid:arrow-left"
+          :variant="submitButtonTheme"
+          @click="restart"
+        />
+      </div>
+
       <Grid
         v-if="submitted && replacesForm"
         gap="2rem"
@@ -705,10 +727,13 @@ onMounted(() => {
           class="kvass-form__success-content"
           v-html="successMessageComp"
         ></div>
+
         <Alert v-else variant="info">
           <div v-html="successMessageComp"></div>
         </Alert>
+
         <Button
+          v-if="formSettings?.contentLayout === 'vertical'"
           class="kvass-form__restart-button"
           :label="formSettings?.restartButtonLabel"
           icon-left="fa-pro-solid:arrow-left"
@@ -720,28 +745,37 @@ onMounted(() => {
         <div class="kvass-form__content" :style="style">
           <template v-for="field in formFields.filteredFields">
             <FormControl
+              :style="`--grid-area: ${transformKey(field?.key)};`"
               :class="[
                 'kvass-form__field',
                 { 'kvass-form__field--size-half': field.size === 'half' },
+                {
+                  'kvass-form__has-custom-label-size': Boolean(field.fontSize),
+                },
                 {
                   'kvass-form__field--required': (
                     field.options?.validation || ''
                   ).includes('required'),
                 },
               ]"
-              :style="{ '--grid-area': transformKey(field?.key) }"
-              :label="
-                field?.['hide-label'] ||
-                hideFormFieldLabelOn.includes(field.component)
-                  ? ''
-                  : field.label
-              "
               :error="
                 !isFieldValid(field.key) && visited.includes(field.key)
                   ? getFieldError(field.key)
                   : ''
               "
             >
+              <template #label>
+                <label
+                  :style="`${field.fontSize ? `font-size:${field.fontSize}px;` : ''} ${field.fontWeight ? `font-weight:${field.fontWeight};` : ''}`"
+                  v-if="
+                    !(
+                      field?.['hide-label'] ||
+                      hideFormFieldLabelOn.includes(field.component)
+                    )
+                  "
+                  >{{ field.label }}</label
+                >
+              </template>
               <component
                 :is="componentMap[field.component]"
                 v-bind="field.options?.props"
@@ -822,15 +856,29 @@ onMounted(() => {
     max-width: var(--_kvass-form-max-width);
     margin-inline: auto;
 
-    &--layout-horizontal {
-      display: grid;
-      grid-template-columns: var(--kvass-form-layout-columns, 1fr 1fr);
-      column-gap: var(--kvass-form-layout-gap, 3rem);
-      row-gap: 1rem;
-      align-items: start;
+    &--placement-left {
+      margin-inline: 0 auto;
+    }
 
-      @media (max-width: 767px) {
-        grid-template-columns: 1fr;
+    &--layout {
+      &-vertical {
+        .kvass-form__success-content {
+          margin-top: 1rem;
+        }
+      }
+      &-horizontal {
+        display: grid;
+        grid-template-columns: var(--kvass-form-layout-columns, 1fr 1fr);
+        column-gap: var(--kvass-form-layout-gap, 5rem);
+        row-gap: 1rem;
+        align-items: start;
+
+        :nth-child(1 of h1, h2, h3) {
+          margin-top: 0;
+        }
+        @media (max-width: 767px) {
+          grid-template-columns: 1fr;
+        }
       }
     }
   }
@@ -847,12 +895,17 @@ onMounted(() => {
     }
   }
 
+  &__field {
+    font-size: var(--kvass-form-form-font-size);
+  }
+
   &__bottom {
     margin-top: 2rem;
   }
   &__restart-button {
     max-width: fit-content;
     margin-inline: auto;
+    margin-top: 2rem;
   }
   &__submit-button {
     grid-column-end: span 2;
@@ -873,7 +926,7 @@ onMounted(() => {
         )
       );
     }
-    margin: 0 auto;
+    margin: var(--kvass-form-submit-button-margin, 0 auto);
   }
   &__privacy {
     font-size: 0.95em;
