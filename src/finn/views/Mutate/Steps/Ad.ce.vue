@@ -1917,6 +1917,27 @@ const saveDraft = () => {
                     </template>
                   </Input>
                 </FormControl>
+                <FormControl
+                  v-if="hasField('VIRTUAL_VIEWING_URL')"
+                  v-bind="validate('VIRTUAL_VIEWING_URL')"
+                  label="Virtuell visning URL"
+                  :class="[
+                    'ad__field',
+                    { 'ad__field--edited': isEdited('VIRTUAL_VIEWING_URL') },
+                  ]"
+                >
+                  <Input v-model="data.VIRTUAL_VIEWING_URL">
+                    <template #suffix>
+                      <Icon
+                        :icon="getIsEditedBind('VIRTUAL_VIEWING_URL').icon"
+                        v-tooltip="{
+                          content: getIsEditedBind('VIRTUAL_VIEWING_URL').label,
+                          container: false,
+                        }"
+                      ></Icon>
+                    </template>
+                  </Input>
+                </FormControl>
               </template>
             </Expandable>
 
