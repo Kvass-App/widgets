@@ -4,7 +4,16 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue({ customElement: true })],
+  plugins: [
+    vue({
+      customElement: true,
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('visuado-'),
+        },
+      },
+    }),
+  ],
   optimizeDeps: {
     include: ['@kvass/vue3-flatfinder'],
     esbuildOptions: {
@@ -68,6 +77,9 @@ export default defineConfig({
         ),
         'kvass-storyfly': fileURLToPath(
           new URL('./src/storyfly/main.js', import.meta.url),
+        ),
+        'kvass-walkable': fileURLToPath(
+          new URL('./src/walkable/main.js', import.meta.url),
         ),
         knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
         finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
