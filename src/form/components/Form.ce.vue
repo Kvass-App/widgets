@@ -834,7 +834,7 @@ onMounted(() => {
 .kvass-form {
   font-size: var(--kvass-form-font-size);
   background-color: var(--kvass-form-background, transparent);
-  padding: var(--kvass-form-padding, 1rem);
+  padding: var(--kvass-form-padding, 2rem);
   color: var(--kvass-form-text-color, currentColor);
   --_kvass-form-ui-color: var(--kvass-form-ui-color, var(--secondary));
 
