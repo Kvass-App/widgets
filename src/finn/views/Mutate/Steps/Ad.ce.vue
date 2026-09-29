@@ -117,6 +117,7 @@ const validatorData = computed(() => {
 const customMessages = computed(() => {
   return {
     required_if: 'Feltet ":attribute" er påkrevd når ":other" er avhuket',
+    after: 'Feltet ":attribute" må være etter ":after"',
   }
 })
 
@@ -1068,6 +1069,50 @@ const saveDraft = () => {
                           v-tooltip="{
                             content: getIsEditedBind('RENTAL_PRICE_PER_MONTH')
                               .label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('RENT_FROM')"
+                    v-bind="validate('RENT_FROM')"
+                    label="Leie fra"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('RENT_FROM') },
+                    ]"
+                  >
+                    <Input v-model="data.RENT_FROM" type="date">
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('RENT_FROM').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('RENT_FROM').label,
+                            container: false,
+                          }"
+                        ></Icon>
+                      </template>
+                    </Input>
+                  </FormControl>
+
+                  <FormControl
+                    v-if="hasField('RENT_TO')"
+                    v-bind="validate('RENT_TO')"
+                    label="Leie til"
+                    :class="[
+                      'ad__field',
+                      { 'ad__field--edited': isEdited('RENT_TO') },
+                    ]"
+                  >
+                    <Input v-model="data.RENT_TO" type="date">
+                      <template #suffix>
+                        <Icon
+                          :icon="getIsEditedBind('RENT_TO').icon"
+                          v-tooltip="{
+                            content: getIsEditedBind('RENT_TO').label,
                             container: false,
                           }"
                         ></Icon>
