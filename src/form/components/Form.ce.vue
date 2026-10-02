@@ -611,11 +611,19 @@ function submit() {
       submitted.value = true
 
       //emit track events to KvassApi if defined
+
       if (typeof Kvass !== 'undefined') {
         if (hasLeadFields?.value) {
+          // tracking integrations expect contact info nested under `contact`
+          const contact = Object.fromEntries(
+            Object.entries(dataToSubmit)
+              .filter(([key]) => key.startsWith('contact.'))
+              .map(([key, value]) => [key.replace('contact.', ''), value]),
+          )
+
           Kvass.emit('track', {
             event: 'lead',
-            data: dataToSubmit,
+            data: { ...dataToSubmit, contact },
           })
         }
         Kvass.emit('track', {
@@ -707,7 +715,11 @@ onMounted(() => {
           :center="formSettings?.centerHeading"
         />
         <Button
-          v-if="formSettings?.contentLayout === 'horizontal' && successIsCustom"
+          v-if="
+            formSettings?.contentLayout === 'horizontal' &&
+            replacesForm &&
+            submitted
+          "
           class="kvass-form__restart-button"
           :label="formSettings?.restartButtonLabel"
           icon-left="fa-pro-solid:arrow-left"
