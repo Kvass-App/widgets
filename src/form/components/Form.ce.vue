@@ -51,6 +51,11 @@ function flattenToSingleLevel(
   return result
 }
 
+function getApiBase() {
+  if (!document.querySelector('base[href]')) return window.location.origin
+  return document.baseURI.replace(/\/$/, '')
+}
+
 const componentMap = {
   radio: RadioGroup,
   email: Input,
@@ -340,7 +345,7 @@ function getFieldOptions(i, key) {
     case 'file':
       base.options.props = {
         upload: async (rawFile) => {
-          const url = `${window.location.origin}/api/form/upload`
+          const url = `${getApiBase()}/api/form/upload`
 
           const file = await Promise.resolve(rawFile)
 
@@ -597,13 +602,9 @@ function submit() {
       }).then((res) => {
         endpointResponse.value = res || null
       })
-    : createFormSubmit(
-        props.accountUrl || window.location.origin,
-        props.formId,
-        {
-          ...dataToSubmit,
-        },
-      )
+    : createFormSubmit(props.accountUrl || getApiBase(), props.formId, {
+        ...dataToSubmit,
+      })
 
   promise.value = request
     .then(() => {
