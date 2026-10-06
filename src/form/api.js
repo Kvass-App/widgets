@@ -14,11 +14,15 @@ function createFormSubmit(url, formId, data) {
               `,
       variables: { data: { form: formId, data } },
     }),
-  }).then((res) => {
-    console.log(res)
-    if (!res.ok)
-      throw new Error(`FormSubmit failed, statusCode: ${res?.status}`)
   })
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`FormSubmit failed, statusCode: ${res?.status}`)
+      return res.json()
+    })
+    .then((res) => {
+      if (!res.data?.FormSubmitCreate?.id) throw new Error('FormSubmit failed')
+    })
 }
 
 function submitToEndpoint(url, payload, options = {}) {
