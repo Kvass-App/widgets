@@ -4,10 +4,6 @@ import { useElementSize, useMutationObserver } from '@vueuse/core'
 import { computed, ref, useHost, watch, watchEffect } from 'vue'
 import WalkableIcon from './WalkableIcon.ce.vue'
 
-import(
-  /* @vite-ignore */ 'https://player-cdn.walkable.visuado.com/latest/walkable-player.element.js'
-)
-
 const props = withDefaults(
   defineProps<{
     url: string
@@ -21,6 +17,14 @@ const props = withDefaults(
 
 const dialog = ref()
 const isOpen = ref(false)
+
+// only when a tour is shown, so a button doesn't load the player until it's opened
+watchEffect(() => {
+  if (props.variant !== 'inline' && !isOpen.value) return
+  import(
+    /* @vite-ignore */ 'https://player-cdn.walkable.visuado.com/latest/walkable-player.element.js'
+  )
+})
 
 const link = computed(() => new URL(props.url))
 
