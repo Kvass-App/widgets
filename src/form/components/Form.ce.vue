@@ -645,9 +645,9 @@ function submit() {
       }
     })
     .catch((err) => {
-      console.log(err)
       submitError.value = true
-      return setTimeout(() => (submitError.value = false), props.submitTimeout)
+      setTimeout(() => (submitError.value = false), props.submitTimeout)
+      throw err
     })
 }
 
