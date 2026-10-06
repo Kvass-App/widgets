@@ -90,7 +90,6 @@ const props = defineProps({
   },
   accountUrl: {
     type: String,
-    required: true,
   },
 
   submitButtonTheme: {
