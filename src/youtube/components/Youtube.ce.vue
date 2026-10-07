@@ -117,11 +117,22 @@ export default {
         ExtractString(value, /https\:\/\/(w{3}\.)?youtu\.be\/(.+)\/?/, {
           group: 2,
         }),
+        ExtractString(
+          value,
+          /https\:\/\/(w{3}\.)?youtube\.com\/shorts\/(.+)\/?/,
+          { group: 2 },
+        ),
       ].find((e) => {
         return Boolean(e)
       })
 
-      if (id) return id.split('&')[0]
+      if (id) return id.split(/[?&#/]/)[0]
+    },
+    isShorts() {
+      return /youtube\.com\/shorts\//.test(this.url)
+    },
+    resolvedAspectRatio() {
+      return this.isShorts ? '9/16' : this.aspectRatio
     },
   },
 
@@ -206,56 +217,89 @@ export default {
 
 <template>
   <div
-    class="widget-kvass-media-render-youtube"
-    :style="`aspect-ratio: ${aspectRatio};`"
+    :class="[
+      'widget-kvass-media-render-youtube',
+      { 'widget-kvass-media-render-youtube--vertical': isShorts },
+    ]"
+    :style="`aspect-ratio: ${resolvedAspectRatio};`"
   >
     <div
-      ref="youtubePlayer"
-      class="kvass-media-render-youtube__embed"
-      frameborder="0"
-      allow="autoplay; fullscreen;"
-      webkitallowfullscreen
-      mozallowfullscreen
-    />
-
-    <transition name="fade" mode="in-out">
+      class="widget-kvass-media-render-youtube__frame"
+      :style="`aspect-ratio: ${resolvedAspectRatio};`"
+    >
       <div
-        v-show="!ready && thumbnail"
-        class="widget-kvass-media-render-youtube__thumbnail"
-        :style="{ backgroundImage: `url(${thumbnail})` }"
+        ref="youtubePlayer"
+        class="kvass-media-render-youtube__embed"
+        frameborder="0"
+        allow="autoplay; fullscreen;"
+        webkitallowfullscreen
+        mozallowfullscreen
       />
-    </transition>
-    <div v-if="showConsent" class="widget-kvass-media-render-youtube__blocked">
-      <div class="widget-kvass-media-render-youtube__blocked-warning">
-        {{ consentBlockMessage }}
-        <button
-          class="widget-kvass-media-render-youtube__blocked-warning-button"
-          @click="openConsent"
-        >
-          {{ consentButtonLabel }}
-        </button>
+
+      <transition name="fade" mode="in-out">
+        <div
+          v-show="!ready && thumbnail"
+          class="widget-kvass-media-render-youtube__thumbnail"
+          :style="{ backgroundImage: `url(${thumbnail})` }"
+        />
+      </transition>
+      <div
+        v-if="showConsent"
+        class="widget-kvass-media-render-youtube__blocked"
+      >
+        <div class="widget-kvass-media-render-youtube__blocked-warning">
+          {{ consentBlockMessage }}
+          <button
+            class="widget-kvass-media-render-youtube__blocked-warning-button"
+            @click="openConsent"
+          >
+            {{ consentButtonLabel }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss">
+:host {
+  display: block;
+  height: 100%;
+}
+
 .widget-kvass-media-render-youtube {
   height: 100%;
   width: 100%;
   position: relative;
+  display: flex;
 
   iframe {
     height: 100%;
     width: 100%;
   }
 
-  & > * {
-    position: absolute;
-    top: 0;
-    left: 0;
+  &__frame {
+    position: relative;
     width: 100%;
     height: 100%;
+    margin: auto;
+
+    & > * {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &--vertical {
+    max-height: 100vh;
+
+    .widget-kvass-media-render-youtube__frame {
+      width: auto;
+      max-width: 100%;
+    }
   }
 
   &__thumbnail {
