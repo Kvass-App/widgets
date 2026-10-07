@@ -987,6 +987,12 @@ onMounted(() => {
     --k-input-padding-x: var(--kvass-form-padding-inline, 0.75rem);
     --k-input-padding-y: var(--kvass-form-padding-block, 0);
     min-height: 44px;
+    input:disabled {
+      color: inherit;
+      &::placeholder {
+        color: inherit;
+      }
+    }
   }
 
   textarea {
@@ -1026,7 +1032,7 @@ onMounted(() => {
       border-color: var(--_kvass-form-ui-contrast-color);
     }
     &__label {
-      line-height: normal;
+      line-height: inherit;
     }
   }
 
