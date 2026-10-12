@@ -38,6 +38,14 @@ To use the widget, use the `<kvass-youtube />` element as shown here.
 <script type="module" src="/src/youtube/main.js"></script>
 ```
 
+### YouTube Shorts
+
+Shorts URLs (`https://www.youtube.com/shorts/<id>`) are detected automatically and rendered as a vertical 9:16 player, centered inside the element. The `aspect-ratio` attribute only applies to regular videos.
+
+```html
+<kvass-youtube url="https://www.youtube.com/shorts/qWYn55cRh9w"></kvass-youtube>
+```
+
 ## Props
 
 The component has several props for easy configuration.
