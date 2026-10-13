@@ -33,6 +33,9 @@ export function normalizeCollection(collection) {
       ([key, value]) => ({ key, value }),
     )[0]
 
+    if (!currentCollection)
+      return { total: collection.total, icons: collection.icons }
+
     /**
      * {
      * 	limit: number
