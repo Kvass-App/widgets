@@ -114,7 +114,7 @@ const searchDebounced = refDebounced(search, 500)
 watch(
   searchDebounced,
   async (s) => {
-    if (s === undefined || s === null) return
+    if (!s && !selectedCollection.value) return
 
     collection.value = await getIcons({
       collection: selectedCollection.value,
@@ -188,12 +188,12 @@ const featuredIcons = ref(props.featuredIcons?.split(',').map((i) => i.trim()))
                     {{ Translate('goBack') }}
                   </button>
                   <h3
-                    v-if="selectedCollection && collection.prefix"
+                    v-if="selectedCollection && collection?.prefix"
                     style="margin-bottom: 0"
                   >
                     {{ Translate(collection.prefix) }}
                   </h3>
-                  <p v-if="collection.total" style="opacity: 0.5">
+                  <p v-if="collection?.total" style="opacity: 0.5">
                     {{ collection.total }}
                     {{ Translate('iconsSelectWidgetIconsFound') }}
                   </p>
