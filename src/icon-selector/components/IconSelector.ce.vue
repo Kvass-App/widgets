@@ -114,7 +114,7 @@ const searchDebounced = refDebounced(search, 500)
 watch(
   searchDebounced,
   async (s) => {
-    if (s === undefined || s === null) return
+    if (!s && !selectedCollection.value) return
 
     collection.value = await getIcons({
       collection: selectedCollection.value,
