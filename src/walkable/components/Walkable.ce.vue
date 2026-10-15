@@ -62,15 +62,37 @@ const closePlacement = computed(() => {
 })
 
 const lightboxPlayer = ref<HTMLElement>()
+const lightboxRoot = ref<ShadowRoot | null>()
 const disclaimer = ref<HTMLElement | null>()
+const hasIntro = ref(false)
+const expectsIntro = ref(false)
 
-function findDisclaimer() {
-  disclaimer.value =
-    lightboxPlayer.value?.shadowRoot?.querySelector('.disclaimer')
+// The shadow root only exists once the player's script has defined the element
+watch(lightboxPlayer, async (player) => {
+  lightboxRoot.value = null
+  if (!player) return
+  await customElements.whenDefined('visuado-walkable-player')
+  lightboxRoot.value = player.shadowRoot
+})
+
+// The player shows its welcome card once the tour has loaded, until the card has been dismissed
+function isIntroDismissed() {
+  try {
+    return localStorage.getItem('walkable-player:intro-dismissed') === '1'
+  } catch {
+    return false
+  }
 }
 
-watch(lightboxPlayer, findDisclaimer)
-useMutationObserver(() => lightboxPlayer.value?.shadowRoot, findDisclaimer, {
+// The welcome card has its own ×, which only closes the card, so ours looks to sit behind it until the card is gone
+function findPlayerParts() {
+  disclaimer.value = lightboxRoot.value?.querySelector('.disclaimer')
+  hasIntro.value = Boolean(lightboxRoot.value?.querySelector('.intro-veil'))
+  if (!hasIntro.value && isIntroDismissed()) expectsIntro.value = false
+}
+
+watch(lightboxRoot, findPlayerParts)
+useMutationObserver(lightboxRoot, findPlayerParts, {
   childList: true,
   subtree: true,
 })
@@ -91,6 +113,7 @@ watchEffect(() => {
 })
 
 function openLightbox() {
+  expectsIntro.value = showsHelp.value && !isIntroDismissed()
   isOpen.value = true
   dialog.value.showModal()
 }
@@ -206,6 +229,10 @@ function onTouchcancel() {
         <div class="kvass-walkable__dialog-content">
           <Button
             class="kvass-walkable__close"
+            :class="{
+              'kvass-walkable__close--behind': expectsIntro || hasIntro,
+              'kvass-walkable__close--blocked': hasIntro,
+            }"
             icon="fa-pro-light:xmark"
             @click="dialog.close()"
           />
@@ -380,6 +407,15 @@ function onTouchcancel() {
       height: 32px;
       border-radius: 8px;
       font-size: 16px;
+    }
+
+    &--behind {
+      opacity: 0.35;
+      filter: blur(3px);
+    }
+
+    &--blocked {
+      pointer-events: none;
     }
   }
 }
