@@ -3,6 +3,7 @@ import { Button } from '@kvass/ui'
 import { useElementSize, useMutationObserver } from '@vueuse/core'
 import { computed, ref, useHost, watch, watchEffect } from 'vue'
 import WalkableIcon from './WalkableIcon.ce.vue'
+import { Translate } from '../../utils/index.js'
 
 const props = withDefaults(
   defineProps<{
@@ -29,7 +30,10 @@ watchEffect(() => {
 const link = computed(() => new URL(props.url))
 
 const buttonLabel = computed(
-  () => link.value.searchParams.get('label') || props.label,
+  () =>
+    link.value.searchParams.get('label') ||
+    props.label ||
+    Translate('lookAround'),
 )
 
 const player = computed(() => {
