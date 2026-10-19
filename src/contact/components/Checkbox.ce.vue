@@ -64,28 +64,28 @@ function onChange(ev) {
     color: currentColor;
     width: var(
       --kvass-contact-checkbox-size,
-      var(--kvass-contact-default-checkbox-size)
+      var(--__kvass-contact-checkbox-size)
     );
     aspect-ratio: 1;
     border: var(
         --kvass-contact-checkbox-border-width,
-        var(--kvass-contact-default-checkbox-border-width)
+        var(--__kvass-contact-checkbox-border-width)
       )
       solid currentColor;
     border-radius: var(
       --kvass-contact-checkbox-border-radius,
-      var(--kvass-contact-default-checkbox-border-radius)
+      var(--__kvass-contact-checkbox-border-radius)
     );
 
     &:focus-visible {
       outline: var(
           --kvass-contact-outline-width,
-          var(--kvass-contact-default-outline-width)
+          var(--__kvass-contact-outline-width)
         )
-        solid var(--kvass-contact-color, var(--kvass-contact-default-color));
+        solid var(--kvass-contact-color, var(--__kvass-contact-color));
       outline-offset: var(
         --kvass-contact-outline-offset,
-        var(--kvass-contact-default-outline-offset)
+        var(--__kvass-contact-outline-offset)
       );
     }
 
@@ -93,11 +93,11 @@ function onChange(ev) {
       position: relative;
       background-color: var(
         --kvass-contact-primary,
-        var(--kvass-contact-default-primary)
+        var(--__kvass-contact-primary)
       );
       border-color: var(
         --kvass-contact-primary,
-        var(--kvass-contact-default-primary)
+        var(--__kvass-contact-primary)
       );
 
       &::before {
@@ -110,7 +110,7 @@ function onChange(ev) {
 
         color: var(
           --kvass-contact-color-inverted,
-          var(--kvass-contact-default-color-inverted)
+          var(--__kvass-contact-color-inverted)
         );
       }
     }
@@ -119,7 +119,7 @@ function onChange(ev) {
   &--required {
     span:after {
       content: '*';
-      color: var(--kvass-contact-error, var(--kvass-contact-default-error));
+      color: var(--kvass-contact-error, var(--__kvass-contact-error));
       margin-left: 0.3rem;
     }
   }
