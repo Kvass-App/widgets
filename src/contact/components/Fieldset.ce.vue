@@ -18,37 +18,31 @@ defineProps({
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: calc(
-    var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 4
-  );
+  gap: calc(var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 4);
   margin: calc(
-      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 1.5
+      var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 1.5
     )
     0 0 0;
   padding: calc(
-    var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+    var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2
   );
   border-radius: var(
     --kvass-contact-border-radius,
-    var(--kvass-contact-default-border-radius)
+    var(--__kvass-contact-border-radius)
   );
-  border: var(
-      --kvass-contact-border-width,
-      var(--kvass-contact-default-border-width)
-    )
-    solid
-    var(--kvass-contact-border-color, var(--kvass-contact-default-border-color));
+  border: var(--kvass-contact-border-width, var(--__kvass-contact-border-width))
+    solid var(--kvass-contact-border-color, var(--__kvass-contact-border-color));
   font: inherit;
 
   &:focus-visible {
     outline: var(
         --kvass-contact-outline-width,
-        var(--kvass-contact-default-outline-width)
+        var(--__kvass-contact-outline-width)
       )
-      solid var(--kvass-contact-color, var(--kvass-contact-default-color));
+      solid var(--kvass-contact-color, var(--__kvass-contact-color));
     outline-offset: var(
       --kvass-contact-outline-offset,
-      var(--kvass-contact-default-outline-offset)
+      var(--__kvass-contact-outline-offset)
     );
   }
 

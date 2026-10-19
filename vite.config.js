@@ -1,6 +1,8 @@
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
+import Widgets from './widgets.config.js'
+import Manifest from './plugins/manifest.js'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,6 +15,7 @@ export default defineConfig({
         },
       },
     }),
+    Manifest(Widgets),
   ],
   optimizeDeps: {
     include: ['@kvass/vue3-flatfinder'],
@@ -33,72 +36,12 @@ export default defineConfig({
         chunkFileNames: `[name].js`,
         assetFileNames: `[name].[ext]`,
       },
-      input: {
-        contact: fileURLToPath(
-          new URL('./src/contact/main.js', import.meta.url),
-        ),
-        'img-comparison-slider': fileURLToPath(
-          new URL('./src/img-comparison-slider/main.js', import.meta.url),
-        ),
-        'project-portal': fileURLToPath(
-          new URL('./src/project-portal/main.js', import.meta.url),
-        ),
-        vimeo: fileURLToPath(new URL('./src/vimeo/main.js', import.meta.url)),
-        youtube: fileURLToPath(
-          new URL('./src/youtube/main.js', import.meta.url),
-        ),
-        map: fileURLToPath(new URL('./src/map/main.js', import.meta.url)),
-        flatfinder: fileURLToPath(
-          new URL('./src/flatfinder/main.js', import.meta.url),
-        ),
-        'font-selector': fileURLToPath(
-          new URL('./src/font-selector/main.js', import.meta.url),
-        ),
-        'icon-selector': fileURLToPath(
-          new URL('./src/icon-selector/main.js', import.meta.url),
-        ),
-        'location-selector': fileURLToPath(
-          new URL('./src/location-selector/main.js', import.meta.url),
-        ),
-        'table-builder': fileURLToPath(
-          new URL('./src/table-builder/main.js', import.meta.url),
-        ),
-        'chart-builder': fileURLToPath(
-          new URL('./src/chart-builder/main.js', import.meta.url),
-        ),
-        'residential-expenses': fileURLToPath(
-          new URL('./src/residential-expenses/main.js', import.meta.url),
-        ),
-        'loan-calculator': fileURLToPath(
-          new URL('./src/loan-calculator/main.js', import.meta.url),
-        ),
-        'kvass-form': fileURLToPath(
-          new URL('./src/form/main.js', import.meta.url),
-        ),
-        'kvass-storyfly': fileURLToPath(
-          new URL('./src/storyfly/main.js', import.meta.url),
-        ),
-        'kvass-walkable': fileURLToPath(
-          new URL('./src/walkable/main.js', import.meta.url),
-        ),
-        knips: fileURLToPath(new URL('./src/knips/main.js', import.meta.url)),
-        finn: fileURLToPath(new URL('./src/finn/main.js', import.meta.url)),
-        directories: fileURLToPath(
-          new URL('./src/directories/main.js', import.meta.url),
-        ),
-        nabolagsprofil: fileURLToPath(
-          new URL('./src/nabolagsprofil/main.js', import.meta.url),
-        ),
-        'visualization-order-form': fileURLToPath(
-          new URL('./src/visualization-order-form/main.js', import.meta.url),
-        ),
-        'google-search-console': fileURLToPath(
-          new URL('./src/google-search-console/main.js', import.meta.url),
-        ),
-        'gsc-verification-key-form': fileURLToPath(
-          new URL('./src/gsc-verification-key/main.js', import.meta.url),
-        ),
-      },
+      input: Object.fromEntries(
+        Object.entries(Widgets).map(([name, { path }]) => [
+          name,
+          fileURLToPath(new URL(path, import.meta.url)),
+        ]),
+      ),
     },
   },
   server: {

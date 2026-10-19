@@ -83,47 +83,47 @@ function onBlur() {
   
   &__element {
     padding: calc(
-      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2
     );
 
     padding-left: var(
       --kvass-contact-field-input-tranform,
       calc(
-        var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+        var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2
       )
     );
 
     border-radius: var(
       --kvass-contact-border-radius,
-      var(--kvass-contact-default-border-radius)
+      var(--__kvass-contact-border-radius)
     );
     border: var(
         --kvass-contact-border-width,
-        var(--kvass-contact-default-border-width)
+        var(--__kvass-contact-border-width)
       )
       solid
       var(
         --kvass-contact-border-color,
-        var(--kvass-contact-default-border-color)
+        var(--__kvass-contact-border-color)
       );
     resize: vertical;
     font: inherit;
     color: inherit;
     background-color: var(
       --kvass-contact-input-background,
-      var(--kvass-contact-default-input-background)
+      var(--__kvass-contact-input-background)
     );
 
     &:focus-visible {
       outline: var(
           --kvass-contact-outline-width,
-          var(--kvass-contact-default-outline-width)
+          var(--__kvass-contact-outline-width)
         )
-        solid var(--kvass-contact-color, var(--kvass-contact-default-color));
+        solid var(--kvass-contact-color, var(--__kvass-contact-color));
 
       outline-offset: var(
         --kvass-contact-outline-offset,
-        var(--kvass-contact-default-outline-offset)
+        var(--__kvass-contact-outline-offset)
       );
     }
   }
@@ -131,7 +131,7 @@ function onBlur() {
   &--required {
     .kvass-contact-field__label::after {
       content: '*';
-      color: var(--kvass-contact-error, var(--kvass-contact-default-error));
+      color: var(--kvass-contact-error, var(--__kvass-contact-error));
       margin-left: 0.3rem;
     }
 
@@ -139,7 +139,7 @@ function onBlur() {
       .kvass-contact-field__element:invalid {
         border-color: var(
           --kvass-contact-error,
-          var(--kvass-contact-default-error)
+          var(--__kvass-contact-error)
         );
       }
     }
@@ -149,7 +149,7 @@ function onBlur() {
     grid-column-end: span
       var(
         --kvass-contact-grid-columns,
-        var(--kvass-contact-default-grid-columns)
+        var(--__kvass-contact-grid-columns)
       );
   }
 }

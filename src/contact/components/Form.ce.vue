@@ -246,54 +246,46 @@ onMounted(() => {
 .kvass-contact {
   // default variables
 
-  --kvass-contact-default-background: #ffffff;
-  --kvass-contact-default-spacing: 2rem;
-  --kvass-contact-default-padding: var(
+  --__kvass-contact-background: #ffffff;
+  --__kvass-contact-spacing: 2rem;
+  --__kvass-contact-padding: var(
     --kvass-contact-spacing,
-    var(--kvass-contact-default-spacing)
+    var(--__kvass-contact-spacing)
   );
-  --kvass-contact-default-border-radius: 4px;
-  --kvass-contact-default-border-color: #eaeaea;
-  --kvass-contact-default-border-width: 1px;
-  --kvass-contact-default-color: #222222;
-  --kvass-contact-default-color-inverted: #ffffff;
-  --kvass-contact-default-max-width: 720px;
-  --kvass-contact-default-primary: #1d56d8;
-  --kvass-contact-default-error: #d81d1d;
-  --kvass-contact-default-grid-columns: 1;
-  --kvass-contact-default-disabled: #eaeaea;
-  --kvass-contact-default-input-background: #ffffff;
-  --kvass-contact-default-outline-width: 2px;
-  --kvass-contact-default-outline-offset: 0px;
-  --kvass-contact-default-checkbox-size: 1em;
-  --kvass-contact-default-label-transform: 0;
-  --kvass-contact-default-checkbox-border-width: var(
-    --kvass-contact-default-border-width
-  );
+  --__kvass-contact-border-radius: 4px;
+  --__kvass-contact-border-color: #eaeaea;
+  --__kvass-contact-border-width: 1px;
+  --__kvass-contact-color: #222222;
+  --__kvass-contact-color-inverted: #ffffff;
+  --__kvass-contact-max-width: 720px;
+  --__kvass-contact-primary: #1d56d8;
+  --__kvass-contact-error: #d81d1d;
+  --__kvass-contact-grid-columns: 1;
+  --__kvass-contact-disabled: #eaeaea;
+  --__kvass-contact-input-background: #ffffff;
+  --__kvass-contact-outline-width: 2px;
+  --__kvass-contact-outline-offset: 0px;
+  --__kvass-contact-checkbox-size: 1em;
+  --__kvass-contact-label-transform: 0;
+  --__kvass-contact-checkbox-border-width: var(--__kvass-contact-border-width);
 
-  --kvass-contact-default-checkbox-border-radius: var(
-    --kvass-contact-default-border-radius
+  --__kvass-contact-checkbox-border-radius: var(
+    --__kvass-contact-border-radius
   );
 
   background-color: var(
     --kvass-contact-background,
-    var(--kvass-contact-default-background)
+    var(--__kvass-contact-background)
   );
-  padding: var(--kvass-contact-padding, var(--kvass-contact-default-padding));
+  padding: var(--kvass-contact-padding, var(--__kvass-contact-padding));
   border-radius: var(
     --kvass-contact-border-radius,
-    var(--kvass-contact-default-border-radius)
+    var(--__kvass-contact-border-radius)
   );
-  color: var(--kvass-contact-color, var(--kvass-contact-default-color));
-  max-width: var(
-    --kvass-contact-max-width,
-    var(--kvass-contact-default-max-width)
-  );
+  color: var(--kvass-contact-color, var(--__kvass-contact-color));
+  max-width: var(--kvass-contact-max-width, var(--__kvass-contact-max-width));
   font: inherit;
-  accent-color: var(
-    --kvass-contact-primary,
-    var(--kvass-contact-default-primary)
-  );
+  accent-color: var(--kvass-contact-primary, var(--__kvass-contact-primary));
 
   font-size: var(--kvass-contact-font-size, inherit);
   height: inherit;
@@ -301,19 +293,19 @@ onMounted(() => {
   max-height: inherit;
   display: flex;
   flex-direction: column;
-  gap: var(--kvass-contact-spacing, var(--kvass-contact-default-spacing));
+  gap: var(--kvass-contact-spacing, var(--__kvass-contact-spacing));
 
   @media (max-width: 600px) {
     --kvass-contact-grid-columns: 1;
     padding: calc(
-      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2
     );
   }
 
   * {
     &:focus-visible {
       outline: 2px solid
-        var(--kvass-contact-color, var(--kvass-contact-default-color));
+        var(--kvass-contact-color, var(--__kvass-contact-color));
       outline-offset: 2px;
     }
   }
@@ -339,15 +331,10 @@ onMounted(() => {
   &__fields {
     display: grid;
     grid-template-columns: repeat(
-      var(
-        --kvass-contact-grid-columns,
-        var(--kvass-contact-default-grid-columns)
-      ),
+      var(--kvass-contact-grid-columns, var(--__kvass-contact-grid-columns)),
       1fr
     );
-    gap: calc(
-      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
-    );
+    gap: calc(var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2);
   }
 
   &__success--overlay {
@@ -367,19 +354,19 @@ onMounted(() => {
 
   &__submit {
     padding: calc(
-      var(--kvass-contact-spacing, var(--kvass-contact-default-spacing)) / 2
+      var(--kvass-contact-spacing, var(--__kvass-contact-spacing)) / 2
     );
     border-radius: var(
       --kvass-contact-border-radius,
-      var(--kvass-contact-default-border-radius)
+      var(--__kvass-contact-border-radius)
     );
     background-color: var(
       --kvass-contact-primary,
-      var(--kvass-contact-default-primary)
+      var(--__kvass-contact-primary)
     );
     color: var(
       --kvass-contact-color-inverted,
-      var(--kvass-contact-default-color-inverted)
+      var(--__kvass-contact-color-inverted)
     );
     border: none;
     font: inherit;
@@ -393,9 +380,9 @@ onMounted(() => {
     &:disabled {
       background-color: var(
         --kvass-contact-disabled,
-        var(--kvass-contact-default-disabled)
+        var(--__kvass-contact-disabled)
       );
-      color: var(--kvass-contact-color, var(--kvass-contact-default-color));
+      color: var(--kvass-contact-color, var(--__kvass-contact-color));
       cursor: not-allowed;
     }
   }
