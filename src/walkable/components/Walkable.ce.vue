@@ -31,9 +31,7 @@ const link = computed(() => new URL(props.url))
 
 const buttonLabel = computed(
   () =>
-    link.value.searchParams.get('label') ||
-    props.label ||
-    Translate('lookAround'),
+    link.value.searchParams.get('label') || props.label || Translate('view360'),
 )
 
 const player = computed(() => {
