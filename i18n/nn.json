@@ -16,5 +16,6 @@
   "privacyPolicyTitle": "Personvernerklæring",
   "select": "Vel",
   "somethingWentWrong": "Noko gjekk gale",
-  "submit": "Send inn {x}\n"
+  "submit": "Send inn {x}\n",
+  "view360": "360° visning"
 }
