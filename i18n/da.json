@@ -50,5 +50,6 @@
   "showAllGoogleFonts": "Vis alle Google-skrifttyper",
   "somethingWentWrong": "Noget gik galt",
   "submit": "Indsend {x}",
-  "uploadFont": "Upload skrifttype"
+  "uploadFont": "Upload skrifttype",
+  "view360": "360°-visning"
 }
