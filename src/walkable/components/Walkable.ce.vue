@@ -251,6 +251,20 @@ function onTouchcancel() {
 
 <style lang="scss">
 :host {
+  --kvass-walkable-button-background: white;
+  --kvass-walkable-button-background-hover: color-mix(
+    in srgb,
+    var(--kvass-walkable-button-background) 92%,
+    black
+  );
+  --kvass-walkable-button-background-active: color-mix(
+    in srgb,
+    var(--kvass-walkable-button-background) 85%,
+    black
+  );
+  --kvass-walkable-button-color: #1a1a1a;
+  --kvass-walkable-button-radius: 4px;
+
   --kvass-walkable-close-background: #12171ea8;
   --kvass-walkable-close-color: #f2f5f8;
 
@@ -324,18 +338,21 @@ function onTouchcancel() {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 8px 20px;
-      border-radius: 99px;
-      backdrop-filter: blur(8px);
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      transition: transform 0.2s ease-in-out;
+      padding: 8px 12px;
+      border-radius: var(--kvass-walkable-button-radius);
+      background: var(--kvass-walkable-button-background);
+      color: var(--kvass-walkable-button-color);
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s ease-in-out;
     }
 
     &:hover .k-button__content {
-      transform: scale(1.1);
+      background: var(--kvass-walkable-button-background-hover);
+    }
+
+    &:active .k-button__content {
+      background: var(--kvass-walkable-button-background-active);
     }
   }
 
