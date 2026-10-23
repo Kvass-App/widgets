@@ -512,6 +512,7 @@ const formFields = computed(() => {
                 key: i.postplace?.key || 'postplace',
                 component: 'postplace',
                 label: i.postplace?.label,
+                size: i.size,
                 options: {
                   props: {
                     placeholder: i.postplace?.placeholder,
