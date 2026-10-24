@@ -18,12 +18,12 @@ const formatting = computed(() => {
   switch (props.format) {
     case 'currency':
       return getCurrencyInputProps({
-        locale: metadata.value.props.locale,
-        currency: metadata.value.props.currency,
+        locale: metadata.value.locale,
+        currency: metadata.value.currency,
       })
     case 'year':
       return {
-        suffix: new Intl.NumberFormat(metadata.value.props.locale, {
+        suffix: new Intl.NumberFormat(metadata.value.locale, {
           style: 'unit',
           unit: 'year',
           unitDisplay: 'long',
@@ -39,7 +39,7 @@ const formatting = computed(() => {
 })
 
 const formatValue = computed(() => {
-  const { locale, currency } = metadata.value.props
+  const { locale, currency } = metadata.value
   if (props.format === 'percent')
     return formatFactory('percent', { locale, maximumFractionDigits: 1 })
   return formatFactory(props.format, { locale, currency })
