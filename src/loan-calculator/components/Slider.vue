@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed, inject, ref, watch } from 'vue'
 import { Slider, Input, Grid, GridItem } from '@kvass/ui'
-import { getCurrencyInputProps } from '../../utils'
+import { getCurrencyInputProps, format as formatFactory } from '../../utils'
 
 const metadata = inject('metadata')
 
 const props = defineProps({
-  label: Number,
+  label: String,
   min: Number,
   max: Number,
   step: Number,
@@ -32,6 +32,13 @@ const formatting = computed(() => {
     default:
       return {}
   }
+})
+
+const formatValue = computed(() => {
+  const { locale, currency } = metadata.value.props
+  if (props.format === 'percent')
+    return formatFactory('percent', { maximumFractionDigits: 1 })
+  return formatFactory(props.format, { locale, currency })
 })
 
 const model = defineModel()
@@ -68,6 +75,8 @@ const onInputBlur = () => {
     <GridItem v-if="!disabled" area="slider">
       <Slider
         v-model="model"
+        :label="label"
+        :format="formatValue"
         :min="min"
         :max="max"
         :step="step"
