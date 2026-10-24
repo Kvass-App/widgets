@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, useId, watch } from 'vue'
 import { Clone, hasDiff } from '../../utils'
-import { Button, Flex, Expandable } from '@kvass/ui'
+import { Button, Flex, FormSection } from '@kvass/ui'
 
 import { vTooltip } from 'floating-vue'
 
@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Expandable class="expandable-list" :title="title" :subtitle="subtitle">
+  <FormSection class="expandable-list" :title="title" :subtitle="subtitle">
     <template #title v-if="$slots.title">
       <slot name="title"></slot>
     </template>
@@ -154,7 +154,7 @@ onMounted(() => {
       >
       </Button>
     </template>
-  </Expandable>
+  </FormSection>
 </template>
 
 <style lang="scss">
@@ -169,8 +169,8 @@ onMounted(() => {
     }
   }
 
-  .k-expandable__footer {
-    --k-expandable-spacing: 0rem;
+  .k-formsection__footer {
+    --k-formsection-spacing: 0rem;
 
     .k-button {
       width: 100%;

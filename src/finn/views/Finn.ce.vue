@@ -117,6 +117,9 @@ const getComponent = computed(() => {
   --k-alert-info-text: #303336;
   --k-alert-icon-size: var(--k-ui-spacing-lg);
 
+  --k-formsection-title-size: var(--k-ui-font-size-lg);
+  --k-formsection-subtitle-size: var(--k-ui-font-size);
+
   // --k-ui-color-danger: #fcdad9;
   // --k-ui-color-danger-dark: var(--danger-dark);
   // --k-ui-color-danger-darkest: #6d2423;
@@ -155,20 +158,12 @@ const getComponent = computed(() => {
     z-index: 1010;
   }
 
-  .k-expandable__header {
+  .k-formsection__header {
     & > .k-button__content {
       & > .k-button__icon {
         font-size: var(--k-ui-font-size-lg);
       }
     }
-  }
-
-  .k-expandable__title {
-    font-size: var(--k-ui-font-size-lg);
-  }
-
-  .k-expandable__subtitle {
-    font-size: var(--k-ui-font-size);
   }
 
   .k-formcontrol__label {

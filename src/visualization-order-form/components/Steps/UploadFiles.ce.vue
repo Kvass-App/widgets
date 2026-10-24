@@ -137,12 +137,12 @@ const upload = (
               :multiple="true"
               :sortable="false"
               :upload="upload"
-              :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
                 delete: getLabel('delete'),
                 download: 'Download',
                 copy: 'Copy link',
+                dropMessage: getLabel('dropMessage'),
               }"
             ></File>
           </FormControl>
@@ -173,12 +173,12 @@ const upload = (
               :uploadOptions="{
                 preTransform: preTransform,
               }"
-              :dropMessage="getLabel('dropMessage')"
               :rename="false"
               :labels="{
                 delete: getLabel('delete'),
                 download: 'Download',
                 copy: 'Copy link',
+                dropMessage: getLabel('dropMessage'),
               }"
             ></File>
           </FormControl>
@@ -208,12 +208,12 @@ const upload = (
                 :uploadOptions="{
                   preTransform: preTransform,
                 }"
-                :dropMessage="getLabel('dropMessage')"
                 :rename="false"
                 :labels="{
                   delete: getLabel('delete'),
                   download: 'Download',
                   copy: 'Copy link',
+                  dropMessage: getLabel('dropMessage'),
                 }"
               ></File>
             </FormControl>

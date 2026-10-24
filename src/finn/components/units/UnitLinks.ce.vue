@@ -121,7 +121,7 @@ defineExpose({
         v-if="hasFields('MOREINFO')"
         :limit="4"
         :template="{ URL: '', URLTEXT: '' }"
-        :expanded="true"
+        open
         v-model="item.MOREINFO"
         @remove="
           (idx) => {

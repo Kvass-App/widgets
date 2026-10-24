@@ -5,7 +5,7 @@ import { Input, FormControl, RichText } from '@kvass/ui'
 import ExpandableList from './ExpandableList.ce.vue'
 
 const props = defineProps<{
-  expanded: boolean
+  open: boolean
   title?: string
   subtitle?: string
 }>()
@@ -98,7 +98,7 @@ const setRichTextValue = (
 
 <template>
   <ExpandableList
-    :expanded="expanded"
+    :open="open"
     :title="title"
     :subtitle="subtitle"
     :template="{ title: '', content: '' }"

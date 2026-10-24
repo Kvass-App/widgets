@@ -86,10 +86,10 @@ watch(
           :rename="false"
           :multiple="false"
           :download="false"
-          :dropMessage="Translate('fileDropAreaMessage')"
           :labels="{
             delete: Translate('delete'),
             copy: Translate('copy'),
+            dropMessage: Translate('fileDropAreaMessage'),
           }"
         ></File>
       </FormControl>
