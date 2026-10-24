@@ -60,7 +60,10 @@ const currency = formatFactory('currency', {
 })
 
 const capitalize = (v) => v.charAt(0).toUpperCase() + v.substring(1)
-const percent = formatFactory('percent', { maximumFractionDigits: 2 })
+const percent = formatFactory('percent', {
+  locale: props.locale,
+  maximumFractionDigits: 2,
+})
 const years = formatFactory('year', { locale: props.locale })
 
 const root = ref(null)

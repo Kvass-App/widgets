@@ -236,15 +236,18 @@ const format =
         return new Intl.NumberFormat(options.locale).format(value)
       case 'year':
       case 'years':
-        return [
-          value,
-          new Intl.RelativeTimeFormat(options.locale)
-            .formatToParts(value, 'year')
-            .at(-1).value,
-        ].join(' ')
+        return new Intl.NumberFormat(options.locale, {
+          style: 'unit',
+          unit: 'year',
+          unitDisplay: 'long',
+        }).format(value)
       case 'percent':
         const { maximumFractionDigits = 0 } = options
-        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+        return new Intl.NumberFormat(options.locale, {
+          style: 'unit',
+          unit: 'percent',
+          maximumFractionDigits,
+        }).format(value)
       default:
         return value
     }

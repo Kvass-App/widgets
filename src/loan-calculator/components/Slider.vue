@@ -23,9 +23,13 @@ const formatting = computed(() => {
       })
     case 'year':
       return {
-        suffix: new Intl.RelativeTimeFormat(metadata.value.props.locale)
-          .formatToParts(model.value, 'year')
-          .at(-1).value,
+        suffix: new Intl.NumberFormat(metadata.value.props.locale, {
+          style: 'unit',
+          unit: 'year',
+          unitDisplay: 'long',
+        })
+          .formatToParts(model.value)
+          .find((part) => part.type === 'unit').value,
       }
     case 'percent':
       return { suffix: '%' }
@@ -37,7 +41,7 @@ const formatting = computed(() => {
 const formatValue = computed(() => {
   const { locale, currency } = metadata.value.props
   if (props.format === 'percent')
-    return formatFactory('percent', { maximumFractionDigits: 1 })
+    return formatFactory('percent', { locale, maximumFractionDigits: 1 })
   return formatFactory(props.format, { locale, currency })
 })
 
