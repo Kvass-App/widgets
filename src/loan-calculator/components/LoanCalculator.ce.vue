@@ -3,6 +3,7 @@ import { ref, computed, provide } from 'vue'
 import {
   getLabel as getLabelFactory,
   format as formatFactory,
+  getLanguage,
 } from '../../utils/index.js'
 import { Button } from '@kvass/ui'
 import Slider from './Slider.vue'
@@ -31,7 +32,7 @@ const props = defineProps({
   },
   locale: {
     type: String,
-    default: 'nb-NO',
+    default: () => getLanguage(),
   },
   currency: {
     type: String,

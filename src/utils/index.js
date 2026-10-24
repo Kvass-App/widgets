@@ -58,6 +58,15 @@ function LoadScript(src, options = { type: 'text/javascript' }) {
   document.body.appendChild(script)
 }
 
+function getLanguage(lang = document.documentElement.getAttribute('lang')) {
+  if (!lang) return 'en'
+  const root = lang.toLowerCase().split(/[-_]/)[0]
+  if (root === 'no') return 'nb'
+  const supported = ['en', 'da', 'de', 'sv', 'nl', 'nn', 'nb', 'fr']
+  if (supported.includes(root)) return root
+  return 'en'
+}
+
 function Translate(key, plural = 1, options = {}) {
   const messages = { en, nb, fr, da, sv, de, nl, nn }
 
@@ -303,6 +312,7 @@ export {
   Wait,
   WaitUntil,
   LoadScript,
+  getLanguage,
   Translate,
   PropEnumValidator,
   Diff,
