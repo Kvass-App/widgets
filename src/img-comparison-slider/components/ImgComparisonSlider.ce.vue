@@ -111,6 +111,15 @@ const options = computed(() => {
   --divider-width: 4px;
   --divider-color: black;
 
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--k-ui-outline-width) solid var(--k-ui-outline-color);
+    outline-offset: var(--k-ui-outline-offset);
+  }
+
   &__image {
     width: 100%;
     height: 100%;
