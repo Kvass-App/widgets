@@ -2103,6 +2103,12 @@ const saveDraft = () => {
                   <RichText
                     placeholder="Skriv her..."
                     :actions="['bold', 'italic', 'orderedList', 'bulletList']"
+                    :labels="{
+                      bold: 'Fet',
+                      italic: 'Kursiv',
+                      orderedList: 'Nummerert liste',
+                      bulletList: 'Punktliste',
+                    }"
                     v-model="item.GENERAL_TEXT"
                   >
                   </RichText>

@@ -122,6 +122,12 @@ const setRichTextValue = (
       <FormControl label="Tekst">
         <RichText
           :actions="['bold', 'italic', 'orderedList', 'bulletList']"
+          :labels="{
+            bold: 'Fet',
+            italic: 'Kursiv',
+            orderedList: 'Nummerert liste',
+            bulletList: 'Punktliste',
+          }"
           :modelValue="data.content"
           @update:modelValue="(v) => setRichTextValue(v, index, 'content')"
           placeholder="Skriv her..."
