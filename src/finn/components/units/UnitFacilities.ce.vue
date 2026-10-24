@@ -6,7 +6,7 @@ import {
   Icon,
   Dialog,
   Checkbox,
-  Expandable,
+  FormSection,
 } from '@kvass/ui'
 
 import { Clone, hasDiff } from '../../../utils/index.js'
@@ -85,7 +85,7 @@ defineExpose({
       <Button style="display: none"></Button>
     </template>
     <template #default>
-      <Expandable :expanded="true" v-if="hasFields('ESTATE_PREFERENCE')">
+      <FormSection open v-if="hasFields('ESTATE_PREFERENCE')">
         <template #title>
           <span> Fasiliteter i enhetsannonsen" </span>
           <Tooltip
@@ -124,7 +124,7 @@ defineExpose({
             ></Checkbox>
           </FormControl>
         </template>
-      </Expandable>
+      </FormSection>
     </template>
     <template #actions="{ close }">
       <Button

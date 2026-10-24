@@ -6,7 +6,7 @@ import {
   Flex,
   Icon,
   Input,
-  Expandable,
+  FormSection,
   Dialog,
   Media,
   File,
@@ -119,8 +119,8 @@ defineExpose({
     </template>
     <template #default>
       <Flex direction="column" gap="2rem">
-        <Expandable
-          :expanded="true"
+        <FormSection
+          open
           title="Hovedtittel og undertittel"
           v-if="hasFields('HEADING')"
         >
@@ -184,8 +184,8 @@ defineExpose({
               </Input>
             </FormControl>
           </template>
-        </Expandable>
-        <Expandable :expanded="true" v-if="hasFields('MEDIA')">
+        </FormSection>
+        <FormSection open v-if="hasFields('MEDIA')">
           <template #title>
             <span>Bilder</span>
             <Tooltip
@@ -215,7 +215,6 @@ defineExpose({
               v-if="hasField('MEDIA')"
               v-model="item.MEDIA"
               label="Bilder i enhetsannonsen"
-              dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
               :accept="['image/jpeg', 'image/png', 'image/jpg']"
               :upload="uploadFunction"
               :types="['Image']"
@@ -237,13 +236,14 @@ defineExpose({
                   inputLabel: '',
                   error: '',
                 },
+                dropMessage: 'Dra en fil hit eller <b>velg</b> for å laste opp',
               }"
             >
             </Media>
           </template>
-        </Expandable>
+        </FormSection>
 
-        <Expandable :expanded="true" v-if="hasFields('FLOORPLAN_MEDIA')">
+        <FormSection open v-if="hasFields('FLOORPLAN_MEDIA')">
           <template #title>
             <span>Plantegninger</span>
             <Tooltip
@@ -274,7 +274,6 @@ defineExpose({
               v-if="hasField('FLOORPLAN_MEDIA')"
               v-model="item.FLOORPLAN_MEDIA"
               label="Plantegninger i enhetsannonsen"
-              dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
               :accept="['image/jpeg', 'image/png', 'image/jpg']"
               :upload="uploadFunction"
               :uploadOptions="{}"
@@ -285,14 +284,15 @@ defineExpose({
                 delete: 'Slett',
                 download: 'Last ned',
                 copy: 'Kopier lenke',
+                dropMessage: 'Dra en fil hit eller <b>velg</b> for å laste opp',
               }"
             >
             </File>
           </template>
-        </Expandable>
+        </FormSection>
 
         <RichTextMultiple
-          :expanded="true"
+          open
           v-if="hasFields('GENERAL_DESCRIPTION')"
           v-model="item.GENERAL_DESCRIPTION"
         >

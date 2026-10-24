@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed, inject, ref, watch } from 'vue'
 import { Slider, Input, Grid, GridItem } from '@kvass/ui'
-import { getCurrencyInputProps } from '../../utils'
+import { getCurrencyInputProps, format as formatFactory } from '../../utils'
 
 const metadata = inject('metadata')
 
 const props = defineProps({
-  label: Number,
+  label: String,
   min: Number,
   max: Number,
   step: Number,
@@ -18,20 +18,31 @@ const formatting = computed(() => {
   switch (props.format) {
     case 'currency':
       return getCurrencyInputProps({
-        locale: metadata.value.props.locale,
-        currency: metadata.value.props.currency,
+        locale: metadata.value.locale,
+        currency: metadata.value.currency,
       })
     case 'year':
       return {
-        suffix: new Intl.RelativeTimeFormat(metadata.value.props.locale)
-          .formatToParts(model.value, 'year')
-          .at(-1).value,
+        suffix: new Intl.NumberFormat(metadata.value.locale, {
+          style: 'unit',
+          unit: 'year',
+          unitDisplay: 'long',
+        })
+          .formatToParts(model.value)
+          .find((part) => part.type === 'unit').value,
       }
     case 'percent':
       return { suffix: '%' }
     default:
       return {}
   }
+})
+
+const formatValue = computed(() => {
+  const { locale, currency } = metadata.value
+  if (props.format === 'percent')
+    return formatFactory('percent', { locale, maximumFractionDigits: 1 })
+  return formatFactory(props.format, { locale, currency })
 })
 
 const model = defineModel()
@@ -68,6 +79,8 @@ const onInputBlur = () => {
     <GridItem v-if="!disabled" area="slider">
       <Slider
         v-model="model"
+        :label="label"
+        :format="formatValue"
         :min="min"
         :max="max"
         :step="step"

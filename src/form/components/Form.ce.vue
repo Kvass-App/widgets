@@ -366,8 +366,6 @@ function getFieldOptions(i, key) {
             })
         },
         uploadOptions: { maxSize: '5MB' },
-        fileSizeError: t('fileSizeError'),
-        'drop-message': t('fileDropAreaMessage'),
         'disable-preview': true,
         rename: false,
         multiple: false,
@@ -375,6 +373,8 @@ function getFieldOptions(i, key) {
         labels: {
           delete: t('delete'),
           maxSize: t('maxSize'),
+          dropMessage: t('fileDropAreaMessage'),
+          fileSizeError: t('fileSizeError'),
         },
       }
       return base

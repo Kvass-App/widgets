@@ -32,10 +32,11 @@ const getElement = (path) => {
 const getAttributes = (file) => {
   const { descriptor } = parse(readFileSync(file, 'utf8'), { filename: file })
   const { bindings } = compileScript(descriptor, { id: file, fs: FileSystem })
+  const { __propsAliases: aliases = {}, ...rest } = bindings
 
-  return Object.entries(bindings)
+  return Object.entries(rest)
     .filter(([, type]) => type.startsWith('props'))
-    .map(([name]) => toKebabCase(name))
+    .map(([name]) => toKebabCase(aliases[name] || name))
 }
 
 const getPrivateValues = (source) => {

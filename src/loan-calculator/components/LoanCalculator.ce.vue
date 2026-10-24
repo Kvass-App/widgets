@@ -1,45 +1,55 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, provide } from 'vue'
 import {
   getLabel as getLabelFactory,
   format as formatFactory,
+  getLanguage,
 } from '../../utils/index.js'
 import { Button } from '@kvass/ui'
 import Slider from './Slider.vue'
 
-const props = defineProps({
-  logo: { type: String },
-  equityPercentDefault: { type: Number, default: 0.3 },
-  equityPercentMin: { type: Number, default: 0.15 },
-  equityPercentMax: { type: Number, default: 0.8 },
-  nominelInterestRateDefault: { type: Number, default: 4.5 },
-  nominelInterestRateMin: { type: Number, default: 0 },
-  nominelInterestRateMax: { type: Number, default: 10 },
-  feeEstablishing: { type: Number, default: 0 },
-  feeMonthly: { type: Number, default: 0 },
-  repaymentPeriodDefault: { type: Number, default: 25 },
-  repaymentPeriodMax: { type: Number, default: 30 },
-  repaymentPeriodMin: { type: Number, default: 5 },
-  purchasePriceFixed: { type: Boolean },
-  purchasePrice: { type: Number, required: true },
-  jointDebt: { type: Number },
-  ctaLink: { type: Number },
-  ctaLabel: { type: Number },
-  labels: {
-    type: Object,
-    default: () => ({}),
-  },
-  locale: {
-    type: String,
-    default: 'nb-NO',
-  },
-  currency: {
-    type: String,
-    default: 'NOK',
-  },
-})
+export interface Props {
+  logo?: string
+  equityPercentDefault?: number
+  equityPercentMin?: number
+  equityPercentMax?: number
+  nominelInterestRateDefault?: number
+  nominelInterestRateMin?: number
+  nominelInterestRateMax?: number
+  feeEstablishing?: number
+  feeMonthly?: number
+  repaymentPeriodDefault?: number
+  repaymentPeriodMax?: number
+  repaymentPeriodMin?: number
+  purchasePriceFixed?: boolean
+  purchasePrice: number
+  jointDebt?: number
+  ctaLink?: string
+  ctaLabel?: string
+  labels?: string | Record<string, string>
+  locale?: string
+  currency?: string
+}
 
-const t = getLabelFactory(props.labels, {
+const {
+  equityPercentDefault = 0.3,
+  equityPercentMin = 0.15,
+  equityPercentMax = 0.8,
+  nominelInterestRateDefault = 4.5,
+  nominelInterestRateMin = 0,
+  nominelInterestRateMax = 10,
+  feeEstablishing = 0,
+  feeMonthly = 0,
+  repaymentPeriodDefault = 25,
+  repaymentPeriodMax = 30,
+  repaymentPeriodMin = 5,
+  purchasePrice,
+  labels = {},
+  locale = getLanguage(),
+  currency: currencyProp = 'NOK',
+} = defineProps<Props>()
+
+const t = getLabelFactory(labels, {
   purchasePrice: 'Kjøpesum',
   equity: 'Egenkapital',
   nominalInterestRate: 'Nominell rente',
@@ -55,29 +65,32 @@ const t = getLabelFactory(props.labels, {
 })
 
 const currency = formatFactory('currency', {
-  locale: props.locale,
-  currency: props.currency,
+  locale,
+  currency: currencyProp,
 })
 
 const capitalize = (v) => v.charAt(0).toUpperCase() + v.substring(1)
-const percent = formatFactory('percent', { maximumFractionDigits: 2 })
-const years = formatFactory('year', { locale: props.locale })
+const percent = formatFactory('percent', {
+  locale,
+  maximumFractionDigits: 2,
+})
+const years = formatFactory('year', { locale })
 
 const root = ref(null)
 
 provide(
   'metadata',
-  computed(() => ({ root, props })),
+  computed(() => ({ root, locale, currency: currencyProp })),
 )
 
-const purchasePriceInput = ref(props.purchasePrice)
-const equity = ref(props.purchasePrice * props.equityPercentDefault)
-const repaymentPeriod = ref(props.repaymentPeriodDefault)
-const nominelInterestRate = ref(props.nominelInterestRateDefault)
+const purchasePriceInput = ref(purchasePrice)
+const equity = ref(purchasePrice * equityPercentDefault)
+const repaymentPeriod = ref(repaymentPeriodDefault)
+const nominelInterestRate = ref(nominelInterestRateDefault)
 
 const equityLimits = computed(() => ({
-  min: Math.round(purchasePriceInput.value * props.equityPercentMin),
-  max: Math.round(purchasePriceInput.value * props.equityPercentMax),
+  min: Math.round(purchasePriceInput.value * equityPercentMin),
+  max: Math.round(purchasePriceInput.value * equityPercentMax),
 }))
 
 const loanAmount = computed(() => purchasePriceInput.value - equity.value)
@@ -91,19 +104,17 @@ const monthlyCost = computed(() => {
       nominalRatePerMonth *
       Math.pow(1 + nominalRatePerMonth, numberOfPayments)) /
       (Math.pow(1 + nominalRatePerMonth, numberOfPayments) - 1) +
-    props.feeMonthly
+    feeMonthly
   )
 })
 const totalCost = computed(() => {
   const numberOfPayments = repaymentPeriod.value * 12
   return (
-    monthlyCost.value * numberOfPayments +
-    props.feeEstablishing -
-    loanAmount.value
+    monthlyCost.value * numberOfPayments + feeEstablishing - loanAmount.value
   )
 })
 const effectiveRate = computed(() => {
-  const loan = loanAmount.value - props.feeEstablishing // Loan principal minus establishment fee
+  const loan = loanAmount.value - feeEstablishing // Loan principal minus establishment fee
   const totalPeriods = repaymentPeriod.value * 12 // Total months
   const paymentPerMonth = monthlyCost.value // Monthly payment including fees
 

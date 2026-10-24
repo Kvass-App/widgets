@@ -15,7 +15,7 @@ import {
   Grid,
   Card,
   Alert,
-  Expandable,
+  FormSection,
   Media,
   Button,
   Icon,
@@ -298,17 +298,13 @@ const editDialogAccepted = ref(
 const editDialog = ref()
 
 function onFocus(e) {
-  if (
-    e.target.classList.contains('k-expandable__header') ||
-    e.target.classList.contains('disable-focus-modal')
-  )
-    return
+  if (e.target.classList.contains('disable-focus-modal')) return
   editDialog.value.open()
 }
 
 const setExpandableElements = (state: boolean) => {
   //@ts-ignore
-  const items = element.value.querySelectorAll('.k-expandable--expandable')
+  const items = element.value.querySelectorAll('.k-formsection__body')
 
   items.forEach((el) => {
     state
@@ -514,8 +510,8 @@ const saveDraft = () => {
 
         <template #default>
           <Flex direction="column" gap="2rem">
-            <Expandable
-              :expanded="true"
+            <FormSection
+              open
               v-if="hasFields('PROJECT_NAME', 'HOUSING_UNIT_REF', 'HEADING')"
             >
               <template #title>
@@ -634,10 +630,10 @@ const saveDraft = () => {
                   </Input>
                 </FormControl>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable
-              :expanded="true"
+            <FormSection
+              open
               v-if="
                 hasFields(
                   'PRICE_SUGGESTION',
@@ -791,9 +787,9 @@ const saveDraft = () => {
                   </Input>
                 </FormControl>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable :expanded="true">
+            <FormSection open>
               <template #title>
                 <span> Nøkkelinformasjon</span>
                 <Tooltip
@@ -1837,10 +1833,10 @@ const saveDraft = () => {
                   </FormControl>
                 </Grid>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable
-              :expanded="true"
+            <FormSection
+              open
               v-if="
                 hasFields('PROPERTY_TYPE') && Array.isArray(data.PROPERTY_TYPE)
               "
@@ -1884,9 +1880,9 @@ const saveDraft = () => {
                   ></Checkbox>
                 </FormControl>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable :expanded="true" v-if="hasFields('MEDIA')">
+            <FormSection open v-if="hasFields('MEDIA')">
               <template #title>
                 <span>Bilder</span>
                 <Tooltip
@@ -1916,7 +1912,6 @@ const saveDraft = () => {
                   v-if="hasFields('MEDIA')"
                   v-model="data.MEDIA"
                   label="Bilder i Finn-annonsen"
-                  dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
                   :accept="['image/jpeg', 'image/png', 'image/jpg']"
                   :upload="uploadFunction"
                   :types="['Image']"
@@ -1938,6 +1933,8 @@ const saveDraft = () => {
                       inputLabel: '',
                       error: '',
                     },
+                    dropMessage:
+                      'Dra en fil hit eller <b>velg</b> for å laste opp',
                   }"
                 >
                 </Media>
@@ -1984,9 +1981,9 @@ const saveDraft = () => {
                   </Input>
                 </FormControl>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable :expanded="true" v-if="hasFields('FLOORPLAN_MEDIA')">
+            <FormSection open v-if="hasFields('FLOORPLAN_MEDIA')">
               <template #title>
                 <span>Plantegninger</span>
                 <Tooltip
@@ -2017,7 +2014,6 @@ const saveDraft = () => {
                   v-if="hasFields('FLOORPLAN_MEDIA')"
                   v-model="data.FLOORPLAN_MEDIA"
                   label="Plantegninger i Finn-annonsen"
-                  dropMessage="Dra en fil hit eller <b>velg</b> for å laste opp"
                   :accept="['image/jpeg', 'image/png', 'image/jpg']"
                   :upload="uploadFunction"
                   :uploadOptions="{}"
@@ -2027,14 +2023,16 @@ const saveDraft = () => {
                     delete: 'Slett',
                     download: 'Last ned',
                     copy: 'Kopier lenke',
+                    dropMessage:
+                      'Dra en fil hit eller <b>velg</b> for å laste opp',
                   }"
                 >
                 </File>
               </template>
-            </Expandable>
+            </FormSection>
 
             <RichTextMultiple
-              :expanded="true"
+              open
               v-if="hasFields('GENERAL_DESCRIPTION')"
               v-model="data.GENERAL_DESCRIPTION"
             >
@@ -2066,7 +2064,7 @@ const saveDraft = () => {
             </RichTextMultiple>
 
             <ExpandableList
-              :expanded="true"
+              open
               :template="{ GENERAL_HEADING: '', GENERAL_TEXT: '' }"
               v-model="data.GENERAL_TEXT_REALESTATE"
               v-if="hasFields('GENERAL_TEXT_REALESTATE')"
@@ -2105,6 +2103,12 @@ const saveDraft = () => {
                   <RichText
                     placeholder="Skriv her..."
                     :actions="['bold', 'italic', 'orderedList', 'bulletList']"
+                    :labels="{
+                      bold: 'Fet',
+                      italic: 'Kursiv',
+                      orderedList: 'Nummerert liste',
+                      bulletList: 'Punktliste',
+                    }"
                     v-model="item.GENERAL_TEXT"
                   >
                   </RichText>
@@ -2112,8 +2116,8 @@ const saveDraft = () => {
               </template>
             </ExpandableList>
 
-            <Expandable
-              :expanded="true"
+            <FormSection
+              open
               v-if="hasFields('ESTATE_PREFERENCE', 'PROJECT_PREFERENCE')"
             >
               <template #title>
@@ -2186,9 +2190,9 @@ const saveDraft = () => {
                   ></Checkbox>
                 </FormControl>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable :expanded="true" v-if="units.length">
+            <FormSection open v-if="units.length">
               <template #title>
                 <span> Valgte enheter til Finn-annonsen </span>
                 <Tooltip
@@ -2205,14 +2209,12 @@ const saveDraft = () => {
                   :facilities="unitFacilities"
                 ></UnitTable>
               </template>
-            </Expandable>
+            </FormSection>
 
             <template v-if="addressError">
-              <Expandable
+              <FormSection
                 title="Adresse"
                 subtitle="Om du vil endre adresse må du tilpasse denne på grunnlag."
-                :expandable="false"
-                :expanded="false"
               >
                 <template #actions>
                   <Button
@@ -2226,7 +2228,7 @@ const saveDraft = () => {
                   >
                   </Button>
                 </template>
-              </Expandable>
+              </FormSection>
               <Alert
                 variant="danger"
                 :content="addressError"
@@ -2235,9 +2237,7 @@ const saveDraft = () => {
               </Alert>
             </template>
 
-            <Expandable
-              :expandable="false"
-              :expanded="false"
+            <FormSection
               v-if="
                 hasFields(
                   'PHASE_PLANNING',
@@ -2268,9 +2268,9 @@ const saveDraft = () => {
                 >
                 </Button>
               </template>
-            </Expandable>
+            </FormSection>
 
-            <Expandable :expandable="false" :expanded="false">
+            <FormSection>
               <template #title>
                 <span>Kundebehandler</span>
                 <Tooltip
@@ -2291,7 +2291,7 @@ const saveDraft = () => {
                 >
                 </Button>
               </template>
-            </Expandable>
+            </FormSection>
             <Alert
               v-if="brokerError"
               variant="danger"
@@ -2301,7 +2301,7 @@ const saveDraft = () => {
             </Alert>
 
             <ExpandableList
-              :expanded="true"
+              open
               v-if="hasFields('MOREINFO')"
               :limit="4"
               :template="{ URL: '', URLTEXT: '' }"
@@ -2554,9 +2554,9 @@ const saveDraft = () => {
       transform: translateY(-50%);
       left: -1rem; /* Extend left */
       width: calc(100% + 2rem); /* Extend width by 2rem (1rem on each side) */
-      height: var(--k-expandable-border-width, 1px);
+      height: var(--k-formsection-border-width, 1px);
       background-color: var(
-        --k-expandable-border-color,
+        --k-formsection-border-color,
         var(--k-ui-color-neutral)
       );
     }

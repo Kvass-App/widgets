@@ -243,6 +243,18 @@ const markerIcon = reactive({
 @import url('@kvass/map/style.css');
 @import url('@kvass/location-selector/style.css');
 
+.mapboxgl-canvas:focus-visible {
+  outline: var(--k-ui-outline-width) solid var(--k-ui-outline-color);
+  outline-offset: calc(var(--k-ui-outline-width) * -1);
+}
+
+.kvass-map .mapboxgl-ctrl-group button:focus-visible {
+  position: relative;
+  z-index: 1;
+  box-shadow: none;
+  outline: var(--k-ui-outline-width) solid var(--k-ui-outline-color);
+}
+
 .widgets-kvass-map__search {
   min-height: 60vh;
   $gap: 1.5rem;

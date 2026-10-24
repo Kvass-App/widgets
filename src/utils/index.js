@@ -58,6 +58,15 @@ function LoadScript(src, options = { type: 'text/javascript' }) {
   document.body.appendChild(script)
 }
 
+function getLanguage(lang = document.documentElement.getAttribute('lang')) {
+  if (!lang) return 'en'
+  const root = lang.toLowerCase().split(/[-_]/)[0]
+  if (root === 'no') return 'nb'
+  const supported = ['en', 'da', 'de', 'sv', 'nl', 'nn', 'nb', 'fr']
+  if (supported.includes(root)) return root
+  return 'en'
+}
+
 function Translate(key, plural = 1, options = {}) {
   const messages = { en, nb, fr, da, sv, de, nl, nn }
 
@@ -236,15 +245,18 @@ const format =
         return new Intl.NumberFormat(options.locale).format(value)
       case 'year':
       case 'years':
-        return [
-          value,
-          new Intl.RelativeTimeFormat(options.locale)
-            .formatToParts(value, 'year')
-            .at(-1).value,
-        ].join(' ')
+        return new Intl.NumberFormat(options.locale, {
+          style: 'unit',
+          unit: 'year',
+          unitDisplay: 'long',
+        }).format(value)
       case 'percent':
         const { maximumFractionDigits = 0 } = options
-        return [Number(value).toFixed(maximumFractionDigits), '%'].join('')
+        return new Intl.NumberFormat(options.locale, {
+          style: 'unit',
+          unit: 'percent',
+          maximumFractionDigits,
+        }).format(value)
       default:
         return value
     }
@@ -300,6 +312,7 @@ export {
   Wait,
   WaitUntil,
   LoadScript,
+  getLanguage,
   Translate,
   PropEnumValidator,
   Diff,
