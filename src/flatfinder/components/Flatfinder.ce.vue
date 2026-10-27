@@ -32,6 +32,7 @@ const props = withDefaults(
     hideUnitLists?: boolean
 
     showFloorplan?: boolean
+    showAllUnits?: boolean
   }>(),
   {
     lazyload: true,
@@ -64,6 +65,7 @@ const props = withDefaults(
     :hide-filter="hideFilter"
     :hide-unit-lists="hideUnitLists"
     :show-floorplan="showFloorplan"
+    :show-all-units="showAllUnits"
   />
 </template>
 
