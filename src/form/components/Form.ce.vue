@@ -591,6 +591,10 @@ function submit() {
     referrer: window.location.href,
   }
 
+  formFields.value.filteredFields
+    .filter((f) => f.component === 'checkbox' && dataToSubmit[f.key] == null)
+    .forEach((f) => (dataToSubmit[f.key] = false))
+
   const endpoint = formSettings.value?.submitEndpoint
 
   const request = endpoint
