@@ -114,4 +114,10 @@ export default {
       'Step-by-step Google Search Console site verification in Kvass admin',
     isInternal: true,
   },
+  'dnb-lead-calculator': {
+    path: './src/dnb-lead-calculator/main.js',
+    description:
+      'DNB price calculator and lead form for Kvass project sites, behind an access code',
+    isInternal: true,
+  },
 }
