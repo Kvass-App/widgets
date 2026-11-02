@@ -30,6 +30,9 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    // inline the calculator logos, emitted assets get absolute paths that break on unpkg
+    assetsInlineLimit: (file) =>
+      file.includes('/src/dnb-lead-calculator/') ? true : undefined,
     rollupOptions: {
       output: {
         entryFileNames: `[name].js`,
