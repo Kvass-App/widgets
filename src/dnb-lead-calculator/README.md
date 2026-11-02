@@ -1,4 +1,4 @@
-# kvass-lead-calculator
+# kvass-dnb-lead-calculator
 
 Price calculator and lead form for DNB Eiendom brokers ordering a Kvass project
 site with unit selector (PD-131). Hosted in integrations on
@@ -11,9 +11,9 @@ site with unit selector (PD-131). Hosted in integrations on
   type="module"
   src="https://unpkg.com/@kvass/widgets@<version>/dist/dnb-lead-calculator.js"
 ></script>
-<kvass-lead-calculator
+<kvass-dnb-lead-calculator
   endpoint="https://manager.kvass.no/api/lead/dnb-kvass-calculator"
-></kvass-lead-calculator>
+></kvass-dnb-lead-calculator>
 ```
 
 Figtree is loaded from Google Fonts on the document, all other styles live in
