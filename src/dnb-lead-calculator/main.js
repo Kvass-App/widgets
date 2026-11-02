@@ -1,7 +1,10 @@
 import { defineCustomElement } from 'vue'
 import Calculator from './components/Calculator.ce.vue'
 
-customElements.define('kvass-lead-calculator', defineCustomElement(Calculator))
+customElements.define(
+  'kvass-dnb-lead-calculator',
+  defineCustomElement(Calculator),
+)
 
 // Figtree lastes på dokumentnivå slik at den også er tilgjengelig i Shadow DOM.
 if (!document.querySelector('link[data-kvass-calculator-font]')) {
