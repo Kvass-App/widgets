@@ -150,17 +150,22 @@ const selectorNote = computed(() =>
     ? '+ boligvelger ' + money(price.value.selector)
     : '+ boligvelger fra ' + money(prices.tiers[0].selector),
 )
-const licenseDetails = computed(() => {
-  if (!price.value) return 'Angi antall enheter'
-  return (
-    'Lisens ' +
-    money(price.value.license) +
-    ' + grunnpakke ' +
-    money(prices.base)
-  )
+const licenseDetails = computed(() =>
+  validUnits(form.units)
+    ? 'Basert på ' +
+      form.units +
+      (Number(form.units) === 1 ? ' enhet' : ' enheter')
+    : 'Angi antall enheter',
+)
+// Engangspris for prosjektet. MAKR prises etter forespørsel, så da teller bare etableringen.
+const projectTotal = computed(() => {
+  if (!price.value) return null
+  if (form.packageId === 'makr') return price.value.establishment
+  if (price.value.setup == null) return null
+  return price.value.establishment + price.value.setup
 })
 const setupDetails = computed(() => {
-  if (form.packageId === 'makr') return '20% DNB-rabatt'
+  if (form.packageId === 'makr') return '20 % DNB-rabatt'
   if (form.packageId === 'self') return 'Selvbetjent'
   if (!form.packageId) return 'Velg pakke i steg 2'
   return (
@@ -223,7 +228,14 @@ async function unlock() {
           <img :src="dnbLogo" alt="DNB" class="dnb-logo" /><span></span
           ><img :src="kvassLogo" alt="Kvass" class="kvass-logo" />
         </div>
-        <p>Fordelspriser for DNB Eiendom-kunder</p>
+        <!-- TODO: bytt til ekte filer og tekster -->
+        <nav class="header-links" aria-labelledby="presentations-label">
+          <span id="presentations-label">Innsalgspresentasjoner</span>
+          <div class="header-buttons">
+            <a href="#" download target="_blank" rel="noopener">Kvass</a>
+            <a href="#" download target="_blank" rel="noopener">MAKR</a>
+          </div>
+        </nav>
       </div>
     </header>
     <main>
@@ -664,59 +676,134 @@ async function unlock() {
           </div>
           <aside>
             <div class="summary" aria-live="polite" aria-atomic="true">
-              <h2>
-                Din pris
-                <small v-if="validUnits(form.units)"
-                  >{{ form.units }}
-                  {{ Number(form.units) === 1 ? 'enhet' : 'enheter' }}</small
-                >
-              </h2>
+              <div class="summary-head">
+                <h2>
+                  Din pris
+                  <small v-if="validUnits(form.units)"
+                    >{{ form.units }}
+                    {{ Number(form.units) === 1 ? 'enhet' : 'enheter' }}</small
+                  >
+                </h2>
+                <p class="note">Fordelspriser for DNB Eiendom-kunder</p>
+              </div>
+              <h3 class="price-group">Kundeforhold</h3>
               <dl>
                 <div>
-                  <dt>Lisens / mnd</dt>
+                  <dt>
+                    Onboarding
+                    <span class="note discount">100 % DNB-rabatt</span>
+                  </dt>
                   <dd>
-                    <span class="price-value">{{ money(price?.monthly) }}</span>
+                    <span class="price-line">
+                      <del v-if="price">{{ money(prices.onboarding) }}</del
+                      ><span class="price-value">{{
+                        price ? money(0) : '–'
+                      }}</span>
+                    </span>
+                    <span class="period">engangsbeløp</span>
                   </dd>
                 </div>
-                <p>{{ licenseDetails }}</p>
                 <div>
-                  <dt>Onboarding</dt>
+                  <dt>
+                    Kvass konto
+                  </dt>
                   <dd>
-                    <del v-if="price">{{ money(prices.onboarding) }}</del
-                    ><span class="price-value">{{
-                      price ? money(0) : '–'
-                    }}</span>
+                    <span class="price-value">{{ money(prices.base) }}</span>
+                    <span class="period">per mnd</span>
                   </dd>
                 </div>
-                <p>100% DNB-rabatt</p>
+              </dl>
+              <h3 class="price-group">Prosjekt</h3>
+              <dl>
                 <div>
-                  <dt>Etablering</dt>
+                  <dt>
+                    Prosjektlisens
+                    <span class="note">{{ licenseDetails }}</span>
+                  </dt>
                   <dd>
-                    <del v-if="price">{{ money(price.establishmentFull) }}</del
-                    ><span class="price-value">{{
-                      money(price?.establishment)
-                    }}</span>
+                    <span class="price-value">{{ money(price?.license) }}</span>
+                    <span class="period">per mnd</span>
                   </dd>
                 </div>
-                <p>50% DNB-rabatt</p>
+                <div>
+                  <dt>
+                    Etablering
+                    <span class="note discount">50 % DNB-rabatt</span>
+                  </dt>
+                  <dd>
+                    <span class="price-line">
+                      <del v-if="price">{{
+                        money(price.establishmentFull)
+                      }}</del
+                      ><span class="price-value">{{
+                        money(price?.establishment)
+                      }}</span>
+                    </span>
+                    <span class="period">engangsbeløp</span>
+                  </dd>
+                </div>
                 <div>
                   <dt>
                     {{
                       form.packageId === 'makr'
                         ? 'Skreddersøm via MAKR'
-                        : 'Tech konsulent'
+                        : 'Kvass konsulent'
                     }}
+                    <span
+                      class="note"
+                      :class="{ discount: form.packageId === 'makr' }"
+                      >{{ setupDetails }}</span
+                    >
                   </dt>
                   <dd>
-                    <span class="price-value">{{
-                      form.packageId === 'makr'
-                        ? 'Pris etter forespørsel'
-                        : money(price?.setup)
-                    }}</span>
+                    <span
+                      v-if="form.packageId === 'makr'"
+                      class="price-value on-request"
+                      >Etter forespørsel</span
+                    >
+                    <template v-else>
+                      <span class="price-value">{{ money(price?.setup) }}</span>
+                      <span class="period">engangsbeløp</span>
+                    </template>
                   </dd>
                 </div>
-                <p>{{ setupDetails }}</p>
               </dl>
+              <div class="price-total">
+                <div class="total-head">
+                  <div class="total-main">
+                    <div>
+                      <strong>Prosjektpris</strong>
+                      <span class="note">{{
+                        form.packageId === 'makr' || form.packageId === 'self'
+                          ? 'Etablering'
+                          : 'Etablering + Kvass konsulent'
+                      }}</span>
+                    </div>
+                    <div class="total-amount">
+                      <span class="total-value"
+                        ><small v-if="form.packageId === 'makr' && projectTotal"
+                          >fra</small
+                        >{{ money(projectTotal) }}</span
+                      >
+                      <span class="period">engangsbeløp</span>
+                    </div>
+                  </div>
+                  <div v-if="form.packageId === 'makr'" class="total-extra">
+                    <span>+ Skreddersøm via MAKR</span>
+                    <strong>Etter forespørsel</strong>
+                  </div>
+                  <div class="total-extra">
+                    <span>+ Prosjektlisens</span>
+                    <strong>{{
+                      price ? money(price.license) + ' /mnd' : '–'
+                    }}</strong>
+                  </div>
+                </div>
+                <div class="total-extra">
+                  <span>Kvass konto</span>
+                  <strong>{{ money(prices.base) + ' /mnd' }}</strong>
+                </div>
+              </div>
               <button type="submit" :disabled="sending">
                 {{ sending ? 'Sender …' : 'Send' }}
               </button>
@@ -765,10 +852,33 @@ header {
   align-items: center;
   gap: 20px;
 }
-header p {
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+.header-links span {
+  margin-right: 4px;
   font-size: 14px;
-  color: #4a5f62;
-  margin: 0;
+  font-weight: 600;
+  color: #102b37;
+}
+.header-links a {
+  padding: 9px 18px;
+  border-radius: 28px;
+  background: #d37468;
+  color: #102b37;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.header-links a:hover {
+  filter: brightness(1.08);
 }
 .brand {
   display: flex;
@@ -967,11 +1077,6 @@ dd {
   font-weight: bold;
   font-size: 20px;
   text-align: right;
-}
-dl p {
-  font-size: 12px;
-  color: #a5e1d2;
-  margin: 6px 0 18px;
 }
 button {
   border: 0;
@@ -1258,41 +1363,158 @@ fieldset {
   font-size: 14px;
   font-weight: 600;
 }
+.summary h2 {
+  margin-bottom: 0;
+}
+.summary-head {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(165, 225, 210, 0.25);
+}
+.summary-head p {
+  margin: 4px 0 0;
+}
+.price-group {
+  display: inline-block;
+  margin: 22px 0 6px;
+  padding: 3px 10px;
+  border: 1.5px solid #a5e1d2;
+  border-radius: 999px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
 dl {
-  margin: 0 0 20px;
+  margin: 0;
+}
+.price-total {
+  margin: 20px 0;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: rgba(165, 225, 210, 0.1);
+}
+.total-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.total-head {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(165, 225, 210, 0.25);
+}
+.total-head .total-extra {
+  padding-top: 10px;
+}
+.total-main > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.total-main strong {
+  font-size: 18px;
+  /* Samme grunnlinje som totalprisen, totalhøyden er fortsatt 34px */
+  padding-top: 6px;
+  line-height: 28px;
+}
+.total-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.total-value {
+  font-size: 26px;
+  line-height: 34px;
+  font-weight: 700;
+  color: #a5e1d2;
+  white-space: nowrap;
+}
+.total-value small {
+  margin-right: 6px;
+  line-height: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+.total-extra {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+}
+.total-extra + .total-extra {
+  padding-top: 8px;
+}
+.total-extra strong {
+  color: white;
+  white-space: nowrap;
 }
 dl > div {
-  padding-top: 14px;
-  align-items: baseline;
-  border-color: rgba(165, 225, 210, 0.25);
+  padding: 16px 0;
+  align-items: flex-start;
+  border-top: 0;
+  border-bottom: 1px solid rgba(165, 225, 210, 0.25);
 }
 dt {
-  font-size: 16px;
-  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 17px;
+  font-weight: 600;
+  /* Skyver tittelen ned så grunnlinjen treffer den større prisen til høyre, totalhøyden er fortsatt 26px */
+  padding-top: 2px;
+  line-height: 24px;
+}
+.note {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+}
+.note.discount {
+  font-weight: 600;
+  color: #a5e1d2;
 }
 dd {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+}
+.price-line {
   display: flex;
   align-items: baseline;
   justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
-  font-size: 20px;
-  font-weight: 700;
 }
 dd del {
   font-size: 14px;
+  line-height: 1;
   font-weight: 600;
   color: #a5e1d2;
 }
-dl p {
-  font-size: 13px;
+.on-request {
+  font-size: 15px;
   font-weight: 600;
-  margin: 4px 0 0;
-  padding-bottom: 14px;
-  color: #a5e1d2;
+  /* Mindre tekst, skyves ned til grunnlinjen til tittelen */
+  padding-top: 4px;
+  line-height: 22px;
+  white-space: nowrap;
 }
-dl p:last-child {
-  border-bottom: 1px solid rgba(165, 225, 210, 0.25);
+.period {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
 }
 .summary button {
   padding: 16px;
@@ -1373,6 +1595,10 @@ dl p:last-child {
   }
   dd {
     font-size: 18px;
+  }
+  dt {
+    padding-top: 1px;
+    line-height: 25px;
   }
 }
 .package-card {
