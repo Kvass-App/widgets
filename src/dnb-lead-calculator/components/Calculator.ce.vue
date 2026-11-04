@@ -228,12 +228,21 @@ async function unlock() {
           <img :src="dnbLogo" alt="DNB" class="dnb-logo" /><span></span
           ><img :src="kvassLogo" alt="Kvass" class="kvass-logo" />
         </div>
-        <!-- TODO: bytt til ekte filer og tekster -->
         <nav class="header-links" aria-labelledby="presentations-label">
           <span id="presentations-label">Innsalgspresentasjoner</span>
           <div class="header-buttons">
-            <a href="#" download target="_blank" rel="noopener">Kvass</a>
-            <a href="#" download target="_blank" rel="noopener">MAKR</a>
+            <a
+              href="https://www.figma.com/deck/7YylyVAUUg03khWkTDljJx"
+              target="_blank"
+              rel="noopener"
+              >Kvass</a
+            >
+            <a
+              href="https://www.figma.com/deck/zvJeGNfa8doFgK6rDMQPnv/DNB---Presentasjon-MAKR?node-id=4010-349&t=Vpwx030xTpSOsbYC-0&scaling=contain&content-scaling=fixed&page-id=0%3A1"
+              target="_blank"
+              rel="noopener"
+              >MAKR</a
+            >
           </div>
         </nav>
       </div>
@@ -872,7 +881,7 @@ header {
   padding: 9px 18px;
   border-radius: 28px;
   background: #d37468;
-  color: #102b37;
+  color: white;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
