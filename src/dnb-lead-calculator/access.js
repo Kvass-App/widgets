@@ -1,6 +1,6 @@
 // SHA-256 av tilgangskoden. Bytt med: printf %s 'ny-kode' | shasum -a 256
 export const accessHash =
-  '4e54d3e67aefabcf1d05ac55981d7d9e303b4feddc42e0b5d6956ea714d87c52'
+  'd771976f4e376cc741317f2d119390f790980330e2363af74939c27c751cb84d'
 const storageKey = 'kvass-calculator-access'
 
 export async function hashCode(code) {
