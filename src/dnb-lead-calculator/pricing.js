@@ -9,7 +9,7 @@ export const prices = Object.freeze({
   ],
   // Per påbegynte 30 enheter over største trinn.
   addOn: { units: 30, license: 150, establishment: 10500, selector: 3500 },
-  packages: { dnb: 9900, custom: 19900, self: 0 },
+  packages: { dnb: 5900, custom: 12900, self: 0 },
 })
 export function validUnits(value) {
   return (
