@@ -69,15 +69,16 @@ const packageDetails = {
 const options = [
   {
     id: 'dnb',
-    title: 'Kvass setter opp i DNB Design',
-    price: '9 900 kr',
+    title: 'Kvass setter opp i DNB design',
+    price: '5 900 kr',
     subtitle: 'Ferdig mal i DNB sitt uttrykk',
     info: 'Oppkobling mot meglersystemet, finpuss av prosjektsiden, domene-oppsett og lansering.',
   },
   {
     id: 'custom',
     title: 'Kvass setter opp i utbyggers eget uttrykk',
-    price: '19 900 kr',
+    price: '12 900 kr',
+    hours: '(opptil 7,5 timer)',
     subtitle: 'Kvass implementerer utbyggers egne fonter, farger og logo',
     info: 'Oppstartsmøte og tilpasning, flere undersider ved behov, oppkobling mot meglersystemet, domene-oppsett og lansering. Opptil 12 timer.',
   },
@@ -147,8 +148,8 @@ const money = (value) =>
       ) + ' kr'
 const selectorNote = computed(() =>
   price.value
-    ? '+ boligvelger ' + money(price.value.selector)
-    : '+ boligvelger fra ' + money(prices.tiers[0].selector),
+    ? '+ oppsett boligvelger ' + money(price.value.selector)
+    : '+ oppsett boligvelger fra ' + money(prices.tiers[0].selector),
 )
 const licenseDetails = computed(() =>
   validUnits(form.units)
@@ -169,9 +170,9 @@ const setupDetails = computed(() => {
   if (form.packageId === 'self') return 'Selvbetjent'
   if (!form.packageId) return 'Velg pakke i steg 2'
   return (
-    'Boligvelger ' +
+    'Oppsett boligvelger ' +
     money(price.value?.selector) +
-    ' + pakke ' +
+    '\n+ pakke ' +
     money(prices.packages[form.packageId])
   )
 })
@@ -376,7 +377,8 @@ async function unlock() {
                     >
                     <b v-if="option.id !== 'makr'" class="amount"
                       >{{ option.price
-                      }}<small v-if="prices.packages[option.id]">{{
+                      }}<small v-if="option.hours">{{ option.hours }}</small
+                      ><small v-if="prices.packages[option.id]">{{
                         selectorNote
                       }}</small></b
                     >
@@ -775,7 +777,7 @@ async function unlock() {
                         : 'Kvass konsulent'
                     }}
                     <span
-                      class="note"
+                      class="note setup-note"
                       :class="{ discount: form.packageId === 'makr' }"
                       >{{ setupDetails }}</span
                     >
@@ -842,7 +844,7 @@ async function unlock() {
               <p class="hint">Vi tar kontakt innen 24 timer</p>
             </div>
             <p class="footnote">
-              Alle priser er eks. mva. Endelig tilbud bekreftes av Kvass eller
+              Alle priser er eks. mva. Endelig tilbud sendes av Kvass eller
               MAKR.
             </p>
             <p class="footnote">
@@ -1514,6 +1516,9 @@ dt {
   line-height: 18px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.75);
+}
+.setup-note {
+  white-space: pre-line;
 }
 .note.discount {
   font-weight: 600;
