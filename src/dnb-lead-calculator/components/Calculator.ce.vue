@@ -46,7 +46,7 @@ const packageDetails = {
     ],
   },
   custom: {
-    title: 'Kvass sørger for følgende (opptil 12t):',
+    title: 'Kvass sørger for følgende (opptil 7,5 timer):',
     items: [
       'Oppstartsmøte med Kvass (dine egne farger, skrifttyper og logo & flere undersider ved behov)',
       'Oppkobling mot meglersystemet (synkronisering av bilder, plantegning, priser etc.)',
@@ -80,7 +80,7 @@ const options = [
     price: '12 900 kr',
     hours: '(opptil 7,5 timer)',
     subtitle: 'Kvass implementerer utbyggers egne fonter, farger og logo',
-    info: 'Oppstartsmøte og tilpasning, flere undersider ved behov, oppkobling mot meglersystemet, domene-oppsett og lansering. Opptil 12 timer.',
+    info: 'Oppstartsmøte og tilpasning, flere undersider ved behov, oppkobling mot meglersystemet, domene-oppsett og lansering. Opptil 7,5 timer.',
   },
   {
     id: 'self',
@@ -378,7 +378,10 @@ async function unlock() {
                     <b v-if="option.id !== 'makr'" class="amount"
                       >{{ option.price
                       }}<small v-if="option.hours">{{ option.hours }}</small
-                      ><small v-if="prices.packages[option.id]">{{
+                      ><small
+                        v-if="prices.packages[option.id]"
+                        class="selector-note"
+                        >{{
                         selectorNote
                       }}</small></b
                     >
@@ -1647,9 +1650,18 @@ footer a {
     text-align: left;
     font-size: 14px;
   }
+  .option .amount {
+    white-space: normal;
+  }
   .option .amount small {
     display: inline;
     margin-left: 6px;
+    white-space: nowrap;
+  }
+  /* Boligvelger-oppsett på egen linje, ellers blir linjen for lang */
+  .option .amount .selector-note {
+    display: block;
+    margin: 2px 0 0;
   }
   .units-row {
     flex-wrap: wrap;
