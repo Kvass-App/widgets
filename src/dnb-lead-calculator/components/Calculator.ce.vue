@@ -57,7 +57,7 @@ const packageDetails = {
   self: {
     title: 'Selvbetjent i Kvass CMS',
     items: [
-      'I vårt brukervennlige Kvass CMS kan Utbygger sette opp prosjektet helt selvbetjent, Kvass-support bistår underveis ved evt. spørsmål. Oppsett av boligvelger er ikke inkludert.',
+      'I vårt brukervennlige Kvass CMS kan utbygger eller utbyggers lokale byrå sette opp prosjektet helt selvbetjent, Kvass-support bistår med opplæring og evt. spørsmål underveis.',
     ],
   },
   makr: {
@@ -69,21 +69,22 @@ const packageDetails = {
 const options = [
   {
     id: 'dnb',
-    title: 'Kvass setter opp i DNB Design',
-    price: '9 900 kr',
+    title: 'Kvass setter opp i DNB design',
+    price: '5 900 kr',
     subtitle: 'Ferdig mal i DNB sitt uttrykk',
     info: 'Oppkobling mot meglersystemet, finpuss av prosjektsiden, domene-oppsett og lansering.',
   },
   {
     id: 'custom',
     title: 'Kvass setter opp i utbyggers eget uttrykk',
-    price: '19 900 kr',
+    price: '12 900 kr',
+    hours: '(opptil 7,5 timer)',
     subtitle: 'Kvass implementerer utbyggers egne fonter, farger og logo',
     info: 'Oppstartsmøte og tilpasning, flere undersider ved behov, oppkobling mot meglersystemet, domene-oppsett og lansering. Opptil 12 timer.',
   },
   {
     id: 'self',
-    title: 'Utbygger setter opp prosjektet selv',
+    title: 'Sett opp prosjektet selv',
     price: '0 kr',
     subtitle: 'Selvbetjent i Kvass CMS',
     info: 'Utbygger setter opp prosjektet i Kvass CMS. Kvass-support bistår ved spørsmål. Oppsett av boligvelger tas ut av prisen.',
@@ -102,14 +103,14 @@ const recipientOptions = [
     id: 'broker-and-developer',
     title: 'Megler og utbygger mottar tilbudet',
     subtitle:
-      'Tilbudet sendes til både deg og referansepersonen hos utbygger. Kvass / MAKR kan følge opp utbygger direkte.',
+      'Tilbudet sendes til både deg og referansepersonen hos utbygger. Vi kan følge opp tilbudet direkte med utbygger. Ved å velge dette bekrefter du at utbygger ønsker å motta tilbud, og at referansepersonen er informert om at kontaktopplysningene deles med oss.',
     people: 2,
   },
   {
     id: 'broker-only',
     title: 'Kun megler mottar tilbudet',
     subtitle:
-      'Tilbudet sendes bare til deg. Du videreformidler det til utbygger – vi kontakter ikke utbygger direkte.',
+      'Tilbudet sendes bare til deg. Du videreformidler det til utbygger – vi kontakter ikke utbygger direkte. Ved å velge dette bekrefter du at referansepersonen er informert om at kontaktopplysningene deles med oss.',
     people: 1,
   },
 ]
@@ -147,8 +148,8 @@ const money = (value) =>
       ) + ' kr'
 const selectorNote = computed(() =>
   price.value
-    ? '+ boligvelger ' + money(price.value.selector)
-    : '+ boligvelger fra ' + money(prices.tiers[0].selector),
+    ? '+ oppsett boligvelger ' + money(price.value.selector)
+    : '+ oppsett boligvelger fra ' + money(prices.tiers[0].selector),
 )
 const licenseDetails = computed(() =>
   validUnits(form.units)
@@ -169,12 +170,25 @@ const setupDetails = computed(() => {
   if (form.packageId === 'self') return 'Selvbetjent'
   if (!form.packageId) return 'Velg pakke i steg 2'
   return (
-    'Boligvelger ' +
+    'Oppsett boligvelger ' +
     money(price.value?.selector) +
-    ' + pakke ' +
+    '\n+ pakke ' +
     money(prices.packages[form.packageId])
   )
 })
+// Personvernerklæringen følger selskapet som behandler henvendelsen.
+const privacy = computed(() =>
+  form.packageId === 'makr'
+    ? {
+        before:
+          'Vi (MAKR AS) behandler informasjonen du sender i henhold til vår',
+        href: 'https://www.makr.no/personvern',
+      }
+    : {
+        before: 'Vi (Kvass Norge AS) behandler informasjon du sender iht. vår',
+        href: 'https://www.kvass.no/legal/privacy',
+      },
+)
 const sending = ref(false)
 const sendError = ref('')
 async function send() {
@@ -228,8 +242,11 @@ async function unlock() {
           <img :src="dnbLogo" alt="DNB" class="dnb-logo" /><span></span
           ><img :src="kvassLogo" alt="Kvass" class="kvass-logo" />
         </div>
-        <nav class="header-links" aria-labelledby="presentations-label">
-          <span id="presentations-label">Innsalgspresentasjoner</span>
+        <nav
+          v-if="unlocked"
+          class="header-links"
+          aria-labelledby="presentations-label">
+          <span id="presentations-label">Presentasjoner</span>
           <div class="header-buttons">
             <a
               href="https://www.figma.com/deck/7YylyVAUUg03khWkTDljJx"
@@ -360,7 +377,8 @@ async function unlock() {
                     >
                     <b v-if="option.id !== 'makr'" class="amount"
                       >{{ option.price
-                      }}<small v-if="prices.packages[option.id]">{{
+                      }}<small v-if="option.hours">{{ option.hours }}</small
+                      ><small v-if="prices.packages[option.id]">{{
                         selectorNote
                       }}</small></b
                     >
@@ -759,7 +777,7 @@ async function unlock() {
                         : 'Kvass konsulent'
                     }}
                     <span
-                      class="note"
+                      class="note setup-note"
                       :class="{ discount: form.packageId === 'makr' }"
                       >{{ setupDetails }}</span
                     >
@@ -826,13 +844,28 @@ async function unlock() {
               <p class="hint">Vi tar kontakt innen 24 timer</p>
             </div>
             <p class="footnote">
-              Alle priser er eks. mva. Endelig tilbud bekreftes av Kvass eller
+              Alle priser er eks. mva. Endelig tilbud sendes av Kvass eller
               MAKR.
+            </p>
+            <p class="footnote">
+              {{ privacy.before }}
+              <a :href="privacy.href" target="_blank" rel="noopener"
+                >personvernerklæring</a
+              >.
             </p>
           </aside>
         </form>
       </template>
     </main>
+    <footer>
+      Kvass Norge AS |
+      <a
+        href="https://www.kvass.no/legal/privacy"
+        target="_blank"
+        rel="noopener"
+        >Personvernerklæring</a
+      >
+    </footer>
   </div>
 </template>
 
@@ -1484,6 +1517,9 @@ dt {
   font-weight: 400;
   color: rgba(255, 255, 255, 0.75);
 }
+.setup-note {
+  white-space: pre-line;
+}
 .note.discount {
   font-weight: 600;
   color: #a5e1d2;
@@ -1546,6 +1582,32 @@ dd del {
   margin: 16px 0 0;
   padding: 0 4px;
   text-align: center;
+}
+.footnote + .footnote {
+  margin-top: 6px;
+}
+.footnote a {
+  color: var(--accent);
+}
+.calculator {
+  display: flex;
+  flex-direction: column;
+}
+.calculator > main {
+  flex: 1;
+  width: 100%;
+  margin: 0 auto;
+}
+footer {
+  padding: 24px;
+  border-top: 1px solid #e1e6e2;
+  background: white;
+  text-align: center;
+  font-size: 13px;
+  color: #4a5f62;
+}
+footer a {
+  color: var(--accent);
 }
 @media (max-width: 760px) {
   form {
