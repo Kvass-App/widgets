@@ -52,6 +52,15 @@ Prices are always shown as for a new customer.
 `POST https://manager.kvass.no/api/lead/dnb-kvass-calculator`. Manager registers
 the lead in HubSpot and emails leads@kvass.no.
 
+The payload has two price fields:
+
+- `price`: the raw numbers from `calculatePrice()` in `pricing.js`.
+- `summary`: the "Din pris" box as display-ready text, a list of groups
+  (`title`, `rows`) where each row has `label`, `value` and optionally `note`,
+  `period`, `prefix` and `was`. The box itself is rendered from this list, and
+  manager prints it as is in the email and HubSpot note, so all three always
+  match. Manager does no price calculations.
+
 - Without `endpoint` nothing is sent and an error is shown below the send
   button.
 - Point `endpoint` to `https://staging.manager.kvass.no/...` to test without
