@@ -176,6 +176,93 @@ const setupDetails = computed(() => {
     money(prices.packages[form.packageId])
   )
 })
+// Prisoppsummeringen slik den vises i boksen. Sendes også med leadet, slik at
+// e-post og HubSpot viser nøyaktig det megleren så. discount, onRequest og
+// divider er bare for visning.
+const summary = computed(() => {
+  const p = price.value
+  const makr = form.packageId === 'makr'
+  const base = money(prices.base)
+  const license = money(p?.license)
+  return [
+    {
+      title: 'Kundeforhold',
+      rows: [
+        {
+          label: 'Onboarding',
+          note: '100 % DNB-rabatt',
+          discount: true,
+          was: p ? money(prices.onboarding) : undefined,
+          value: p ? money(0) : '–',
+          period: 'engangsbeløp',
+        },
+        { label: 'Kvass konto', value: base, period: 'per mnd' },
+      ],
+    },
+    {
+      title: 'Prosjekt',
+      rows: [
+        {
+          label: 'Prosjektlisens',
+          note: licenseDetails.value,
+          value: license,
+          period: 'per mnd',
+        },
+        {
+          label: 'Etablering',
+          note: '50 % DNB-rabatt',
+          discount: true,
+          was: p ? money(p.establishmentFull) : undefined,
+          value: money(p?.establishment),
+          period: 'engangsbeløp',
+        },
+        makr
+          ? {
+              label: 'Skreddersøm via MAKR',
+              note: setupDetails.value,
+              discount: true,
+              value: 'Etter forespørsel',
+              onRequest: true,
+            }
+          : {
+              label: 'Kvass konsulent',
+              note: setupDetails.value,
+              value: money(p?.setup),
+              period: 'engangsbeløp',
+            },
+      ],
+    },
+    {
+      title: 'Totalt',
+      rows: [
+        {
+          label: 'Prosjektpris',
+          note:
+            makr || form.packageId === 'self'
+              ? 'Etablering'
+              : 'Etablering + Kvass konsulent',
+          prefix: makr && projectTotal.value ? 'fra' : undefined,
+          value: money(projectTotal.value),
+          period: 'engangsbeløp',
+        },
+        ...(makr
+          ? [{ label: '+ Skreddersøm via MAKR', value: 'Etter forespørsel' }]
+          : []),
+        { label: '+ Prosjektlisens', value: p ? license + ' /mnd' : '–' },
+        { label: 'Kvass konto', value: base + ' /mnd', divider: true },
+      ],
+    },
+  ]
+})
+// Totalboksen: første rad er prosjektprisen, divider-rader står under streken.
+const totals = computed(() => {
+  const [main, ...rest] = summary.value[2].rows
+  return {
+    main,
+    above: rest.filter((row) => !row.divider),
+    below: rest.filter((row) => row.divider),
+  }
+})
 // Personvernerklæringen følger selskapet som behandler henvendelsen.
 const privacy = computed(() =>
   form.packageId === 'makr'
@@ -202,7 +289,11 @@ async function send() {
   sending.value = true
   sendError.value = ''
   try {
-    await submitRequest(props.endpoint, { ...form, price: price.value })
+    await submitRequest(props.endpoint, {
+      ...form,
+      price: price.value,
+      summary: summary.value,
+    })
     submitted.value = true
   } catch (err) {
     sendError.value =
@@ -245,7 +336,8 @@ async function unlock() {
         <nav
           v-if="unlocked"
           class="header-links"
-          aria-labelledby="presentations-label">
+          aria-labelledby="presentations-label"
+        >
           <span id="presentations-label">Presentasjoner</span>
           <div class="header-buttons">
             <a
@@ -255,7 +347,7 @@ async function unlock() {
               >Kvass</a
             >
             <a
-              href="https://www.figma.com/deck/zvJeGNfa8doFgK6rDMQPnv/DNB---Presentasjon-MAKR?node-id=4010-349&t=Vpwx030xTpSOsbYC-0&scaling=contain&content-scaling=fixed&page-id=0%3A1"
+              href="https://www.figma.com/deck/zvJeGNfa8doFgK6rDMQPnv"
               target="_blank"
               rel="noopener"
               >MAKR</a
@@ -381,9 +473,8 @@ async function unlock() {
                       ><small
                         v-if="prices.packages[option.id]"
                         class="selector-note"
-                        >{{
-                        selectorNote
-                      }}</small></b
+                        >{{ selectorNote }}</small
+                      ></b
                     >
                   </label>
                   <div
@@ -716,122 +807,74 @@ async function unlock() {
                 </h2>
                 <p class="note">Fordelspriser for DNB Eiendom-kunder</p>
               </div>
-              <h3 class="price-group">Kundeforhold</h3>
-              <dl>
-                <div>
-                  <dt>
-                    Onboarding
-                    <span class="note discount">100 % DNB-rabatt</span>
-                  </dt>
-                  <dd>
-                    <span class="price-line">
-                      <del v-if="price">{{ money(prices.onboarding) }}</del
-                      ><span class="price-value">{{
-                        price ? money(0) : '–'
-                      }}</span>
-                    </span>
-                    <span class="period">engangsbeløp</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    Kvass konto
-                  </dt>
-                  <dd>
-                    <span class="price-value">{{ money(prices.base) }}</span>
-                    <span class="period">per mnd</span>
-                  </dd>
-                </div>
-              </dl>
-              <h3 class="price-group">Prosjekt</h3>
-              <dl>
-                <div>
-                  <dt>
-                    Prosjektlisens
-                    <span class="note">{{ licenseDetails }}</span>
-                  </dt>
-                  <dd>
-                    <span class="price-value">{{ money(price?.license) }}</span>
-                    <span class="period">per mnd</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    Etablering
-                    <span class="note discount">50 % DNB-rabatt</span>
-                  </dt>
-                  <dd>
-                    <span class="price-line">
-                      <del v-if="price">{{
-                        money(price.establishmentFull)
-                      }}</del
-                      ><span class="price-value">{{
-                        money(price?.establishment)
-                      }}</span>
-                    </span>
-                    <span class="period">engangsbeløp</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    {{
-                      form.packageId === 'makr'
-                        ? 'Skreddersøm via MAKR'
-                        : 'Kvass konsulent'
-                    }}
-                    <span
-                      class="note setup-note"
-                      :class="{ discount: form.packageId === 'makr' }"
-                      >{{ setupDetails }}</span
-                    >
-                  </dt>
-                  <dd>
-                    <span
-                      v-if="form.packageId === 'makr'"
-                      class="price-value on-request"
-                      >Etter forespørsel</span
-                    >
-                    <template v-else>
-                      <span class="price-value">{{ money(price?.setup) }}</span>
-                      <span class="period">engangsbeløp</span>
-                    </template>
-                  </dd>
-                </div>
-              </dl>
+              <template v-for="group in summary.slice(0, 2)" :key="group.title">
+                <h3 class="price-group">{{ group.title }}</h3>
+                <dl>
+                  <div v-for="row in group.rows" :key="row.label">
+                    <dt>
+                      {{ row.label }}
+                      <span
+                        v-if="row.note"
+                        class="note"
+                        :class="{ discount: row.discount }"
+                        >{{ row.note }}</span
+                      >
+                    </dt>
+                    <dd>
+                      <span
+                        v-if="row.onRequest"
+                        class="price-value on-request"
+                        >{{ row.value }}</span
+                      >
+                      <template v-else>
+                        <span v-if="row.was" class="price-line"
+                          ><del>{{ row.was }}</del
+                          ><span class="price-value">{{
+                            row.value
+                          }}</span></span
+                        >
+                        <span v-else class="price-value">{{ row.value }}</span>
+                        <span v-if="row.period" class="period">{{
+                          row.period
+                        }}</span>
+                      </template>
+                    </dd>
+                  </div>
+                </dl>
+              </template>
               <div class="price-total">
                 <div class="total-head">
                   <div class="total-main">
                     <div>
-                      <strong>Prosjektpris</strong>
-                      <span class="note">{{
-                        form.packageId === 'makr' || form.packageId === 'self'
-                          ? 'Etablering'
-                          : 'Etablering + Kvass konsulent'
-                      }}</span>
+                      <strong>{{ totals.main.label }}</strong>
+                      <span class="note">{{ totals.main.note }}</span>
                     </div>
                     <div class="total-amount">
                       <span class="total-value"
-                        ><small v-if="form.packageId === 'makr' && projectTotal"
-                          >fra</small
-                        >{{ money(projectTotal) }}</span
+                        ><small v-if="totals.main.prefix">{{
+                          totals.main.prefix
+                        }}</small
+                        >{{ totals.main.value }}</span
                       >
-                      <span class="period">engangsbeløp</span>
+                      <span class="period">{{ totals.main.period }}</span>
                     </div>
                   </div>
-                  <div v-if="form.packageId === 'makr'" class="total-extra">
-                    <span>+ Skreddersøm via MAKR</span>
-                    <strong>Etter forespørsel</strong>
-                  </div>
-                  <div class="total-extra">
-                    <span>+ Prosjektlisens</span>
-                    <strong>{{
-                      price ? money(price.license) + ' /mnd' : '–'
-                    }}</strong>
+                  <div
+                    v-for="row in totals.above"
+                    :key="row.label"
+                    class="total-extra"
+                  >
+                    <span>{{ row.label }}</span>
+                    <strong>{{ row.value }}</strong>
                   </div>
                 </div>
-                <div class="total-extra">
-                  <span>Kvass konto</span>
-                  <strong>{{ money(prices.base) + ' /mnd' }}</strong>
+                <div
+                  v-for="row in totals.below"
+                  :key="row.label"
+                  class="total-extra"
+                >
+                  <span>{{ row.label }}</span>
+                  <strong>{{ row.value }}</strong>
                 </div>
               </div>
               <button type="submit" :disabled="sending">
@@ -1520,7 +1563,7 @@ dt {
   font-weight: 400;
   color: rgba(255, 255, 255, 0.75);
 }
-.setup-note {
+dt .note {
   white-space: pre-line;
 }
 .note.discount {
