@@ -18,6 +18,7 @@ const props = withDefaults(
 const emit = defineEmits(['open', 'close'])
 
 const dialog = ref()
+const closeButton = ref()
 const isOpen = ref(false)
 const element = useCurrentElement()
 
@@ -38,22 +39,30 @@ watch(
 function openLightbox() {
   isOpen.value = true
   dialog.value.showModal()
-  keepFocusOnClose()
+  returnFocusFromPlayer()
   emit('open')
 }
 
-function keepFocusOnClose() {
-  const close = dialog.value.querySelector('.kvass-story-fly__lightbox-close')
-  const refocus = () =>
+let stopReturningFocus = () => {}
+
+function returnFocusFromPlayer() {
+  const returnFocus = () => {
+    stopReturningFocus()
     setTimeout(() => {
       window.focus()
-      close.focus()
+      closeButton.value?.$el.focus()
     })
-  window.addEventListener('blur', refocus, { once: true })
-  setTimeout(() => window.removeEventListener('blur', refocus), 3000)
+  }
+  window.addEventListener('blur', returnFocus)
+  stopReturningFocus = () => window.removeEventListener('blur', returnFocus)
+}
+
+function onPlayerLoad() {
+  setTimeout(stopReturningFocus, 1000)
 }
 
 function onClose() {
+  stopReturningFocus()
   isOpen.value = false
   emit('close')
 }
@@ -86,11 +95,12 @@ onMounted(() => {
     >
       <div class="kvass-story-fly__lightbox-content">
         <Button
+          ref="closeButton"
           class="kvass-story-fly__lightbox-close"
           icon="fa-pro-light:xmark"
           @click="dialog.close()"
         />
-        <iframe v-if="isOpen" :src="props.url"></iframe>
+        <iframe v-if="isOpen" :src="props.url" @load="onPlayerLoad"></iframe>
       </div>
     </dialog>
   </div>
