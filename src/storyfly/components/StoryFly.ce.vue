@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Button, Icon } from '@kvass/ui'
+import { Button } from '@kvass/ui'
 import { useCurrentElement } from '@vueuse/core'
 import { ref, onMounted, watch } from 'vue'
 
@@ -17,8 +17,8 @@ const props = withDefaults(
 
 const emit = defineEmits(['open', 'close'])
 
-const lightbox = ref()
-const iframe = ref()
+const dialog = ref()
+const closeButton = ref()
 const isOpen = ref(false)
 const element = useCurrentElement()
 
@@ -37,30 +37,33 @@ watch(
 )
 
 function openLightbox() {
-  lightbox.value.style.display = 'flex'
-  setTimeout(() => {
-    lightbox.value.classList.add('kvass-story-fly__lightbox--show')
-  }, 10)
-  iframe.value.src = props.url
-
   isOpen.value = true
+  dialog.value.showModal()
+  returnFocusFromPlayer()
   emit('open')
 }
 
-function closeLightbox(event) {
-  isOpen.value = false
-  if (
-    !event ||
-    event.target.classList.contains('kvass-story-fly__lightbox-close') ||
-    event.target === lightbox.value
-  ) {
-    lightbox.value.classList.remove('kvass-story-fly__lightbox--show')
-    setTimeout(() => {
-      lightbox.value.style.display = 'none'
-      iframe.value.src = ''
-    }, 500)
-  }
+let stopReturningFocus = () => {}
 
+function returnFocusFromPlayer() {
+  const returnFocus = () => {
+    stopReturningFocus()
+    setTimeout(() => {
+      window.focus()
+      closeButton.value?.$el.focus()
+    })
+  }
+  window.addEventListener('blur', returnFocus)
+  stopReturningFocus = () => window.removeEventListener('blur', returnFocus)
+}
+
+function onPlayerLoad() {
+  setTimeout(stopReturningFocus, 1000)
+}
+
+function onClose() {
+  stopReturningFocus()
+  isOpen.value = false
   emit('close')
 }
 
@@ -72,7 +75,6 @@ onMounted(() => {
 <template>
   <div class="kvass-story-fly">
     <Button
-      v-if="!isOpen"
       class="kvass-story-fly__trigger-button"
       :style="`background-image: url(${props.thumbnail});`"
       @click="openLightbox"
@@ -85,21 +87,22 @@ onMounted(() => {
       </template>
     </Button>
 
-    <div
+    <dialog
+      ref="dialog"
       class="kvass-story-fly__lightbox"
-      ref="lightbox"
-      @click="closeLightbox"
+      @click.self="dialog.close()"
+      @close="onClose"
     >
-      <div
-        class="kvass-story-fly__lightbox-content"
-        @click.stop.prevent="() => ''"
-      >
-        <span class="kvass-story-fly__lightbox-close" @click="closeLightbox"
-          >&times;</span
-        >
-        <iframe ref="iframe" src=""></iframe>
+      <div class="kvass-story-fly__lightbox-content">
+        <Button
+          ref="closeButton"
+          class="kvass-story-fly__lightbox-close"
+          icon="fa-pro-light:xmark"
+          @click="dialog.close()"
+        />
+        <iframe v-if="isOpen" :src="props.url" @load="onPlayerLoad"></iframe>
       </div>
-    </div>
+    </dialog>
   </div>
 </template>
 
@@ -155,77 +158,83 @@ onMounted(() => {
     }
   }
   &__lightbox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
-    background: rgba(0, 0, 0, 0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    overflow: hidden;
 
-    @media screen and (min-width: 680px) {
-      padding: 2rem;
+    &[open] {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    &--show {
-      display: flex;
-      opacity: 1;
+    &::backdrop {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    &[open],
+    &[open]::backdrop {
+      animation: kvass-story-fly-fade-in 0.3s ease-in-out;
     }
 
     &-content {
       position: relative;
-      padding: 0;
+      width: min(80vw, calc((100dvh - 160px) * 16 / 9));
+      aspect-ratio: 16 / 9;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      aspect-ratio: 1;
-      flex-grow: 1;
-      height: 100%;
 
-      @media screen and (min-width: 680px) {
-        height: initial;
-        aspect-ratio: 4 / 3;
+      @media screen and (max-width: 767px) {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: auto;
       }
     }
 
     &-close {
-      $size: 30px;
-      $offset: 30px;
-      $fontSize: 23px;
-
       position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: $fontSize;
-
-      cursor: pointer;
-      background: #fff;
-      border-radius: 50%;
-
-      width: $size;
-      height: $size;
-
-      text-align: center;
-
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      font-weight: bold;
+      bottom: calc(100% + 16px);
+      right: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
       border: none;
-      z-index: 10;
-      display: block;
-      line-height: $fontSize;
+      border-radius: 50%;
+      background: #fff;
+      color: #1a1a1a;
+      font-size: 20px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+
+      @media screen and (max-width: 767px) {
+        top: 12px;
+        right: 12px;
+        bottom: auto;
+      }
     }
 
     iframe {
+      display: block;
       width: 100%;
       height: 100%;
       border: none;
     }
+  }
+}
+
+@keyframes kvass-story-fly-fade-in {
+  from {
+    opacity: 0;
   }
 }
 </style>
