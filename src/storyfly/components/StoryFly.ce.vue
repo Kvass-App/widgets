@@ -44,7 +44,11 @@ function openLightbox() {
 
 function keepFocusOnClose() {
   const close = dialog.value.querySelector('.kvass-story-fly__lightbox-close')
-  const refocus = () => close.focus()
+  const refocus = () =>
+    setTimeout(() => {
+      window.focus()
+      close.focus()
+    })
   window.addEventListener('blur', refocus, { once: true })
   setTimeout(() => window.removeEventListener('blur', refocus), 3000)
 }
