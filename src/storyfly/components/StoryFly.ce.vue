@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { Button } from '@kvass/ui'
 import { useCurrentElement } from '@vueuse/core'
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import PlayIcon from './PlayIcon.ce.vue'
+import { requestAutoplay } from '../autoplay'
 
 const props = withDefaults(
   defineProps<{
@@ -23,6 +24,14 @@ const closeButton = ref()
 const isOpen = ref(false)
 const element = useCurrentElement()
 
+const isInline = computed(() => {
+  try {
+    return new URL(props.url).searchParams.get('display') === 'embed'
+  } catch {
+    return false
+  }
+})
+
 watch(
   () => isOpen.value,
   (val) => {
@@ -36,6 +45,13 @@ watch(
   },
   { deep: true },
 )
+
+function play() {
+  if (isInline.value) {
+    isOpen.value = true
+    emit('open')
+  } else openLightbox()
+}
 
 function openLightbox() {
   isOpen.value = true
@@ -69,12 +85,30 @@ function onClose() {
 }
 
 onMounted(() => {
-  if (props.openOnLoad) openLightbox()
+  if (props.openOnLoad) requestAutoplay(element.value, play)
 })
 </script>
 
 <template>
-  <div class="kvass-story-fly">
+  <div v-if="isInline" class="kvass-story-fly kvass-story-fly--inline">
+    <iframe
+      v-if="isOpen"
+      class="kvass-story-fly__inline-player"
+      :src="props.url"
+    ></iframe>
+    <button
+      v-else
+      type="button"
+      class="kvass-story-fly__inline-trigger"
+      :style="`background-image: url(${props.thumbnail});`"
+      @click="play"
+    >
+      <PlayIcon size="large" />
+      <span class="kvass-story-fly__inline-label">{{ props.label }}</span>
+    </button>
+  </div>
+
+  <div v-else class="kvass-story-fly">
     <Button
       class="kvass-story-fly__trigger-button"
       :style="`background-image: url(${props.thumbnail});`"
@@ -181,6 +215,55 @@ onMounted(() => {
           var(--kvass-story-fly-button-background)
         );
       }
+    }
+  }
+  &--inline {
+    position: relative;
+    aspect-ratio: var(
+      --kvass-story-fly-aspect-ratio,
+      var(--aspect-ratio, 16/9)
+    );
+    min-height: var(--kvass-story-fly-min-height, none);
+    border-radius: var(--kvass-story-fly-border-radius, 0);
+    overflow: hidden;
+    background: #000;
+
+    @media screen and (max-width: 680px) {
+      aspect-ratio: var(
+        --kvass-story-fly-aspect-ratio-small-device,
+        var(--aspect-ratio, 16/9)
+      );
+    }
+  }
+  &__inline {
+    &-trigger,
+    &-player {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    &-trigger {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 0;
+      background-color: #000;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    &-label {
+      color: #fff;
+      font-size: 20px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
     }
   }
   &__lightbox {
