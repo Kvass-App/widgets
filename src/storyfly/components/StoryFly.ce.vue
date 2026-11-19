@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Button } from '@kvass/ui'
 import { useCurrentElement } from '@vueuse/core'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, useHost } from 'vue'
 import PlayIcon from './PlayIcon.ce.vue'
 import { requestAutoplay } from '../autoplay'
 
@@ -23,6 +23,7 @@ const dialog = ref()
 const closeButton = ref()
 const isOpen = ref(false)
 const element = useCurrentElement()
+const hasOwnTrigger = Boolean(useHost()?.children.length)
 
 const isInline = computed(() => {
   try {
@@ -108,8 +109,20 @@ onMounted(() => {
     </button>
   </div>
 
-  <div v-else class="kvass-story-fly">
+  <div
+    v-else
+    class="kvass-story-fly"
+    :class="{ 'kvass-story-fly--own-trigger': hasOwnTrigger }"
+  >
+    <span
+      v-if="hasOwnTrigger"
+      class="kvass-story-fly__own-trigger"
+      @click.prevent="openLightbox"
+    >
+      <slot />
+    </span>
     <Button
+      v-else
       class="kvass-story-fly__trigger-button"
       :style="`background-image: url(${props.thumbnail});`"
       @click="openLightbox"
@@ -158,6 +171,9 @@ onMounted(() => {
   }
 
   height: 100%;
+  &--own-trigger {
+    display: contents;
+  }
   &__trigger {
     &-button {
       border: none;
