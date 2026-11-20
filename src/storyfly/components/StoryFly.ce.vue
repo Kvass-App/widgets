@@ -11,6 +11,7 @@ const props = withDefaults(
     label?: string
     thumbnail?: string
     openOnLoad?: boolean
+    variant?: 'button'
   }>(),
   {
     label: 'Interaktiv film',
@@ -112,7 +113,10 @@ onMounted(() => {
   <div
     v-else
     class="kvass-story-fly"
-    :class="{ 'kvass-story-fly--own-trigger': hasOwnTrigger }"
+    :class="{
+      'kvass-story-fly--own-trigger': hasOwnTrigger,
+      'kvass-story-fly--button': props.variant === 'button',
+    }"
   >
     <span
       v-if="hasOwnTrigger"
@@ -124,7 +128,11 @@ onMounted(() => {
     <Button
       v-else
       class="kvass-story-fly__trigger-button"
-      :style="`background-image: url(${props.thumbnail});`"
+      :style="
+        props.variant === 'button'
+          ? undefined
+          : `background-image: url(${props.thumbnail});`
+      "
       @click="openLightbox"
     >
       <template #default>
@@ -173,6 +181,25 @@ onMounted(() => {
   height: 100%;
   &--own-trigger {
     display: contents;
+  }
+  &--button {
+    height: auto;
+
+    .kvass-story-fly__trigger-button {
+      display: block;
+      width: auto;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: auto;
+      padding: 0;
+      background: none;
+      border-radius: 0;
+
+      .k-button__content {
+        position: static;
+        max-width: none;
+      }
+    }
   }
   &__trigger {
     &-button {
