@@ -12,23 +12,18 @@ If you have the widget split into multiple vue components, you'll have to import
 
 ## Build
 
-To make sure the web component builds correctly, you'll have to add a property in the rollup build options
+Add the widget to `widgets.config.js`. That entry decides what gets built and what goes in `dist/manifest.json`.
 
 ```js
-// ./vite.config.js
-export default defineConfig({
+// ./widgets.config.js
+export default {
   // ...
-  build: {
-    rollupOptions: {
-      // ...
-      input: {
-        contact: fileURLToPath(new URL('./src/contact/main.js', import.meta.url)),
-        // newWidget: fileURLToPath(new URL('./src/newWidget/main.js', import.meta.url)),
-      },
-    },
+  'new-widget': {
+    path: './src/new-widget/main.js',
+    description: 'What the widget does, in one line',
+    // isInternal: true, for widgets only used inside Kvass admin
   },
-  // ...
-})
+}
 ```
 
-The components will be automatically built after each commit, and a `js` file will be created in `/dist`.
+`npm run build` creates `dist/<name>.js` for every widget, plus the manifest. A release builds and publishes them when `development` is merged into `master`.

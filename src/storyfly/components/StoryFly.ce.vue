@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { Button } from '@kvass/ui'
 import { useCurrentElement } from '@vueuse/core'
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, useHost } from 'vue'
+import PlayIcon from './PlayIcon.ce.vue'
+import { requestAutoplay } from '../autoplay'
 
 const props = withDefaults(
   defineProps<{
@@ -9,6 +11,7 @@ const props = withDefaults(
     label?: string
     thumbnail?: string
     openOnLoad?: boolean
+    variant?: 'button'
   }>(),
   {
     label: 'Interaktiv film',
@@ -21,6 +24,15 @@ const dialog = ref()
 const closeButton = ref()
 const isOpen = ref(false)
 const element = useCurrentElement()
+const hasOwnTrigger = Boolean(useHost()?.children.length)
+
+const isInline = computed(() => {
+  try {
+    return new URL(props.url).searchParams.get('display') === 'embed'
+  } catch {
+    return false
+  }
+})
 
 watch(
   () => isOpen.value,
@@ -35,6 +47,13 @@ watch(
   },
   { deep: true },
 )
+
+function play() {
+  if (isInline.value) {
+    isOpen.value = true
+    emit('open')
+  } else openLightbox()
+}
 
 function openLightbox() {
   isOpen.value = true
@@ -68,19 +87,56 @@ function onClose() {
 }
 
 onMounted(() => {
-  if (props.openOnLoad) openLightbox()
+  if (props.openOnLoad) requestAutoplay(element.value, play)
 })
 </script>
 
 <template>
-  <div class="kvass-story-fly">
-    <Button
-      class="kvass-story-fly__trigger-button"
+  <div v-if="isInline" class="kvass-story-fly kvass-story-fly--inline">
+    <iframe
+      v-if="isOpen"
+      class="kvass-story-fly__inline-player"
+      :src="props.url"
+    ></iframe>
+    <button
+      v-else
+      type="button"
+      class="kvass-story-fly__inline-trigger"
       :style="`background-image: url(${props.thumbnail});`"
+      @click="play"
+    >
+      <PlayIcon size="large" />
+      <span class="kvass-story-fly__inline-label">{{ props.label }}</span>
+    </button>
+  </div>
+
+  <div
+    v-else
+    class="kvass-story-fly"
+    :class="{
+      'kvass-story-fly--own-trigger': hasOwnTrigger,
+      'kvass-story-fly--button': props.variant === 'button',
+    }"
+  >
+    <span
+      v-if="hasOwnTrigger"
+      class="kvass-story-fly__own-trigger"
+      @click.prevent="openLightbox"
+    >
+      <slot />
+    </span>
+    <Button
+      v-else
+      class="kvass-story-fly__trigger-button"
+      :style="
+        props.variant === 'button'
+          ? undefined
+          : `background-image: url(${props.thumbnail});`
+      "
       @click="openLightbox"
-      icon="fa-pro-solid:play"
     >
       <template #default>
+        <PlayIcon />
         <span>
           {{ props.label }}
         </span>
@@ -108,7 +164,43 @@ onMounted(() => {
 
 <style lang="scss">
 .kvass-story-fly {
+  --kvass-story-fly-button-background: var(
+    --k-button-secondary-background,
+    #1a1a1a
+  );
+  --kvass-story-fly-button-color: var(--k-button-secondary-text, #fff);
+  --kvass-story-fly-play-color: var(--kvass-story-fly-button-background);
+  --kvass-story-fly-play-ring: var(--kvass-story-fly-button-color);
+
+  @supports (color: oklch(from red l c h)) {
+    --kvass-story-fly-play-color: oklch(
+      from var(--kvass-story-fly-button-background) min(l, 0.4) c h
+    );
+  }
+
   height: 100%;
+  &--own-trigger {
+    display: contents;
+  }
+  &--button {
+    height: auto;
+
+    .kvass-story-fly__trigger-button {
+      display: block;
+      width: auto;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: auto;
+      padding: 0;
+      background: none;
+      border-radius: 0;
+
+      .k-button__content {
+        position: static;
+        max-width: none;
+      }
+    }
+  }
   &__trigger {
     &-button {
       border: none;
@@ -125,6 +217,7 @@ onMounted(() => {
       width: 100%;
       border-radius: var(--kvass-story-fly-border-radius, 0);
       position: relative;
+      font: inherit;
 
       @media screen and (max-width: 680px) {
         aspect-ratio: var(
@@ -137,24 +230,84 @@ onMounted(() => {
         position: absolute;
         bottom: var(--kvass-story-fly-trigger-bottom-offset, 15px);
         left: var(--kvass-story-fly-trigger-left-offset, 15px);
-        backdrop-filter: blur(8px);
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        padding: 8px 20px;
-        border-radius: 99px;
-        transition: transform 0.2s ease-in-out;
         z-index: 10;
         display: inline-flex;
-        gap: 0.5rem;
-
         align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+        min-height: 50px;
+        max-width: calc(
+          100% - 2 * var(--kvass-story-fly-trigger-left-offset, 15px)
+        );
+        padding: 8px var(--k-button-medium-padding-inline, 24px);
+        border-radius: var(--k-button-border-radius, 4px);
+        background: var(--kvass-story-fly-button-background);
+        color: var(--kvass-story-fly-button-color);
+        font-size: 16px;
+        line-height: 1.25;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        transition: background-color 0.15s ease;
         cursor: pointer;
-        &:hover {
-          transform: scale(1.1);
-        }
       }
+
+      &:hover .k-button__content {
+        background: var(
+          --k-button-secondary-background-hover,
+          var(--kvass-story-fly-button-background)
+        );
+      }
+    }
+  }
+  &--inline {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(
+      --kvass-story-fly-aspect-ratio,
+      var(--aspect-ratio, 16/9)
+    );
+    min-height: var(--kvass-story-fly-min-height, none);
+    border-radius: var(--kvass-story-fly-border-radius, 0);
+    overflow: hidden;
+    background: #000;
+
+    @media screen and (max-width: 680px) {
+      aspect-ratio: var(
+        --kvass-story-fly-aspect-ratio-small-device,
+        var(--aspect-ratio, 16/9)
+      );
+    }
+  }
+  &__inline {
+    &-trigger,
+    &-player {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    &-trigger {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 0;
+      background-color: #000;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    &-label {
+      color: #fff;
+      font-size: 20px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
     }
   }
   &__lightbox {
