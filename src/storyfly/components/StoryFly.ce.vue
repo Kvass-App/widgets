@@ -2,6 +2,7 @@
 import { Button } from '@kvass/ui'
 import { useCurrentElement } from '@vueuse/core'
 import { ref, onMounted, watch } from 'vue'
+import PlayIcon from './PlayIcon.ce.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -78,9 +79,9 @@ onMounted(() => {
       class="kvass-story-fly__trigger-button"
       :style="`background-image: url(${props.thumbnail});`"
       @click="openLightbox"
-      icon="fa-pro-solid:play"
     >
       <template #default>
+        <PlayIcon />
         <span>
           {{ props.label }}
         </span>
@@ -108,6 +109,20 @@ onMounted(() => {
 
 <style lang="scss">
 .kvass-story-fly {
+  --kvass-story-fly-button-background: var(
+    --k-button-secondary-background,
+    #1a1a1a
+  );
+  --kvass-story-fly-button-color: var(--k-button-secondary-text, #fff);
+  --kvass-story-fly-play-color: var(--kvass-story-fly-button-background);
+  --kvass-story-fly-play-ring: var(--kvass-story-fly-button-color);
+
+  @supports (color: oklch(from red l c h)) {
+    --kvass-story-fly-play-color: oklch(
+      from var(--kvass-story-fly-button-background) min(l, 0.4) c h
+    );
+  }
+
   height: 100%;
   &__trigger {
     &-button {
@@ -125,6 +140,7 @@ onMounted(() => {
       width: 100%;
       border-radius: var(--kvass-story-fly-border-radius, 0);
       position: relative;
+      font: inherit;
 
       @media screen and (max-width: 680px) {
         aspect-ratio: var(
@@ -137,23 +153,33 @@ onMounted(() => {
         position: absolute;
         bottom: var(--kvass-story-fly-trigger-bottom-offset, 15px);
         left: var(--kvass-story-fly-trigger-left-offset, 15px);
-        backdrop-filter: blur(8px);
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        padding: 8px 20px;
-        border-radius: 99px;
-        transition: transform 0.2s ease-in-out;
         z-index: 10;
         display: inline-flex;
-        gap: 0.5rem;
-
         align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+        min-height: 50px;
+        max-width: calc(
+          100% - 2 * var(--kvass-story-fly-trigger-left-offset, 15px)
+        );
+        padding: 8px var(--k-button-medium-padding-inline, 24px);
+        border-radius: var(--k-button-border-radius, 4px);
+        background: var(--kvass-story-fly-button-background);
+        color: var(--kvass-story-fly-button-color);
+        font-size: 16px;
+        line-height: 1.25;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        transition: background-color 0.15s ease;
         cursor: pointer;
-        &:hover {
-          transform: scale(1.1);
-        }
+      }
+
+      &:hover .k-button__content {
+        background: var(
+          --k-button-secondary-background-hover,
+          var(--kvass-story-fly-button-background)
+        );
       }
     }
   }
