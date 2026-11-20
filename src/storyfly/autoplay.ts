@@ -1,7 +1,7 @@
 type Candidate = { host: Element; play: () => void }
 
 const candidates: Candidate[] = []
-let isDecided = false
+let decidedPath: string | null = null
 
 function byDocumentOrder(a: Candidate, b: Candidate) {
   return a.host.compareDocumentPosition(b.host) &
@@ -11,7 +11,7 @@ function byDocumentOrder(a: Candidate, b: Candidate) {
 }
 
 export function requestAutoplay(element: Element, play: () => void) {
-  if (isDecided) return
+  if (decidedPath === location.pathname) return
 
   const root = element.getRootNode()
   const host = root instanceof ShadowRoot ? root.host : element
@@ -19,10 +19,11 @@ export function requestAutoplay(element: Element, play: () => void) {
   if (candidates.length > 1) return
 
   setTimeout(() => {
-    isDecided = true
-    candidates
+    decidedPath = location.pathname
+    const first = candidates
       .filter(({ host }) => host.isConnected)
       .sort(byDocumentOrder)[0]
-      ?.play()
+    candidates.length = 0
+    first?.play()
   })
 }

@@ -219,6 +219,7 @@ onMounted(() => {
   }
   &--inline {
     position: relative;
+    width: 100%;
     aspect-ratio: var(
       --kvass-story-fly-aspect-ratio,
       var(--aspect-ratio, 16/9)
