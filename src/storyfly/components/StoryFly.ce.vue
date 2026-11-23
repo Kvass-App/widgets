@@ -179,6 +179,8 @@ onMounted(() => {
   }
 
   height: 100%;
+  word-break: normal;
+  overflow-wrap: anywhere;
   &--own-trigger {
     display: contents;
   }
