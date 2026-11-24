@@ -156,38 +156,43 @@ const formIsValid = computed(() => {
   return validator.value.passes
 })
 
+const layout = computed(() => {
+  if (formSettings.value.layout) return JSON.parse(formSettings.value.layout)
+
+  return formFields.value.filteredFields.reduce(
+    (acc, current, index, array) => {
+      const currentArray = acc.split('|').filter(Boolean)
+      const prev = currentArray[currentArray?.length - 1]
+      const nextValue = array[index + 1]
+
+      let secound = ''
+      let prevValues = prev ? prev.split(' ') : []
+
+      const currentKey = transformKey(current.key)
+      // scipt if used
+      if (prevValues.find((i) => i === currentKey)) return acc
+
+      if (prevValues.length === '2') {
+        secound = currentKey
+      }
+      if (current?.size === 'half') {
+        secound = '.'
+      }
+
+      if (nextValue?.size === 'half') {
+        secound = transformKey(nextValue?.key)
+      }
+
+      return (acc = `${acc ? `${acc}|` : ''}${currentKey} ${
+        secound || currentKey
+      }`)
+    },
+    '',
+  )
+})
+
 const style = computed(() => {
-  let layout = formSettings.value?.layout
-    ? JSON.parse(formSettings.value?.layout)
-    : formFields?.value?.filteredFields.reduce((acc, current, index, array) => {
-        const currentArray = acc.split('|').filter(Boolean)
-        const prev = currentArray[currentArray?.length - 1]
-        const nextValue = array[index + 1]
-
-        let secound = ''
-        let prevValues = prev ? prev.split(' ') : []
-
-        const currentKey = transformKey(current.key)
-        // scipt if used
-        if (prevValues.find((i) => i === currentKey)) return acc
-
-        if (prevValues.length === '2') {
-          secound = currentKey
-        }
-        if (current?.size === 'half') {
-          secound = '.'
-        }
-
-        if (nextValue?.size === 'half') {
-          secound = transformKey(nextValue?.key)
-        }
-
-        return (acc = `${acc ? `${acc}|` : ''}${currentKey} ${
-          secound || currentKey
-        }`)
-      }, '')
-
-  let rows = layout.split('|')
+  let rows = layout.value.split('|')
 
   let cols = rows[0]
     .split(' ')
@@ -541,6 +546,19 @@ const formFields = computed(() => {
   }
 })
 
+const fieldsInLayoutOrder = computed(() => {
+  const areas = layout.value.split(/[\s|]+/).map((area) => area.split(':')[0])
+
+  const getPosition = (field) => {
+    const index = areas.indexOf(transformKey(field.key))
+    return index === -1 ? areas.length : index
+  }
+
+  return [...formFields.value.filteredFields].sort(
+    (a, b) => getPosition(a) - getPosition(b),
+  )
+})
+
 const hasLeadFields = computed(() => {
   const fields = JSON.parse(props.fields)
   return (fields || [])?.some((i) => i?.component === 'lead')
@@ -760,7 +778,7 @@ onMounted(() => {
       </Grid>
       <form v-else class="kvass-form__form" @submit.prevent="submit">
         <div class="kvass-form__content" :style="style">
-          <template v-for="field in formFields.filteredFields">
+          <template v-for="field in fieldsInLayoutOrder">
             <FormControl
               :style="`--grid-area: ${transformKey(field?.key)};`"
               :class="[
