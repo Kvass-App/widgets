@@ -364,6 +364,12 @@ onBeforeUnmount(() => lockPageScroll(false))
   [data-field='dialog-content'] {
     display: flex;
     flex-direction: column;
+
+    a:not(.k-button) {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
   }
 
   [data-field='clap'] {
@@ -441,6 +447,15 @@ onBeforeUnmount(() => lockPageScroll(false))
     display: flex;
     flex-direction: column;
     min-width: 0;
+
+    > [data-block-type='image'] {
+      margin-block: 0 1rem;
+    }
+
+    > p {
+      margin-block: 0 0.5em;
+      line-height: 1.5;
+    }
   }
 
   [data-block-type='mediaCarousel'] {

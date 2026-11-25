@@ -70,7 +70,11 @@ const Blocks = {
       size: 'contain',
       'aspect-ratio': block.imageRatio,
       style: block.looks?.maxWidth
-        ? { maxWidth: `${block.looks.maxWidth}px`, marginInline: 'auto' }
+        ? {
+            width: '100%',
+            maxWidth: `${block.looks.maxWidth}px`,
+            marginInline: 'auto',
+          }
         : undefined,
     }
   },
