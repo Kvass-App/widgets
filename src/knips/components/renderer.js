@@ -121,4 +121,16 @@ const ValidateBlocks = (item) => {
   return item.blocks.every((block) => block.type in Blocks)
 }
 
-export { RenderBlock, getTitle, getThumbnail, ValidateBlocks }
+// Knips wraps content in sections (role: header | body | footer).
+// Header (logo) and footer (newsletter unsubscribe etc.) are email-specific,
+// so only the body content is used. Posts without sections are returned as-is.
+const SkippedSectionRoles = ['header', 'footer']
+
+const FlattenBlocks = (blocks = []) =>
+  (blocks || []).flatMap((block) => {
+    if (block.type !== 'section') return [block]
+    if (SkippedSectionRoles.includes(block.role)) return []
+    return FlattenBlocks(block.blocks)
+  })
+
+export { RenderBlock, getTitle, getThumbnail, ValidateBlocks, FlattenBlocks }

@@ -1,7 +1,13 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch, nextTick } from 'vue'
 import { Card, Grid, Button, Image, Icon, Flex } from '@kvass/ui'
-import { RenderBlock, getTitle, getThumbnail, ValidateBlocks } from './renderer'
+import {
+  RenderBlock,
+  getTitle,
+  getThumbnail,
+  ValidateBlocks,
+  FlattenBlocks,
+} from './renderer'
 
 const Shorten = (e, l) => (e.length > l ? e.substring(e, l - 3) + '...' : e)
 const Replace = (s, d) => s.replace(/{(\w+)}/g, (m, k) => d[k] || m)
@@ -34,7 +40,8 @@ const props = defineProps({
 const items = ref([])
 const item = ref(null)
 const knipsElement = ref(null)
-const mapItem = (item) => {
+const mapItem = (rawItem) => {
+  const item = { ...rawItem, blocks: FlattenBlocks(rawItem.blocks) }
   return {
     id: item.id,
     title: getTitle(item),
@@ -64,45 +71,41 @@ const clap = async (item) => {
   item.claps = item.claps + 1
 }
 
+// Local dev (e.g. *.local.kvass.test, localhost): show all posts,
+// including drafts/non-public, so the feed can be tested locally
+const isLocal = () =>
+  /(\.test|\.local|localhost)$/.test(window.location.hostname)
+
+const isVisible = (e) =>
+  isLocal() || (e.status === 'published' && e.channel === 'public')
+
 const getPosts = () => {
   const { feed, posts: limit } = props
   const api = Replace(isUrl(feed) ? feed : defaultUrl, { feed, limit })
 
   fetch(api)
     .then((res) => res.json())
-    .then(
-      (data) =>
-        (items.value = data
-          .filter((e) => e.status === 'published' && e.channel === 'public')
-          .map(mapItem)),
-    )
+    .then((data) => (items.value = data.filter(isVisible).map(mapItem)))
 }
 
 const onDialog = (e) => {
   if (!e.isSupported) return window.open(`${e.externalUrl}`)
   item.value = e
-
-  //scroll to current element
-  setTimeout(() => {
-    let navigationHeight = getComputedStyle(
-      document.documentElement,
-    ).getPropertyValue('--k-navigation-nav-height')
-
-    if (!navigationHeight || !knipsElement.value) return
-
-    navigationHeight = navigationHeight.trim().replace(/\D/g, '')
-
-    const y =
-      knipsElement.value.getBoundingClientRect().top +
-      window.pageYOffset -
-      navigationHeight
-
-    window.scrollTo({
-      top: y,
-      behavior: 'smooth',
-    })
-  }, 30)
 }
+
+watch(item, async (value) => {
+  const dialog = knipsElement.value
+  if (!dialog) return
+  if (value) {
+    await nextTick()
+    if (!dialog.open) dialog.showModal()
+    dialog.scrollTop = 0
+    lockPageScroll(true)
+  } else {
+    if (dialog.open) dialog.close()
+    lockPageScroll(false)
+  }
+})
 
 const onModalClick = (event) => {
   if (event.target.closest('.k-card')) return
@@ -110,6 +113,7 @@ const onModalClick = (event) => {
 }
 
 onMounted(getPosts)
+onBeforeUnmount(() => lockPageScroll(false))
 </script>
 
 <template>
@@ -162,14 +166,13 @@ onMounted(getPosts)
         </template>
       </Card>
     </Grid>
-    <div
-      v-if="item"
+    <dialog
       class="knips-feed__modal"
       @click="onModalClick"
+      @close="item = null"
       ref="knipsElement"
     >
-      <div class="knips-feed__modal-backdrop"></div>
-      <Card appearance="flat">
+      <Card v-if="item" appearance="flat">
         <template #header v-if="item">
           <component
             :is="item.thumbnail.component"
@@ -214,7 +217,7 @@ onMounted(getPosts)
           />
         </template>
       </Card>
-    </div>
+    </dialog>
   </div>
 </template>
 
@@ -370,7 +373,8 @@ onMounted(getPosts)
     }
   }
 
-  [data-block-type='regular']:empty {
+  [data-block-type='regular']:empty,
+  [data-block-type='quote']:empty {
     display: none;
   }
 
@@ -408,27 +412,41 @@ onMounted(getPosts)
   }
 
   &__modal {
-    position: fixed;
-    top: 0;
-    left: 0;
+    // reset native <dialog> defaults
+    border: none;
+    padding: 0;
+    margin: 0;
+    max-width: none;
+    max-height: none;
     width: 100%;
     height: 100%;
+    background: transparent;
+    color: var(--color);
 
-    background-color: rgb(0 0 0 / 0.3);
-    z-index: 10000;
-
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    max-height: calc(100vh - 4rem);
     overflow-y: auto;
+    overscroll-behavior: contain;
+
+    &[open] {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    &::backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
     .k-card {
       width: 100%;
       max-width: 75ch;
-
       margin: 2rem;
-
       position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+
+      @media (max-width: 600px) {
+        margin: 1rem;
+      }
     }
 
     .k-card__content {
@@ -436,14 +454,6 @@ onMounted(getPosts)
       border-top-right-radius: inherit;
       overflow: clip;
       padding: var(--k-ui-spacing-lg);
-    }
-
-    &-backdrop {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(black, 0.2);
-      backdrop-filter: blur(8px);
     }
   }
 }
