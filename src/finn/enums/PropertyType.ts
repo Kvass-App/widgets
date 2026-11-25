@@ -65,7 +65,11 @@ export default [
       return item.fields.IS_LEISURE
     },
   },
-  { value: 'leisure_plot', label: 'Hyttetomt', categories: ['PLOT_SALE'] },
+  {
+    value: 'leisure_plot',
+    label: 'Hyttetomt',
+    categories: ['PLOT_SALE', 'LEISURE_PLOT_SALE'],
+  },
   {
     value: 'office',
     label: 'Kontor',
@@ -81,7 +85,11 @@ export default [
     label: 'Rom i bofellesskap',
     categories: ['ESTATE_RENT'],
   },
-  { value: 'plot', label: 'Tomter', categories: ['PLOT_SALE'] },
+  {
+    value: 'plot',
+    label: 'Tomter',
+    categories: ['PLOT_SALE', 'LEISURE_PLOT_SALE'],
+  },
   {
     value: 'business',
     label: 'Butikk/Handel',
