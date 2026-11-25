@@ -3,6 +3,7 @@ import { onMounted, onBeforeUnmount, ref, watch, nextTick } from 'vue'
 import { Card, Grid, Button, Image, Icon, Flex } from '@kvass/ui'
 import {
   RenderBlock,
+  BlockList,
   getTitle,
   getThumbnail,
   ValidateBlocks,
@@ -86,6 +87,20 @@ const getPosts = () => {
   fetch(api)
     .then((res) => res.json())
     .then((data) => (items.value = data.filter(isVisible).map(mapItem)))
+}
+
+// lock page scroll while the dialog is open
+let previousOverflow = null
+const lockPageScroll = (lock) => {
+  const root = document.documentElement
+  if (lock) {
+    if (previousOverflow === null) previousOverflow = root.style.overflow
+    root.style.overflow = 'hidden'
+    return
+  }
+  if (previousOverflow === null) return
+  root.style.overflow = previousOverflow
+  previousOverflow = null
 }
 
 const onDialog = (e) => {
@@ -202,13 +217,7 @@ onBeforeUnmount(() => lockPageScroll(false))
             </Flex>
           </Flex>
           <div data-field="dialog-content">
-            <component
-              v-for="{ component, content, ...rest } in item.content"
-              :is="component"
-              v-bind="rest"
-            >
-              <span v-if="content" v-html="content"></span>
-            </component>
+            <BlockList :blocks="item.content" />
           </div>
           <Button
             icon-right="fa-pro-light:times"
@@ -405,6 +414,62 @@ onBeforeUnmount(() => lockPageScroll(false))
 
   [data-block-type='link'] {
     margin: 0 auto;
+  }
+
+  [data-block-type='columns'] {
+    display: flex;
+    gap: var(--k-ui-spacing);
+    margin-block: 1.5em;
+
+    &[data-align='middle'] {
+      align-items: center;
+    }
+
+    &[data-align='bottom'] {
+      align-items: flex-end;
+    }
+
+    &[data-stacked] {
+      @media (max-width: 600px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  }
+
+  [data-block-type='column'] {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  [data-block-type='mediaCarousel'] {
+    margin-block: 1em;
+
+    > span {
+      display: flex;
+      gap: var(--k-ui-spacing-sm);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+    }
+
+    figure {
+      flex: 0 0 85%;
+      margin: 0;
+      scroll-snap-align: center;
+
+      &:only-child {
+        flex-basis: 100%;
+      }
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   [alignment='center'] {

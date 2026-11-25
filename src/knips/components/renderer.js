@@ -1,4 +1,11 @@
+import { h } from 'vue'
 import { Image, Button } from '@kvass/ui'
+
+const TextAlign = (block) =>
+  block.alignment ? { textAlign: block.alignment } : undefined
+
+const LineBreaks = (value) =>
+  typeof value === 'string' ? value.replace(/\n/g, '<br>') : value
 
 const SpanStyles = {
   bold: (span) => `<b>${span.text}</b>`,
@@ -11,7 +18,7 @@ const SpanStyles = {
 }
 
 const RenderSpans = (block) => {
-  if (!block.spans?.length) return block.text
+  if (!block.spans?.length) return LineBreaks(block.text)
 
   let result = block.spans.flatMap((span) => RenderSpan(span, block))
   //merge strings together to prevent comma splits
@@ -20,7 +27,7 @@ const RenderSpans = (block) => {
     (result || [])?.every((i) => typeof i === 'string')
   )
     result = [result.join(' ')]
-  return result
+  return result.map(LineBreaks)
 }
 
 const RenderSpan = (span, block) => {
@@ -34,9 +41,21 @@ const RenderSpan = (span, block) => {
 }
 
 const Blocks = {
-  h1: (block) => ({ component: 'h1', content: RenderSpans(block) }),
-  h2: (block) => ({ component: 'h2', content: RenderSpans(block) }),
-  regular: (block) => ({ component: 'p', content: RenderSpans(block) }),
+  h1: (block) => ({
+    component: 'h1',
+    content: RenderSpans(block),
+    style: TextAlign(block),
+  }),
+  h2: (block) => ({
+    component: 'h2',
+    content: RenderSpans(block),
+    style: TextAlign(block),
+  }),
+  regular: (block) => ({
+    component: 'p',
+    content: RenderSpans(block),
+    style: TextAlign(block),
+  }),
   quote: (block) => ({
     component: 'blockquote',
     content: RenderSpans(block),
@@ -50,8 +69,22 @@ const Blocks = {
       src: block.imageUrl,
       size: 'contain',
       'aspect-ratio': block.imageRatio,
+      style: block.looks?.maxWidth
+        ? { maxWidth: `${block.looks.maxWidth}px`, marginInline: 'auto' }
+        : undefined,
     }
   },
+  columns: (block, item) => ({
+    component: 'div',
+    'data-stacked': block.stackedOnMobile === false ? undefined : '',
+    'data-align': block.verticalAlignment,
+    children: (block.blocks || []).map((column) => ({
+      component: 'div',
+      'data-block-type': 'column',
+      style: { flex: column.flex || 1 },
+      children: RenderBlocks(column.blocks, item),
+    })),
+  }),
   video: (block, item) => {
     if (block.imageUrl === item.featuredImage?.src) return
     return {
@@ -82,7 +115,27 @@ const Blocks = {
       target: '_blank',
     }
   },
+  mediaCarousel: (block) => {
+    const media = (block.mediaList || []).filter((m) => m.imageUrl)
+    if (!media.length) return
+    return {
+      component: 'div',
+      content: media
+        .map(
+          (m) =>
+            `<figure style="aspect-ratio: ${Number(m.imageRatio) || 16 / 9}"><img src="${EscapeAttr(m.imageUrl)}" alt="${EscapeAttr(m.altText || '')}" loading="lazy" /></figure>`,
+        )
+        .join(''),
+    }
+  },
 }
+
+const EscapeAttr = (value) =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
 
 const RenderBlock = (block, item, meta) => {
   if (!(block.type in Blocks)) {
@@ -94,6 +147,24 @@ const RenderBlock = (block, item, meta) => {
     'data-block-type': block.type,
   }
 }
+
+const RenderBlocks = (blocks, item) =>
+  (blocks || []).map((block) => RenderBlock(block, item)).filter(Boolean)
+
+// renders rendered blocks recursively, so columns can hold their own blocks
+const BlockList = (props) =>
+  (props.blocks || []).map(({ component, content, children, ...rest }) => {
+    const inner = children
+      ? h(BlockList, { blocks: children })
+      : content
+        ? h('span', { innerHTML: content })
+        : undefined
+    if (!inner) return h(component, rest)
+    return typeof component === 'string'
+      ? h(component, rest, [inner])
+      : h(component, rest, { default: () => inner })
+  })
+BlockList.props = ['blocks']
 
 const getTitle = (item) =>
   item.blocks.find((b) => ['h1', 'h2'].includes(b.type))?.text
@@ -117,9 +188,15 @@ const getThumbnail = (item) => {
   }
 }
 
-const ValidateBlocks = (item) => {
-  return item.blocks.every((block) => block.type in Blocks)
+const isSupportedBlock = (block) => {
+  if (!(block.type in Blocks)) return false
+  if (block.type !== 'columns') return true
+  return (block.blocks || []).every((column) =>
+    (column.blocks || []).every(isSupportedBlock),
+  )
 }
+
+const ValidateBlocks = (item) => item.blocks.every(isSupportedBlock)
 
 // Knips wraps content in sections (role: header | body | footer).
 // Header (logo) and footer (newsletter unsubscribe etc.) are email-specific,
@@ -133,4 +210,12 @@ const FlattenBlocks = (blocks = []) =>
     return FlattenBlocks(block.blocks)
   })
 
-export { RenderBlock, getTitle, getThumbnail, ValidateBlocks, FlattenBlocks }
+export {
+  RenderBlock,
+  RenderBlocks,
+  BlockList,
+  getTitle,
+  getThumbnail,
+  ValidateBlocks,
+  FlattenBlocks,
+}
