@@ -135,21 +135,33 @@ export default [
   },
   {
     type: 'PLOT_SALE',
-    label: 'Tomt/Fritidstomt',
-    sublabel: 'Boligtomt/Fritidstomt til salgs',
+    label: 'Boligtomt',
+    sublabel: 'Boligtomt til salgs',
     group: 'Tomter',
     disabled: (units: Unit[]) => {
       if (!units.length) return false
 
-      const types = ['plot', 'leisurePlot']
+      return !units.some((unit) => {
+        return unit.saleType === 'sale' && unit.propertyType.value === 'plot'
+      })
+    },
+    disabledReason: 'Du må ha tomteenheter til salgs',
+  },
+  {
+    type: 'LEISURE_PLOT_SALE',
+    label: 'Fritidstomt',
+    sublabel: 'Fritidstomt til salgs',
+    group: 'Tomter',
+    disabled: (units: Unit[]) => {
+      if (!units.length) return false
 
       return !units.some((unit) => {
         return (
-          unit.saleType === 'sale' && types.includes(unit.propertyType.value)
+          unit.saleType === 'sale' && unit.propertyType.value === 'leisurePlot'
         )
       })
     },
-    disabledReason: 'Du må ha tomteenheter eller fritidstomter til salgs',
+    disabledReason: 'Du må ha fritidstomter til salgs',
   },
   {
     type: 'ESTATE_RENT',
