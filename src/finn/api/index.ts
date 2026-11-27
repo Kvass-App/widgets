@@ -97,6 +97,47 @@ export function useAPI(element?: CurrentElementType) {
     })
   }
 
+  const getUpsell = (id: string) => {
+    const url = getUrl('upsell')
+
+    url.searchParams.append('id', id)
+
+    return fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        authorization: `Bearer ${props.token}`,
+      },
+    }).then((res) => res.json())
+  }
+
+  const purchaseUpsell = (id: string, productSpecId: string) => {
+    const url = getUrl('upsell')
+
+    url.searchParams.append('id', id)
+
+    return fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${props.token}`,
+      },
+      body: JSON.stringify({ productSpecId }),
+    }).then((res) => res.json())
+  }
+
+  const cancelUpsell = (id: string, specId: string) => {
+    const url = getUrl('upsell')
+
+    url.searchParams.append('id', id)
+    url.searchParams.append('specId', specId)
+
+    return fetch(url.toString(), {
+      method: 'DELETE',
+      headers: {
+        authorization: `Bearer ${props.token}`,
+      },
+    }).then((res) => res.json())
+  }
+
   const publish = async (
     data,
     options: { preview?: boolean; publish?: boolean } = {},
@@ -175,6 +216,9 @@ export function useAPI(element?: CurrentElementType) {
     remove,
     publish,
     unpublish,
+    getUpsell,
+    purchaseUpsell,
+    cancelUpsell,
     navigateProjectStep,
     getUnits,
     fields,

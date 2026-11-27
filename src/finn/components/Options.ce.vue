@@ -108,7 +108,13 @@ const navigateEdit = (id: string, step: string) => {
     </template>
   </Dialog>
 
-  <Dropdown label="Endre" keepOpen :teleport="false" class="options">
+  <Dropdown
+    label="Endre"
+    size="small"
+    keepOpen
+    :teleport="false"
+    class="options"
+  >
     <template #default>
       <Button
         iconRight="fa-pro-light:pen"
