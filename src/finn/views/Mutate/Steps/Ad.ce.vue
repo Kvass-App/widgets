@@ -205,12 +205,22 @@ const getIsEditedBind = (field) => {
   return isEdited(field)
     ? {
         icon: 'fa-pro-regular:cloud-xmark',
-        label: 'Ikke synkronisert',
+        label: 'Ikke synkronisert. Klikk for å tilbakestille feltet.',
       }
     : {
         icon: 'fa-pro-regular:cloud-check',
         label: 'Synkronisert',
       }
+}
+
+const resetField = (field) => {
+  if (!(field in initialFields.value)) {
+    delete data.value[field]
+    delete modelValue.value.fields[field]
+    return
+  }
+
+  data.value[field] = Clone(initialFields.value[field])
 }
 
 const changedTextIds = computed(() => {
@@ -242,6 +252,16 @@ const getTextSourceBind = (id: string) => {
         icon: 'fa-pro-regular:cloud-check',
         label: 'Synkronisert med prosjektet.',
       }
+}
+
+const resetDialog = ref()
+const fieldToReset = ref<string>()
+
+const openResetDialog = (field: string) => {
+  if (!isEdited(field)) return
+
+  fieldToReset.value = field
+  resetDialog.value.open()
 }
 
 const onTextMove = (item: TextSection, neighbor: TextSection) => {
@@ -486,7 +506,9 @@ const saveDraft = () => {
           Når du aksepterer her og gjør endringer i tekstfelt vil skyen skifte
           farge til oransje og innholde et kryss. Da er ikke lenger feltet du
           har justert synkronisert med prosjektsiden. På den måten kan du
-          tilpasse innhold til Finn uten å påvirke prosjektsiden.
+          tilpasse innhold til Finn uten å påvirke prosjektsiden. Klikker du på
+          den oransje skyen, kan du tilbakestille feltet slik at det blir
+          synkronisert igjen.
         </p>
         <Image
           src="https://assets.kvass.no/67c59b8a92504cdf70ab97d2"
@@ -507,6 +529,30 @@ const saveDraft = () => {
             }
           "
         ></Button>
+      </template>
+    </Dialog>
+    <Dialog
+      :teleport="false"
+      ref="resetDialog"
+      alignment="center"
+      title="Tilbakestill feltet"
+      subtitle="Feltet henter innholdet fra prosjektet igjen og blir synkronisert. Endringene du har gjort i feltet blir borte."
+    >
+      <template #trigger="{ triggerProps }">
+        <Button v-bind="triggerProps" style="display: none"></Button>
+      </template>
+      <template #actions="{ close }">
+        <Button label="Nei, gå tilbake" variant="secondary" @click="close" />
+        <Button
+          label="Ja, tilbakestill"
+          variant="primary"
+          @click="
+            () => {
+              resetField(fieldToReset)
+              close()
+            }
+          "
+        />
       </template>
     </Dialog>
     <Alert
@@ -531,7 +577,9 @@ const saveDraft = () => {
           Om du ønsker å benytte den ferdigutfylte Finn-annonsen vi tilbyr
           trenger du ikke gjøre endringer på denne siden. Dersom du tidligere
           har gjort endringer og ønsker å tilbakestille til vår ferdig utfylte
-          annonse kan du gjøre dette under knappen "Tilbakestill innhold"
+          annonse kan du gjøre dette under knappen "Tilbakestill innhold". Vil
+          du bare tilbakestille ett felt, klikker du på den oransje skyen ved
+          feltet.
         </p>
       </template>
     </Alert>
@@ -656,6 +704,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('HOUSING_UNIT_REF').icon"
+                        @click.stop="openResetDialog('HOUSING_UNIT_REF')"
                         v-tooltip="{
                           content: getIsEditedBind('HOUSING_UNIT_REF').label,
                           container: false,
@@ -678,6 +727,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('PROJECT_NAME').icon"
+                        @click.stop="openResetDialog('PROJECT_NAME')"
                         v-tooltip="{
                           content: getIsEditedBind('PROJECT_NAME').label,
                           container: false,
@@ -701,6 +751,7 @@ const saveDraft = () => {
                   <template #suffix>
                       <Icon
                           :icon="getIsEditedBind('BOLIGNUMMER').icon"
+                          @click.stop="openResetDialog('BOLIGNUMMER')"
                           v-tooltip="{
                             content: getIsEditedBind('BOLIGNUMMER').label,
                             container: false,
@@ -727,6 +778,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('HEADING').icon"
+                        @click.stop="openResetDialog('HEADING')"
                         v-tooltip="{
                           content: getIsEditedBind('HEADING').label,
                           container: false,
@@ -782,6 +834,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('PRICE_SUGGESTION').icon"
+                        @click.stop="openResetDialog('PRICE_SUGGESTION')"
                         v-tooltip="{
                           content: getIsEditedBind('PRICE_SUGGESTION').label,
                           container: false,
@@ -816,6 +869,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('SALES_COST_SUM').icon"
+                        @click.stop="openResetDialog('SALES_COST_SUM')"
                         v-tooltip="{
                           content: getIsEditedBind('SALES_COST_SUM').label,
                           container: false,
@@ -850,6 +904,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('COLLECTIVE_DEBT').icon"
+                        @click.stop="openResetDialog('COLLECTIVE_DEBT')"
                         v-tooltip="{
                           content: getIsEditedBind('COLLECTIVE_DEBT').label,
                           container: false,
@@ -884,6 +939,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('TOTAL_PRICE').icon"
+                        @click.stop="openResetDialog('TOTAL_PRICE')"
                         v-tooltip="{
                           content: getIsEditedBind('TOTAL_PRICE').label,
                           container: false,
@@ -956,6 +1012,7 @@ const saveDraft = () => {
 
                         <Icon
                           :icon="getIsEditedBind('IS_LEISURE').icon"
+                          @click.stop="openResetDialog('IS_LEISURE')"
                           v-tooltip="{
                             content: getIsEditedBind('IS_LEISURE').label,
                             container: false,
@@ -1009,6 +1066,7 @@ const saveDraft = () => {
 
                         <Icon
                           :icon="getIsEditedBind('LEISURE_SITUATION').icon"
+                          @click.stop="openResetDialog('LEISURE_SITUATION')"
                           v-tooltip="{
                             content: getIsEditedBind('LEISURE_SITUATION').label,
                             container: false,
@@ -1056,6 +1114,7 @@ const saveDraft = () => {
                         />
                         <Icon
                           :icon="getIsEditedBind('PROPERTY_TYPE').icon"
+                          @click.stop="openResetDialog('PROPERTY_TYPE')"
                           v-tooltip="{
                             content: getIsEditedBind('PROPERTY_TYPE').label,
                             container: false,
@@ -1090,6 +1149,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('PLOT_AREA').icon"
+                          @click.stop="openResetDialog('PLOT_AREA')"
                           v-tooltip="{
                             content: getIsEditedBind('PLOT_AREA').label,
                             container: false,
@@ -1131,6 +1191,7 @@ const saveDraft = () => {
 
                         <Icon
                           :icon="getIsEditedBind('PLOT_IS_OWNED').icon"
+                          @click.stop="openResetDialog('PLOT_IS_OWNED')"
                           v-tooltip="{
                             content: getIsEditedBind('PLOT_IS_OWNED').label,
                             container: false,
@@ -1168,6 +1229,9 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('RENTAL_PRICE_PER_MONTH').icon"
+                          @click.stop="
+                            openResetDialog('RENTAL_PRICE_PER_MONTH')
+                          "
                           v-tooltip="{
                             content: getIsEditedBind('RENTAL_PRICE_PER_MONTH')
                               .label,
@@ -1191,6 +1255,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('RENT_FROM').icon"
+                          @click.stop="openResetDialog('RENT_FROM')"
                           v-tooltip="{
                             content: getIsEditedBind('RENT_FROM').label,
                             container: false,
@@ -1213,6 +1278,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('RENT_TO').icon"
+                          @click.stop="openResetDialog('RENT_TO')"
                           v-tooltip="{
                             content: getIsEditedBind('RENT_TO').label,
                             container: false,
@@ -1245,6 +1311,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('NO_OF_ROOMS').icon"
+                          @click.stop="openResetDialog('NO_OF_ROOMS')"
                           v-tooltip="{
                             content: getIsEditedBind('NO_OF_ROOMS').label,
                             container: false,
@@ -1278,6 +1345,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('NO_OF_BEDROOMS').icon"
+                          @click.stop="openResetDialog('NO_OF_BEDROOMS')"
                           v-tooltip="{
                             content: getIsEditedBind('NO_OF_BEDROOMS').label,
                             container: false,
@@ -1310,6 +1378,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('AREA_FROM').icon"
+                          @click.stop="openResetDialog('AREA_FROM')"
                           v-tooltip="{
                             content: getIsEditedBind('AREA_FROM').label,
                             container: false,
@@ -1344,6 +1413,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('AREA_TO').icon"
+                          @click.stop="openResetDialog('AREA_TO')"
                           v-tooltip="{
                             content: getIsEditedBind('AREA_TO').label,
                             container: false,
@@ -1379,6 +1449,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('PRIMARY_ROOM_AREA').icon"
+                          @click.stop="openResetDialog('PRIMARY_ROOM_AREA')"
                           v-tooltip="{
                             content: getIsEditedBind('PRIMARY_ROOM_AREA').label,
                             container: false,
@@ -1413,6 +1484,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('USEABLE_AREA').icon"
+                          @click.stop="openResetDialog('USEABLE_AREA')"
                           v-tooltip="{
                             content: getIsEditedBind('USEABLE_AREA').label,
                             container: false,
@@ -1448,6 +1520,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('USEABLE_AREA_I').icon"
+                          @click.stop="openResetDialog('USEABLE_AREA_I')"
                           v-tooltip="{
                             content: getIsEditedBind('USEABLE_AREA_I').label,
                             container: false,
@@ -1483,6 +1556,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('USEABLE_AREA_E').icon"
+                          @click.stop="openResetDialog('USEABLE_AREA_E')"
                           v-tooltip="{
                             content: getIsEditedBind('USEABLE_AREA_E').label,
                             container: false,
@@ -1518,6 +1592,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('USEABLE_AREA_B').icon"
+                          @click.stop="openResetDialog('USEABLE_AREA_B')"
                           v-tooltip="{
                             content: getIsEditedBind('USEABLE_AREA_B').label,
                             container: false,
@@ -1552,6 +1627,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('GROSS_AREA').icon"
+                          @click.stop="openResetDialog('GROSS_AREA')"
                           v-tooltip="{
                             content: getIsEditedBind('GROSS_AREA').label,
                             container: false,
@@ -1589,6 +1665,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('NO_OF_PARKING_SPOTS').icon"
+                          @click.stop="openResetDialog('NO_OF_PARKING_SPOTS')"
                           v-tooltip="{
                             content: getIsEditedBind('NO_OF_PARKING_SPOTS')
                               .label,
@@ -1624,6 +1701,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('FLOOR').icon"
+                          @click.stop="openResetDialog('FLOOR')"
                           v-tooltip="{
                             content: getIsEditedBind('FLOOR').label,
                             container: false,
@@ -1658,6 +1736,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('NO_OF_FLOORS').icon"
+                          @click.stop="openResetDialog('NO_OF_FLOORS')"
                           v-tooltip="{
                             content: getIsEditedBind('NO_OF_FLOORS').label,
                             container: false,
@@ -1692,6 +1771,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('CONSTRUCTION_YEAR').icon"
+                          @click.stop="openResetDialog('CONSTRUCTION_YEAR')"
                           v-tooltip="{
                             content: getIsEditedBind('CONSTRUCTION_YEAR').label,
                             container: false,
@@ -1726,6 +1806,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('RENOVATED_YEAR').icon"
+                          @click.stop="openResetDialog('RENOVATED_YEAR')"
                           v-tooltip="{
                             content: getIsEditedBind('RENOVATED_YEAR').label,
                             container: false,
@@ -1769,6 +1850,7 @@ const saveDraft = () => {
                         />
                         <Icon
                           :icon="getIsEditedBind('ENERGY_LABEL').icon"
+                          @click.stop="openResetDialog('ENERGY_LABEL')"
                           v-tooltip="{
                             content: getIsEditedBind('ENERGY_LABEL').label,
                             container: false,
@@ -1817,6 +1899,9 @@ const saveDraft = () => {
                           :icon="
                             getIsEditedBind('ENERGY_LABEL_COLOR_CODE').icon
                           "
+                          @click.stop="
+                            openResetDialog('ENERGY_LABEL_COLOR_CODE')
+                          "
                           v-tooltip="{
                             content: getIsEditedBind('ENERGY_LABEL_COLOR_CODE')
                               .label,
@@ -1861,6 +1946,7 @@ const saveDraft = () => {
 
                         <Icon
                           :icon="getIsEditedBind('OWNERSHIP_TYPE').icon"
+                          @click.stop="openResetDialog('OWNERSHIP_TYPE')"
                           v-tooltip="{
                             content: getIsEditedBind('OWNERSHIP_TYPE').label,
                             container: false,
@@ -1895,6 +1981,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('BEDROOMS_FROM').icon"
+                          @click.stop="openResetDialog('BEDROOMS_FROM')"
                           v-tooltip="{
                             content: getIsEditedBind('BEDROOMS_FROM').label,
                             container: false,
@@ -1929,6 +2016,7 @@ const saveDraft = () => {
                       <template #suffix>
                         <Icon
                           :icon="getIsEditedBind('BEDROOMS_TO').icon"
+                          @click.stop="openResetDialog('BEDROOMS_TO')"
                           v-tooltip="{
                             content: getIsEditedBind('BEDROOMS_TO').label,
                             container: false,
@@ -1966,6 +2054,7 @@ const saveDraft = () => {
                     },
                   ]"
                   :icon="getIsEditedBind('PROPERTY_TYPE').icon"
+                  @click.stop="openResetDialog('PROPERTY_TYPE')"
                   v-tooltip="{
                     content: getIsEditedBind('PROPERTY_TYPE').label,
                     container: false,
@@ -2007,6 +2096,7 @@ const saveDraft = () => {
                     },
                   ]"
                   :icon="getIsEditedBind('MEDIA').icon"
+                  @click.stop="openResetDialog('MEDIA')"
                   v-tooltip="{
                     content: getIsEditedBind('MEDIA').label,
                     container: false,
@@ -2057,6 +2147,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('VIDEO_URL').icon"
+                        @click.stop="openResetDialog('VIDEO_URL')"
                         v-tooltip="{
                           content: getIsEditedBind('VIDEO_URL').label,
                           container: false,
@@ -2078,6 +2169,7 @@ const saveDraft = () => {
                     <template #suffix>
                       <Icon
                         :icon="getIsEditedBind('VIRTUAL_VIEWING_URL').icon"
+                        @click.stop="openResetDialog('VIRTUAL_VIEWING_URL')"
                         v-tooltip="{
                           content: getIsEditedBind('VIRTUAL_VIEWING_URL').label,
                           container: false,
@@ -2108,6 +2200,7 @@ const saveDraft = () => {
                     },
                   ]"
                   :icon="getIsEditedBind('FLOORPLAN_MEDIA').icon"
+                  @click.stop="openResetDialog('FLOORPLAN_MEDIA')"
                   v-tooltip="{
                     content: getIsEditedBind('FLOORPLAN_MEDIA').label,
                     container: false,
@@ -2167,6 +2260,7 @@ const saveDraft = () => {
                     },
                   ]"
                   :icon="getIsEditedBind('GENERAL_TEXT_REALESTATE').icon"
+                  @click.stop="openResetDialog('GENERAL_TEXT_REALESTATE')"
                   v-tooltip="{
                     content: getIsEditedBind('GENERAL_TEXT_REALESTATE').label,
                     container: false,
@@ -2178,6 +2272,7 @@ const saveDraft = () => {
                 <Icon
                   :class="[
                     'ad__expandable-list-field-icon',
+                    'ad__text-source',
                     {
                       'ad__expandable-list-field-icon--edited':
                         changedTextIds.includes(item.id),
@@ -2246,6 +2341,13 @@ const saveDraft = () => {
                     hasField('PROJECT_PREFERENCE')
                       ? getIsEditedBind('PROJECT_PREFERENCE').icon
                       : getIsEditedBind('ESTATE_PREFERENCE').icon
+                  "
+                  @click.stop="
+                    openResetDialog(
+                      hasField('PROJECT_PREFERENCE')
+                        ? 'PROJECT_PREFERENCE'
+                        : 'ESTATE_PREFERENCE',
+                    )
                   "
                   v-tooltip="{
                     content: hasField('PROJECT_PREFERENCE')
@@ -2435,6 +2537,7 @@ const saveDraft = () => {
                     },
                   ]"
                   :icon="getIsEditedBind('MOREINFO').icon"
+                  @click.stop="openResetDialog('MOREINFO')"
                   v-tooltip="{
                     content: getIsEditedBind('MOREINFO').label,
                     container: false,
@@ -2608,6 +2711,7 @@ const saveDraft = () => {
 
       svg {
         color: var(--edited-icon);
+        cursor: pointer;
       }
 
       .k-input__input {
@@ -2635,6 +2739,7 @@ const saveDraft = () => {
 
       svg:last-of-type {
         color: var(--edited-icon);
+        cursor: pointer;
       }
     }
   }
@@ -2671,7 +2776,12 @@ const saveDraft = () => {
 
     &--edited {
       color: var(--edited-icon);
+      cursor: pointer;
     }
+  }
+
+  &__text-source {
+    cursor: default;
   }
 
   &__navigate-button {
