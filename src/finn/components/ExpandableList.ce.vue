@@ -22,6 +22,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (event: 'update:modelValue', value: any): void
   (event: 'remove', value: number): void
+  (event: 'move', item: any, neighbor: any): void
 }>()
 
 const internalValue = ref<any>(Clone(props.modelValue))
@@ -75,9 +76,11 @@ const move = (index: number, delta: number) => {
   const id = ids.value.splice(index, 1)[0]
   ids.value.splice(index + delta, 0, id)
 
+  const neighbor = internalValue.value[index + delta]
   const newinternalValue = [...internalValue.value]
   const item = newinternalValue.splice(index, 1)[0]
   newinternalValue.splice(index + delta, 0, item)
+  emit('move', item, neighbor)
   internalValue.value = newinternalValue
   emit('update:modelValue', [...newinternalValue])
 }
@@ -105,6 +108,7 @@ onMounted(() => {
       <slot name="before-content"></slot>
       <template v-for="(item, index) in internalValue" :key="getId(index)">
         <Flex justify="end" gap="4px" class="expandable-list__actions">
+          <slot name="item-actions" :item="item" :index="index"></slot>
           <Button
             v-tooltip="{ content: 'Fjern', container: false }"
             size="small"
