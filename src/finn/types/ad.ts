@@ -10,6 +10,7 @@ export type Type =
   | 'PLOT_SALE'
   | 'LEISURE_PLOT_SALE'
   | 'LEISURE_SALE'
+  | 'LEISURE_SALE_ABROAD'
   | 'ESTATE_RENT'
 
 export type ID = string

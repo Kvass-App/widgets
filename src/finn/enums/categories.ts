@@ -96,6 +96,24 @@ export default [
     disabledReason: 'Du må ha hytteenheter til salgs',
   },
   {
+    type: 'LEISURE_SALE',
+    label: 'Fritidsbolig',
+    sublabel: 'Fritidsbolig til salgs',
+    group: 'Fritidsbolig',
+    disabled: (units: Unit[]) => {
+      if (!units.length) return false
+
+      const types = ['plot', 'leisurePlot', 'leisure']
+
+      return !units.some((unit) => {
+        return (
+          unit.saleType === 'sale' && types.includes(unit.propertyType.value)
+        )
+      })
+    },
+    disabledReason: 'Du må ha tomter, fritidstomter eller hytter til salgs',
+  },
+  {
     type: 'ESTATE_BUSINESS_SALE',
     label: 'Til salgs',
     sublabel: 'Næringseiendommer til salgs',
@@ -178,7 +196,7 @@ export default [
     disabledReason: 'Du må ha enheter til leie',
   },
   {
-    type: 'LEISURE_SALE',
+    type: 'LEISURE_SALE_ABROAD',
     label: 'Bolig',
     sublabel: 'Bolig til salgs i utlandet',
     group: 'Utland',
