@@ -28,8 +28,8 @@ const navigatePublish = (id: string, preview: boolean) => {
   API.navigateView('mutate', id)
 }
 
-const navigateEdit = (id: string) => {
-  sessionStorage.setItem('k-finn-step', 'ad')
+const navigateEdit = (id: string, step: string) => {
+  sessionStorage.setItem('k-finn-step', step)
   API.navigateView('mutate', id)
 }
 </script>
@@ -108,12 +108,25 @@ const navigateEdit = (id: string) => {
     </template>
   </Dialog>
 
-  <Dropdown label="Endre" keepOpen :teleport="false" class="options">
+  <Dropdown
+    label="Endre"
+    size="small"
+    keepOpen
+    :teleport="false"
+    class="options"
+  >
     <template #default>
       <Button
         iconRight="fa-pro-light:pen"
         label="Rediger"
-        @click="() => navigateEdit(item.id)"
+        @click="() => navigateEdit(item.id, 'ad')"
+        variant="tertiary"
+      ></Button>
+
+      <Button
+        iconRight="fa-pro-light:sliders"
+        label="Navn og enheter"
+        @click="() => navigateEdit(item.id, 'type')"
         variant="tertiary"
       ></Button>
 

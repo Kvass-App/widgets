@@ -12,6 +12,7 @@ import {
 } from '@kvass/ui'
 
 import Options from '../components/Options.ce.vue'
+import Upsell from '../components/Upsell.ce.vue'
 
 import { useAPI } from '../api'
 import { type Ad } from '../types/ad'
@@ -44,6 +45,10 @@ const columns = computed(() => {
     },
     {
       id: 'url',
+      label: '',
+    },
+    {
+      id: 'upsell',
       label: '',
     },
 
@@ -152,6 +157,7 @@ onMounted(() => {
             <template v-if="item.url">
               <Dropdown
                 label="Se annonser"
+                size="small"
                 v-if="item.units.some((v) => v.url)"
               >
                 <template #default>
@@ -179,6 +185,7 @@ onMounted(() => {
                 v-else
                 iconRight="fa-pro-light:arrow-up-right-from-square"
                 label="Se annonse"
+                size="small"
                 target="_blank"
                 is="a"
                 :href="item.url"
@@ -191,11 +198,15 @@ onMounted(() => {
               v-if="!item.preview && item.statistics"
               iconRight="fa-pro-light:arrow-up-right-from-square"
               label="Se innsikt"
+              size="small"
               target="_blank"
               is="a"
               :href="item.statistics"
             >
             </Button>
+          </template>
+          <template #upsell="{ item }">
+            <Upsell :item="item" :key="item.id" />
           </template>
           <template #edit="{ item }">
             <Options :item="item" @refetch="() => getData()" :key="item.id" />
@@ -222,7 +233,12 @@ onMounted(() => {
 
 <style lang="scss">
 .ads {
+  --k-datatable-cell-size: var(--k-ui-spacing-xs);
+  --k-button-secondary-background-hover: var(--k-ui-color-neutral-light);
+
   .k-datatable {
+    --k-button-small-font-size: 0.9em;
+
     position: initial;
   }
 

@@ -96,6 +96,24 @@ export default [
     disabledReason: 'Du må ha hytteenheter til salgs',
   },
   {
+    type: 'LEISURE_SALE',
+    label: 'Fritidsbolig',
+    sublabel: 'Fritidsbolig til salgs',
+    group: 'Fritidsbolig',
+    disabled: (units: Unit[]) => {
+      if (!units.length) return false
+
+      const types = ['plot', 'leisurePlot', 'leisure']
+
+      return !units.some((unit) => {
+        return (
+          unit.saleType === 'sale' && types.includes(unit.propertyType.value)
+        )
+      })
+    },
+    disabledReason: 'Du må ha tomter, fritidstomter eller hytter til salgs',
+  },
+  {
     type: 'ESTATE_BUSINESS_SALE',
     label: 'Til salgs',
     sublabel: 'Næringseiendommer til salgs',
@@ -135,21 +153,33 @@ export default [
   },
   {
     type: 'PLOT_SALE',
-    label: 'Tomt/Fritidstomt',
-    sublabel: 'Boligtomt/Fritidstomt til salgs',
+    label: 'Boligtomt',
+    sublabel: 'Boligtomt til salgs',
     group: 'Tomter',
     disabled: (units: Unit[]) => {
       if (!units.length) return false
 
-      const types = ['plot', 'leisurePlot']
+      return !units.some((unit) => {
+        return unit.saleType === 'sale' && unit.propertyType.value === 'plot'
+      })
+    },
+    disabledReason: 'Du må ha tomteenheter til salgs',
+  },
+  {
+    type: 'LEISURE_PLOT_SALE',
+    label: 'Fritidstomt',
+    sublabel: 'Fritidstomt til salgs',
+    group: 'Tomter',
+    disabled: (units: Unit[]) => {
+      if (!units.length) return false
 
       return !units.some((unit) => {
         return (
-          unit.saleType === 'sale' && types.includes(unit.propertyType.value)
+          unit.saleType === 'sale' && unit.propertyType.value === 'leisurePlot'
         )
       })
     },
-    disabledReason: 'Du må ha tomteenheter eller fritidstomter til salgs',
+    disabledReason: 'Du må ha fritidstomter til salgs',
   },
   {
     type: 'ESTATE_RENT',
@@ -166,7 +196,7 @@ export default [
     disabledReason: 'Du må ha enheter til leie',
   },
   {
-    type: 'LEISURE_SALE',
+    type: 'LEISURE_SALE_ABROAD',
     label: 'Bolig',
     sublabel: 'Bolig til salgs i utlandet',
     group: 'Utland',
