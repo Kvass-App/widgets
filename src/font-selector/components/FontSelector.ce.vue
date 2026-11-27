@@ -379,7 +379,12 @@ onMounted(() => {
         columns="1"
       >
         <FormControl :label="Translate('selectOrSearchForFont')">
-          <Input v-model="search" @focus="onFocus" @blur="onBlur">
+          <Input
+            v-model="search"
+            :placeholder="templateFont"
+            @focus="onFocus"
+            @blur="onBlur"
+          >
             <template #suffix>
               <Icon
                 @click="triggerSearch"
