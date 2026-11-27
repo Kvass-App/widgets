@@ -56,6 +56,7 @@ const getComponent = computed(() => {
       font-weight: normal;
       word-break: break-word;
       white-space: pre-wrap;
+      width: max-content;
       max-width: 300px;
       line-height: 1.4;
     }
