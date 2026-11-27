@@ -35,7 +35,6 @@ import { vTooltip } from 'floating-vue'
 import Categories from '../../../enums/categories.ts'
 import UnitTable from '../../../components/units/UnitTable.ce.vue'
 import ExpandableList from '../../../components/ExpandableList.ce.vue'
-import RichTextMultiple from '../../../components/RichTextMultiple.ce.vue'
 
 import { Clone, uploadFunction, hasDiff } from '../../../../utils/index.js'
 
@@ -53,6 +52,33 @@ import { PropsInjectionKey } from '../../../keys'
 import { useAPI, type Fields } from '../../../api'
 
 import { useCurrentElement } from '@vueuse/core'
+
+type TextSection = {
+  id?: string
+  GENERAL_HEADING?: string
+  GENERAL_TEXT?: string
+}
+
+function getTextIds(...lists: TextSection[][]) {
+  return [...new Set(lists.flat().map((section) => section.id))]
+}
+
+function getSectionsById(sections: TextSection[], id?: string) {
+  return sections.filter((section) => section.id === id)
+}
+
+function hasTextContent(section: TextSection) {
+  return 'GENERAL_HEADING' in section || 'GENERAL_TEXT' in section
+}
+
+function mergeTextSections(source: TextSection[], stored: TextSection[]) {
+  return getTextIds(source, stored).flatMap((id) =>
+    stored.some((section) => section.id === id)
+      ? getSectionsById(stored, id).filter(hasTextContent)
+      : getSectionsById(source, id),
+  )
+}
+
 const element = useCurrentElement()
 
 const API = useAPI(element)
@@ -121,9 +147,23 @@ const customMessages = computed(() => {
   }
 })
 
+const validatorLabels = computed(() => {
+  const label = labels.value['GENERAL_TEXT_REALESTATE.*.GENERAL_TEXT']
+
+  return {
+    ...labels.value,
+    ...Object.fromEntries(
+      (data.value.GENERAL_TEXT_REALESTATE || []).map((_, index) => [
+        `GENERAL_TEXT_REALESTATE.${index}.GENERAL_TEXT`,
+        `${label} (seksjon ${index + 1})`,
+      ]),
+    ),
+  }
+})
+
 const validator = Validator({
   rules: rules,
-  labels: labels,
+  labels: validatorLabels,
   data: validatorData,
   customMessages: customMessages,
 })
@@ -173,6 +213,55 @@ const getIsEditedBind = (field) => {
       }
 }
 
+const changedTextIds = computed(() => {
+  const source = initialFields.value.GENERAL_TEXT_REALESTATE
+  const sections = data.value.GENERAL_TEXT_REALESTATE
+  return getTextIds(source, sections).filter((id) =>
+    hasDiff(
+      { value: getSectionsById(sections, id) },
+      { value: getSectionsById(source, id) },
+    ),
+  )
+})
+
+const getTextSourceBind = (id: string) => {
+  if (id === 'custom') {
+    return {
+      icon: 'fa-pro-regular:cloud-xmark',
+      label: 'Egen seksjon, finnes ikke på prosjektet.',
+    }
+  }
+
+  return changedTextIds.value.includes(id)
+    ? {
+        icon: 'fa-pro-regular:cloud-xmark',
+        label:
+          'Ikke synkronisert. Gjelder alle seksjoner fra samme felt på prosjektet.',
+      }
+    : {
+        icon: 'fa-pro-regular:cloud-check',
+        label: 'Synkronisert med prosjektet.',
+      }
+}
+
+const onTextMove = (item: TextSection, neighbor: TextSection) => {
+  item.id = neighbor.id
+}
+
+const storeTextSections = () => {
+  if (!changedTextIds.value.length) {
+    delete modelValue.value.fields.GENERAL_TEXT_REALESTATE
+    return
+  }
+
+  const sections = data.value.GENERAL_TEXT_REALESTATE
+  modelValue.value.fields.GENERAL_TEXT_REALESTATE =
+    changedTextIds.value.flatMap((id) => {
+      const changed = getSectionsById(sections, id)
+      return changed.length ? changed : [{ id }]
+    })
+}
+
 const getData = () => {
   fetching.value = true
 
@@ -182,14 +271,31 @@ const getData = () => {
 
       initialFields.value = Clone(value.fields)
 
+      const storedText = modelValue.value.fields.GENERAL_TEXT_REALESTATE
+
       // TODO, Partial update ?
       // Hva om man går fram og tilbake ?
       data.value = Clone({ ...value.fields, ...modelValue.value.fields })
 
+      if (storedText) {
+        data.value.GENERAL_TEXT_REALESTATE = mergeTextSections(
+          Clone(value.fields.GENERAL_TEXT_REALESTATE),
+          data.value.GENERAL_TEXT_REALESTATE,
+        )
+      }
+
       watcherCleanups.value.forEach((watcherCleanup) => watcherCleanup())
       watcherCleanups.value = []
 
+      watcherCleanups.value.push(
+        watch(() => data.value.GENERAL_TEXT_REALESTATE, storeTextSections, {
+          deep: true,
+        }),
+      )
+
       Object.keys(value.fields).forEach((key) => {
+        if (key === 'GENERAL_TEXT_REALESTATE') return
+
         const watcherCleanup = watch(
           () => data.value[key],
           (newValue, oldValue) => {
@@ -2031,41 +2137,14 @@ const saveDraft = () => {
               </template>
             </FormSection>
 
-            <RichTextMultiple
-              open
-              v-if="hasFields('GENERAL_DESCRIPTION')"
-              v-model="data.GENERAL_DESCRIPTION"
-            >
-              <template #title>
-                <span>Beskrivelse</span>
-                <Tooltip
-                  class="k-ml-xxs"
-                  content="Teksten du skriver her vises under beskrivelsen i Finn-annonsen."
-                  src="https://assets.kvass.no/67c80a5792504cdf70aba732"
-                />
-              </template>
-              <template #actions>
-                <Icon
-                  :class="[
-                    'ad__expandable-list-field-icon',
-                    {
-                      'ad__expandable-list-field-icon--edited': isEdited(
-                        'GENERAL_DESCRIPTION',
-                      ),
-                    },
-                  ]"
-                  :icon="getIsEditedBind('GENERAL_DESCRIPTION').icon"
-                  v-tooltip="{
-                    content: getIsEditedBind('GENERAL_DESCRIPTION').label,
-                    container: false,
-                  }"
-                ></Icon>
-              </template>
-            </RichTextMultiple>
-
             <ExpandableList
               open
-              :template="{ GENERAL_HEADING: '', GENERAL_TEXT: '' }"
+              :template="{
+                id: 'custom',
+                GENERAL_HEADING: '',
+                GENERAL_TEXT: '',
+              }"
+              @move="onTextMove"
               v-model="data.GENERAL_TEXT_REALESTATE"
               v-if="hasFields('GENERAL_TEXT_REALESTATE')"
             >
@@ -2090,6 +2169,23 @@ const saveDraft = () => {
                   :icon="getIsEditedBind('GENERAL_TEXT_REALESTATE').icon"
                   v-tooltip="{
                     content: getIsEditedBind('GENERAL_TEXT_REALESTATE').label,
+                    container: false,
+                  }"
+                ></Icon>
+              </template>
+
+              <template #item-actions="{ item }">
+                <Icon
+                  :class="[
+                    'ad__expandable-list-field-icon',
+                    {
+                      'ad__expandable-list-field-icon--edited':
+                        changedTextIds.includes(item.id),
+                    },
+                  ]"
+                  :icon="getTextSourceBind(item.id).icon"
+                  v-tooltip="{
+                    content: getTextSourceBind(item.id).label,
                     container: false,
                   }"
                 ></Icon>
